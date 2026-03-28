@@ -121,21 +121,41 @@ export async function POST(req: NextRequest) {
   }
 
   // yt-dlp path — check if the binary exists
-  const ytDlpPath =
-    process.env.YT_DLP_PATH ||
-    "/Users/explainerium/Library/Python/3.9/bin/yt-dlp";
+  let ytDlpPath = process.env.YT_DLP_PATH || "";
 
-  // On Vercel/serverless, yt-dlp won't be available
-  try {
+  // If no env var set, try common locations
+  if (!ytDlpPath) {
     const fs = await import("fs");
-    if (!fs.existsSync(ytDlpPath)) {
-      logStat(platform, format, false, "no_ytdlp");
-      return Response.json(
-        { success: false, error: "Video downloading is not available in this deployment environment. This feature requires a custom server with yt-dlp installed." },
-        { status: 503 }
-      );
+    const commonPaths = [
+      "/usr/local/bin/yt-dlp",
+      "/usr/bin/yt-dlp",
+      "/home/" + (process.env.USER || process.env.HOME?.split("/").pop() || "") + "/.local/bin/yt-dlp",
+      "/Users/explainerium/Library/Python/3.9/bin/yt-dlp", // macOS dev fallback
+    ];
+    for (const p of commonPaths) {
+      if (fs.existsSync(p)) {
+        ytDlpPath = p;
+        break;
+      }
     }
-  } catch { /* continue — fs check failed, try anyway */ }
+  }
+
+  if (!ytDlpPath) {
+    // Last resort: try "yt-dlp" from PATH
+    try {
+      const { execSync } = await import("child_process");
+      const resolved = execSync("which yt-dlp", { encoding: "utf-8" }).trim();
+      if (resolved) ytDlpPath = resolved;
+    } catch { /* not on PATH */ }
+  }
+
+  if (!ytDlpPath) {
+    logStat(platform, format, false, "no_ytdlp");
+    return Response.json(
+      { success: false, error: "Video downloading is not available in this deployment environment. This feature requires a custom server with yt-dlp installed." },
+      { status: 503 }
+    );
+  }
 
   try {
     // Dynamic import to avoid issues at build time
