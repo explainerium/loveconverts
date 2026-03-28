@@ -1,0 +1,3 @@
+- [LoveConverts project state](project_loveconverts.md) — Rebrand from ConvertImg; admin panel, support system, Explainerium footer, is_admin SQL grant
+- [ConvertImg image converter app](project_convertimg.md) — Full-stack image converter: sharp/jszip/react-dropzone, formats, constraints
+- [sharp Buffer TypeScript workaround](project_sharp_typescript.md) — Pass sharp Buffer to Web Response without TS2345 errors
