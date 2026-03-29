@@ -74,15 +74,30 @@ function downloadWithYtDlp(
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
       "-o",
       "-", // output to stdout
-      pageUrl,
     ];
+
+    // For YouTube: add JS runtime and web player client to bypass bot detection
+    const isYouTube = pageUrl.includes("youtube.com") || pageUrl.includes("youtu.be");
+    if (isYouTube) {
+      const { execSync } = require("child_process");
+      try {
+        const nodePath = execSync("which node", { encoding: "utf-8" }).trim();
+        if (nodePath) {
+          args.push("--js-runtimes", `nodejs:${nodePath}`);
+        }
+      } catch { /* skip */ }
+      args.push("--extractor-args", "youtube:player_client=web,default");
+    }
 
     // Add cookies if available
     const fs = require("fs");
     const cookiesPath = process.env.YT_DLP_COOKIES || "/var/www/loveconverts/cookies.txt";
     if (fs.existsSync(cookiesPath)) {
-      args.splice(args.length - 1, 0, "--cookies", cookiesPath);
+      args.push("--cookies", cookiesPath);
     }
+
+    // URL must be last argument
+    args.push(pageUrl);
 
     const child = spawn(ytDlpPath, args, { timeout: 120000 });
     const chunks: Buffer[] = [];

@@ -163,31 +163,48 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    // Dynamic import to avoid issues at build time
-    const { create } = await import("youtube-dl-exec");
-
-    // Create instance with the yt-dlp binary path
-    const youtubeDl = create(ytDlpPath);
-
-    // Build yt-dlp options
-    const ytDlpOptions: Record<string, unknown> = {
-      dumpSingleJson: true,
-      noWarnings: true,
-      noCheckCertificates: true,
-      userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
-      // Do NOT set preferFreeFormats — VP9 is not compatible with QuickTime/iOS
-      // Do NOT set youtubeSkipDashManifest — needed for YouTube format discovery
-    };
-
-    // Use cookies file if available (needed for YouTube bot detection on VPS)
+    // Build yt-dlp CLI args directly for full control over flags
     const fs2 = await import("fs");
-    const cookiesPath = process.env.YT_DLP_COOKIES || "/var/www/loveconverts/cookies.txt";
-    if (fs2.existsSync(cookiesPath)) {
-      ytDlpOptions.cookies = cookiesPath;
+    const { execSync } = await import("child_process");
+
+    const ytArgs = [
+      "--dump-single-json",
+      "--no-warnings",
+      "--no-check-certificates",
+      "--user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+    ];
+
+    // For YouTube: add JS runtime (Node.js) and use web client to bypass bot detection
+    const isYouTubePlatform = ["youtube", "youtube-shorts"].includes(platform);
+    if (isYouTubePlatform) {
+      // Find Node.js path for yt-dlp JS runtime
+      try {
+        const nodePath = execSync("which node", { encoding: "utf-8" }).trim();
+        if (nodePath) {
+          ytArgs.push("--js-runtimes", `nodejs:${nodePath}`);
+        }
+      } catch { /* node not found on PATH, skip */ }
+
+      // Use web player client to reduce bot detection
+      ytArgs.push("--extractor-args", "youtube:player_client=web,default");
     }
 
-    // Use dumpSingleJson to get metadata without downloading
-    const info = await youtubeDl(url, ytDlpOptions) as Record<string, unknown>;
+    // Use cookies file if available (needed for YouTube bot detection on VPS)
+    const cookiesPath = process.env.YT_DLP_COOKIES || "/var/www/loveconverts/cookies.txt";
+    if (fs2.existsSync(cookiesPath)) {
+      ytArgs.push("--cookies", cookiesPath);
+    }
+
+    ytArgs.push(url);
+
+    // Execute yt-dlp and parse JSON output
+    const rawOutput = execSync(`${ytDlpPath} ${ytArgs.map(a => `'${a.replace(/'/g, "'\\''")}'`).join(" ")}`, {
+      encoding: "utf-8",
+      timeout: 60000,
+      maxBuffer: 50 * 1024 * 1024,
+    });
+
+    const info = JSON.parse(rawOutput) as Record<string, unknown>;
 
     const title = (info.title as string) || "Media";
     const thumbnail = (info.thumbnail as string) || null;
