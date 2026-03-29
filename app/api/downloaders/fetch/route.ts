@@ -257,7 +257,10 @@ export async function POST(req: NextRequest) {
     // The top-level info.url is yt-dlp's "best" pick (usually combined V+A)
     const downloadUrl = (info.url as string) || formats[0]?.url || "";
 
-    const isYouTube = ["youtube", "youtube-shorts"].includes(platform);
+    // These platforms have CDN URLs that block VPS IPs or require authentication.
+    // Use yt-dlp for the actual download instead of proxying CDN URLs.
+    const useYtDlpPlatforms = ["youtube", "youtube-shorts", "facebook", "instagram", "tiktok"];
+    const shouldUseYtDlp = useYtDlpPlatforms.includes(platform);
 
     logStat(platform, format, true);
 
@@ -270,8 +273,8 @@ export async function POST(req: NextRequest) {
       formats: formats.length > 0 ? formats : undefined,
       // Pass the original page URL so the stream proxy can use yt-dlp as fallback
       pageUrl: url,
-      // YouTube CDN URLs are signature-locked. The proxy will attempt yt-dlp.
-      useYtDlp: isYouTube,
+      // Use yt-dlp for platforms with restricted CDN URLs
+      useYtDlp: shouldUseYtDlp,
     });
 
   } catch (err: unknown) {
