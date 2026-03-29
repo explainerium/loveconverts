@@ -43,11 +43,6 @@ function SignInForm() {
     }
   }
 
-  async function handleGoogle() {
-    setLoading(true);
-    await signIn("google", { callbackUrl });
-  }
-
   return (
     <div className="bg-card border border-border rounded-2xl p-6 shadow-sm space-y-5">
       {(error || urlError) && (
@@ -57,23 +52,43 @@ function SignInForm() {
         </div>
       )}
 
-      {process.env.NEXT_PUBLIC_GOOGLE_ENABLED && (
-        <>
-          <button
-            onClick={handleGoogle}
-            disabled={loading}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-border text-sm font-semibold text-foreground hover:bg-gray-50 transition-colors"
-            type="button"
-          >
-            <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#4285F4" d="M44.5 20H24v8.5h11.8C34.2 33.1 29.6 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.1 8 3l6-6C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20c11 0 20-8 20-20 0-1.3-.2-2.7-.5-4z"/><path fill="#34A853" d="M6.3 14.7l7 5.1C15.1 15.6 19.2 12 24 12c3.1 0 5.9 1.1 8 3l6-6C34 6.1 29.3 4 24 4 16.3 4 9.6 8.4 6.3 14.7z"/><path fill="#FBBC05" d="M24 44c5.2 0 9.9-1.8 13.5-4.8l-6.5-5.3C28.9 35.6 26.6 36 24 36c-5.6 0-10.3-3.7-11.8-8.7l-7 5.4C8.4 39.3 15.6 44 24 44z"/><path fill="#EA4335" d="M44.5 20H24v8.5h11.8c-1 2.7-2.8 4.9-5.3 6.4l6.5 5.3C41 36.7 44 30.8 44 24c0-1.3-.2-2.7-.5-4z"/></svg>
-            Continue with Google
-          </button>
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-border" /></div>
-            <div className="relative flex justify-center"><span className="bg-card px-3 text-xs text-muted">or</span></div>
-          </div>
-        </>
-      )}
+      {/* Social Login Buttons */}
+      <div className="flex flex-col gap-2">
+        <a
+          href={`/api/auth/signin/google?callbackUrl=${encodeURIComponent(callbackUrl)}`}
+          onClick={(e) => { e.preventDefault(); signIn("google", { callbackUrl }); }}
+          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-border text-sm font-semibold text-foreground hover:bg-muted transition-colors cursor-pointer"
+        >
+          <svg width="18" height="18" viewBox="0 0 48 48">
+            <path fill="#FFC107" d="M43.6 20H24v8h11.3C33.5 33.1 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.8 1.1 7.9 3l5.7-5.7C34.1 6.5 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20c11 0 20-8 20-20 0-1.3-.2-2.7-.4-4z"/>
+            <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.5 15.1 18.9 12 24 12c3 0 5.8 1.1 7.9 3l5.7-5.7C34.1 6.5 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/>
+            <path fill="#4CAF50" d="M24 44c5.2 0 9.9-1.9 13.5-5l-6.2-5.2C29.4 35.6 26.8 36 24 36c-5.1 0-9.4-2.9-11.3-7.1l-6.5 5C9.8 39.8 16.4 44 24 44z"/>
+            <path fill="#1976D2" d="M43.6 20H24v8h11.3c-.9 2.6-2.6 4.8-4.9 6.3l6.2 5.2C40.3 36.2 44 30.6 44 24c0-1.3-.2-2.7-.4-4z"/>
+          </svg>
+          Continue with Google
+        </a>
+
+        <a
+          href={`/api/auth/signin/github?callbackUrl=${encodeURIComponent(callbackUrl)}`}
+          onClick={(e) => { e.preventDefault(); signIn("github", { callbackUrl }); }}
+          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-border text-sm font-semibold text-foreground hover:bg-muted transition-colors cursor-pointer"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0C5.4 0 0 5.4 0 12c0 5.3 3.4 9.8 8.2 11.4.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.5-1.4-1.3-1.8-1.3-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17 4.7 18 5 18 5c.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6C20.6 21.8 24 17.3 24 12c0-6.6-5.4-12-12-12z"/>
+          </svg>
+          Continue with GitHub
+        </a>
+      </div>
+
+      {/* Divider */}
+      <div className="relative">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-border" />
+        </div>
+        <div className="relative flex justify-center">
+          <span className="bg-card px-3 text-xs text-muted">or sign in with email</span>
+        </div>
+      </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-1.5">
