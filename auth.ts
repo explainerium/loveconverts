@@ -1,6 +1,7 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
+import GitHub from "next-auth/providers/github";
 import type { NextAuthConfig } from "next-auth";
 import bcrypt from "bcryptjs";
 
@@ -47,12 +48,22 @@ const config: NextAuthConfig = {
       },
     }),
 
-    // Google OAuth — enable when AUTH_GOOGLE_ID / AUTH_GOOGLE_SECRET are set
-    ...(process.env.AUTH_GOOGLE_ID
+    // Google OAuth — enable when AUTH_GOOGLE_ID is set
+    ...(process.env.AUTH_GOOGLE_ID?.trim()
       ? [
           Google({
-            clientId:     process.env.AUTH_GOOGLE_ID,
-            clientSecret: process.env.AUTH_GOOGLE_SECRET!,
+            clientId:     process.env.AUTH_GOOGLE_ID.trim(),
+            clientSecret: process.env.AUTH_GOOGLE_SECRET!.trim(),
+          }),
+        ]
+      : []),
+
+    // GitHub OAuth — enable when AUTH_GITHUB_ID is set
+    ...(process.env.AUTH_GITHUB_ID?.trim()
+      ? [
+          GitHub({
+            clientId:     process.env.AUTH_GITHUB_ID.trim(),
+            clientSecret: process.env.AUTH_GITHUB_SECRET!.trim(),
           }),
         ]
       : []),
@@ -60,56 +71,59 @@ const config: NextAuthConfig = {
 
   session: { strategy: "jwt" },
 
-  callbacks: {
-    signIn: async ({ user, account }) => {
-      // For OAuth, upsert the user into our database
-      if (account?.provider === "google") {
-        const db = getDb();
-        if (!db) return true; // DB unavailable, allow sign-in but skip DB upsert
+callbacks: {
+  signIn: async ({ user, account }) => {
+    // Handle social login providers (Google + GitHub)
+    if (account?.provider === "google" || account?.provider === "github") {
+      const db = getDb();
+      if (!db) return true; // DB unavailable, allow sign-in anyway
 
-        const existing = db
-          .prepare("SELECT id FROM users WHERE email = ?")
-          .get(user.email) as { id: string } | undefined;
+      // Check if user already exists
+      const existing = db
+        .prepare("SELECT id FROM users WHERE email = ?")
+        .get(user.email) as { id: string } | undefined;
 
-        if (!existing) {
-          db.prepare(`
-            INSERT INTO users (id, email, name, plan)
-            VALUES (?, ?, ?, 'free')
-          `).run(crypto.randomUUID(), user.email, user.name ?? null);
-        }
-
-        // Attach id + plan to user object
-        const row = db
-          .prepare("SELECT id, plan FROM users WHERE email = ?")
-          .get(user.email) as { id: string; plan: string } | undefined;
-
-        if (row) {
-          user.id       = row.id;
-          (user as Record<string, unknown>).plan     = row.plan;
-          (user as Record<string, unknown>).is_admin = (row as Record<string, unknown>).is_admin === 1;
-        }
+      // If new user → create them in DB
+      if (!existing) {
+        db.prepare(`
+          INSERT INTO users (id, email, name, plan, is_admin)
+          VALUES (?, ?, ?, 'free', 0)
+        `).run(crypto.randomUUID(), user.email, user.name ?? null);
       }
-      return true;
-    },
 
-    jwt: async ({ token, user }) => {
-      if (user) {
-        token.id       = user.id as string;
-        token.plan     = ((user as Record<string, unknown>).plan as "free" | "pro") ?? "free";
-        token.is_admin = Boolean((user as Record<string, unknown>).is_admin);
-      }
-      return token;
-    },
+      // Attach id + plan + is_admin to user object
+      const row = db
+        .prepare("SELECT id, plan, is_admin FROM users WHERE email = ?")
+        .get(user.email) as { id: string; plan: string; is_admin: number } | undefined;
 
-    session: async ({ session, token }) => {
-      if (token) {
-        session.user.id       = token.id as string;
-        session.user.plan     = (token.plan as "free" | "pro") ?? "free";
-        session.user.is_admin = Boolean(token.is_admin);
+      if (row) {
+        user.id = row.id;
+        (user as Record<string, unknown>).plan     = row.plan;
+        (user as Record<string, unknown>).is_admin = row.is_admin === 1;
       }
-      return session;
-    },
+    }
+
+    return true;
   },
+
+  jwt: async ({ token, user }) => {
+    if (user) {
+      token.id       = user.id as string;
+      token.plan     = ((user as Record<string, unknown>).plan as "free" | "pro") ?? "free";
+      token.is_admin = Boolean((user as Record<string, unknown>).is_admin);
+    }
+    return token;
+  },
+
+  session: async ({ session, token }) => {
+    if (token) {
+      session.user.id       = token.id as string;
+      session.user.plan     = (token.plan as "free" | "pro") ?? "free";
+      session.user.is_admin = Boolean(token.is_admin);
+    }
+    return session;
+  },
+},
 
   pages: {
     signIn: "/auth/signin",
