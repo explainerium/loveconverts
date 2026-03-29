@@ -254,17 +254,21 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const buffer = await upstream.arrayBuffer();
+    // Stream directly to client instead of buffering entire video in memory
+    const contentLength = upstream.headers.get("content-length");
+    const responseHeaders: Record<string, string> = {
+      "Content-Disposition": `attachment; filename="${filename}"`,
+      "Content-Type": ct || "application/octet-stream",
+      "Cache-Control": "no-store",
+      "X-Content-Type-Options": "nosniff",
+    };
+    if (contentLength) {
+      responseHeaders["Content-Length"] = contentLength;
+    }
 
-    return new Response(buffer, {
+    return new Response(upstream.body, {
       status: 200,
-      headers: {
-        "Content-Disposition": `attachment; filename="${filename}"`,
-        "Content-Type": ct || "application/octet-stream",
-        "Content-Length": buffer.byteLength.toString(),
-        "Cache-Control": "no-store",
-        "X-Content-Type-Options": "nosniff",
-      },
+      headers: responseHeaders,
     });
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
