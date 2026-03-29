@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -11,24 +12,24 @@ const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
   display: "swap",
-  preload: false, // Skip preload to avoid network fetch at build time
+  preload: false,
 });
 
 export const metadata: Metadata = {
   title: {
-    default: "LoveConverts — Free Media Converter & Downloader",
+    default: "LoveConverts — Free Image Converter & Downloader",
     template: "%s | LoveConverts",
   },
   description:
-    "Convert images between JPG, PNG, WEBP, AVIF, GIF, BMP, TIFF, ICO and more. Download videos from YouTube, Instagram, Facebook, TikTok & 10+ platforms. 100% free, fast, no sign-up required.",
+    "Free online image converter, compressor, resizer and social media downloader. Convert JPG, PNG, WEBP, AVIF. Download videos from TikTok, Instagram, YouTube. No signup required.",
   keywords: [
-    "image converter", "convert image", "jpg to png", "webp converter", "avif converter", "free image conversion",
-    "video downloader", "youtube downloader", "instagram downloader", "facebook video downloader", "tiktok downloader",
+    "image converter", "compress image", "resize image", "webp converter", "free image tools",
+    "tiktok downloader", "instagram downloader", "youtube downloader", "facebook video downloader",
     "free media converter", "online converter", "loveconverts",
   ],
   metadataBase: new URL("https://loveconverts.com"),
   openGraph: {
-    title: "LoveConverts — Free Media Converter & Downloader",
+    title: "LoveConverts — Free Image Converter & Downloader",
     description: "Convert images & download videos from 10+ platforms. 100% free, fast, no sign-up.",
     type: "website",
     siteName: "LoveConverts",
@@ -36,7 +37,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "LoveConverts — Free Media Converter & Downloader",
+    title: "LoveConverts — Free Image Converter & Downloader",
     description: "Convert images & download videos from 10+ platforms. 100% free, fast, no sign-up.",
   },
   robots: {
@@ -68,6 +69,24 @@ export default function RootLayout({
           <Footer />
           <FloatingSupport />
         </Providers>
+        {process.env.NEXT_PUBLIC_GA_ID && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
+              strategy="afterInteractive"
+            />
+            <Script id="google-analytics" strategy="afterInteractive">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}', {
+                  page_path: window.location.pathname,
+                });
+              `}
+            </Script>
+          </>
+        )}
       </body>
     </html>
   );

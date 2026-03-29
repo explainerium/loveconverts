@@ -2,10 +2,11 @@ import DownloaderTemplate from "@/app/components/downloaders/DownloaderTemplate"
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Twitter / X Video Downloader — Free | LoveConverts",
-  description: "Download Twitter / X videos and GIFs for free. Paste tweet URL and save.",
+  title: "Twitter / X Video Downloader — Save Tweets as MP4",
+  description: "Download videos and GIFs from Twitter and X online. Paste any tweet link and save as MP4 or GIF. Free, no signup needed.",
   keywords: "Twitter video downloader, X video download, download tweet video, Twitter GIF download",
-  openGraph: { title: "Twitter / X Video Downloader | LoveConverts", description: "Save videos and GIFs from tweets.", images: ["/og-image.png"] },
+  alternates: { canonical: "https://loveconverts.com/downloaders/twitter" },
+  openGraph: { url: "https://loveconverts.com/downloaders/twitter", title: "Twitter / X Video Downloader | LoveConverts", description: "Save videos and GIFs from tweets.", images: ["/og-image.png"] },
 };
 
 const ICON = (

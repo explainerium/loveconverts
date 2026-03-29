@@ -2,10 +2,11 @@ import DownloaderTemplate from "@/app/components/downloaders/DownloaderTemplate"
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Pinterest Video & Image Downloader | LoveConverts",
-  description: "Download Pinterest videos and images for free. No signup required.",
+  title: "Pinterest Video Downloader — Save Pinterest Videos",
+  description: "Download Pinterest videos and images online for free. Paste any Pinterest pin link and save as MP4 or JPG.",
   keywords: "Pinterest downloader, Pinterest video download, Pinterest image download",
-  openGraph: { title: "Pinterest Downloader | LoveConverts", description: "Save Pinterest videos and images.", images: ["/og-image.png"] },
+  alternates: { canonical: "https://loveconverts.com/downloaders/pinterest" },
+  openGraph: { url: "https://loveconverts.com/downloaders/pinterest", title: "Pinterest Downloader | LoveConverts", description: "Save Pinterest videos and images.", images: ["/og-image.png"] },
 };
 
 const ICON = (

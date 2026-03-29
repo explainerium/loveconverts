@@ -2,10 +2,11 @@ import DownloaderTemplate from "@/app/components/downloaders/DownloaderTemplate"
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "YouTube Shorts Downloader — Personal Use | LoveConverts",
-  description: "Download YouTube Shorts videos for free. Personal use only.",
+  title: "YouTube Shorts Downloader — Save Shorts as MP4",
+  description: "Download YouTube Shorts videos online for free. Paste any Shorts link and save as MP4. For personal use only.",
   keywords: "YouTube Shorts downloader, download YouTube Shorts, Shorts video download",
-  openGraph: { title: "YouTube Shorts Downloader | LoveConverts", description: "Download YouTube Shorts — personal use only.", images: ["/og-image.png"] },
+  alternates: { canonical: "https://loveconverts.com/downloaders/youtube-shorts" },
+  openGraph: { url: "https://loveconverts.com/downloaders/youtube-shorts", title: "YouTube Shorts Downloader | LoveConverts", description: "Download YouTube Shorts — personal use only.", images: ["/og-image.png"] },
 };
 
 const ICON = (

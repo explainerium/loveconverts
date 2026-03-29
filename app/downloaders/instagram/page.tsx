@@ -2,10 +2,11 @@ import DownloaderTemplate from "@/app/components/downloaders/DownloaderTemplate"
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Instagram Reels & Video Downloader | LoveConverts",
-  description: "Download Instagram Reels, videos, and photos for free. No login required.",
+  title: "Instagram Video & Reels Downloader — Save IG Videos",
+  description: "Download Instagram Reels, videos and photos online. Paste any Instagram link and save as MP4 or JPG. Free, no signup required.",
   keywords: "Instagram downloader, Instagram Reels download, Instagram video download",
-  openGraph: { title: "Instagram Reels Downloader | LoveConverts", description: "Save Instagram Reels, videos, and photos.", images: ["/og-image.png"] },
+  alternates: { canonical: "https://loveconverts.com/downloaders/instagram" },
+  openGraph: { url: "https://loveconverts.com/downloaders/instagram", title: "Instagram Reels Downloader | LoveConverts", description: "Save Instagram Reels, videos, and photos.", images: ["/og-image.png"] },
 };
 
 const ICON = (

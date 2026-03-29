@@ -3,8 +3,10 @@ import Link from "next/link";
 import { Minimize2, Maximize2, Crop, FileImage, Wand2, ImageIcon, Sparkles } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "All Image Tools",
-  description: "Free online image tools — compress, resize, crop, convert to JPG, and edit photos. No sign-up required.",
+  title: "All Free Image Tools — Converter Compressor Resizer",
+  description: "All free image tools in one place. Convert, compress, resize, crop and edit images online. No signup, no file storage, always free.",
+  alternates: { canonical: "https://loveconverts.com/tools" },
+  openGraph: { url: "https://loveconverts.com/tools" },
 };
 
 const TOOLS = [

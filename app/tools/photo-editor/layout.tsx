@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 export const metadata: Metadata = {
-  title: "Photo Editor Online — Free",
-  description: "Edit photos online — adjust brightness, contrast, saturation, apply filters. Free with live preview.",
+  title: "Free Online Photo Editor — Brightness Contrast Filters",
+  description: "Edit photos online free. Adjust brightness, contrast, saturation, sharpness and apply filters. No download needed, works in browser.",
+  alternates: { canonical: "https://loveconverts.com/tools/photo-editor" },
+  openGraph: { url: "https://loveconverts.com/tools/photo-editor" },
 };
 export default function Layout({ children }: { children: React.ReactNode }) {
   return <>{children}</>;

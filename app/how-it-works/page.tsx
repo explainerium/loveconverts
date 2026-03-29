@@ -11,9 +11,10 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "How It Works",
+  title: "How It Works — Image Converter & Video Downloader",
   description:
-    "Learn how LoveConverts converts your images in 3 simple steps — upload, choose format, download. Free, fast, no sign-up.",
+    "Learn how LoveConverts converts images and downloads videos. Three simple steps: upload or paste a link, choose settings, download instantly.",
+  alternates: { canonical: "https://loveconverts.com/how-it-works" },
 };
 
 const STEPS = [

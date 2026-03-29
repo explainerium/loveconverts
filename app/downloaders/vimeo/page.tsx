@@ -2,10 +2,11 @@ import DownloaderTemplate from "@/app/components/downloaders/DownloaderTemplate"
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Vimeo Video Downloader — HD Free | LoveConverts",
-  description: "Download Vimeo videos in HD quality for free. No signup required.",
+  title: "Vimeo Video Downloader — Save Vimeo Videos Free",
+  description: "Download Vimeo videos online for free. Paste any Vimeo URL and save as MP4. Fast, free, no signup required.",
   keywords: "Vimeo downloader, Vimeo video download, download Vimeo HD",
-  openGraph: { title: "Vimeo Video Downloader | LoveConverts", description: "Download Vimeo videos in HD.", images: ["/og-image.png"] },
+  alternates: { canonical: "https://loveconverts.com/downloaders/vimeo" },
+  openGraph: { url: "https://loveconverts.com/downloaders/vimeo", title: "Vimeo Video Downloader | LoveConverts", description: "Download Vimeo videos in HD.", images: ["/og-image.png"] },
 };
 
 const ICON = (

@@ -2,10 +2,11 @@ import DownloaderTemplate from "@/app/components/downloaders/DownloaderTemplate"
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Facebook Video Downloader — Free & Fast | LoveConverts",
-  description: "Download Facebook videos and Reels in HD. Free, fast, no signup needed.",
+  title: "Facebook Video Downloader — Save FB Videos Free",
+  description: "Download Facebook videos and Reels online for free. Paste any Facebook video link and save as MP4. No signup, personal use only.",
   keywords: "Facebook video downloader, Facebook Reels download, download Facebook video",
-  openGraph: { title: "Facebook Video Downloader | LoveConverts", description: "Save Facebook videos and Reels.", images: ["/og-image.png"] },
+  alternates: { canonical: "https://loveconverts.com/downloaders/facebook" },
+  openGraph: { url: "https://loveconverts.com/downloaders/facebook", title: "Facebook Video Downloader | LoveConverts", description: "Save Facebook videos and Reels.", images: ["/og-image.png"] },
 };
 
 const ICON = (

@@ -3,7 +3,8 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Terms of Service",
-  description: "LoveConverts Terms of Service — please read before using our image conversion tools.",
+  description: "LoveConverts Terms of Service. Read our acceptable use policy for image tools and media downloaders.",
+  alternates: { canonical: "https://loveconverts.com/terms" },
 };
 
 const SECTIONS = [

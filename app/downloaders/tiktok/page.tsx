@@ -2,10 +2,11 @@ import DownloaderTemplate from "@/app/components/downloaders/DownloaderTemplate"
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "TikTok Video Downloader — No Watermark | LoveConverts",
-  description: "Download TikTok videos without watermark. Free, fast, and no signup required.",
+  title: "TikTok Video Downloader — Save TikTok Without Watermark",
+  description: "Download TikTok videos without watermark in HD quality. Paste any TikTok link and save as MP4. Free, no signup, personal use only.",
   keywords: "TikTok downloader, TikTok video download, TikTok no watermark",
-  openGraph: { title: "TikTok Video Downloader | LoveConverts", description: "Save TikTok videos without watermark.", images: ["/og-image.png"] },
+  alternates: { canonical: "https://loveconverts.com/downloaders/tiktok" },
+  openGraph: { url: "https://loveconverts.com/downloaders/tiktok", title: "TikTok Video Downloader | LoveConverts", description: "Save TikTok videos without watermark.", images: ["/og-image.png"] },
 };
 
 const ICON = (

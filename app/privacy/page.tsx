@@ -3,7 +3,8 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
-  description: "LoveConverts Privacy Policy — how we handle your data and images.",
+  description: "LoveConverts Privacy Policy. We never store your files or URLs. Learn how we handle your data.",
+  alternates: { canonical: "https://loveconverts.com/privacy" },
 };
 
 const SECTIONS = [

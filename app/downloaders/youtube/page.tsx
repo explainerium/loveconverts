@@ -2,10 +2,11 @@ import DownloaderTemplate from "@/app/components/downloaders/DownloaderTemplate"
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "YouTube Video Downloader — Personal Use Only | LoveConverts",
-  description: "Download YouTube videos for personal use. HD quality, free, fast.",
+  title: "YouTube Video Downloader — Save YouTube Videos",
+  description: "Download YouTube videos online. Paste any YouTube link to save as MP4. For personal use and content you own only. Free tool.",
   keywords: "YouTube downloader, YouTube video download, save YouTube video",
-  openGraph: { title: "YouTube Video Downloader | LoveConverts", description: "Download YouTube videos — personal use only.", images: ["/og-image.png"] },
+  alternates: { canonical: "https://loveconverts.com/downloaders/youtube" },
+  openGraph: { url: "https://loveconverts.com/downloaders/youtube", title: "YouTube Video Downloader | LoveConverts", description: "Download YouTube videos — personal use only.", images: ["/og-image.png"] },
 };
 
 const ICON = (

@@ -521,7 +521,7 @@ export default function DownloaderTemplate({ config }: { config: PlatformConfig 
                   href={`/downloaders/${p.slug}`}
                   className="px-4 py-2 rounded-xl border border-[#E2E8F0] text-sm font-medium text-[#64748B] hover:border-[#FF4747]/40 hover:text-[#FF4747] transition-colors bg-white"
                 >
-                  {p.name}
+                  {p.name} Downloader
                 </Link>
               ))}
             </div>

@@ -2,10 +2,11 @@ import DownloaderTemplate from "@/app/components/downloaders/DownloaderTemplate"
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Dailymotion Video Downloader — Free | LoveConverts",
-  description: "Download Dailymotion videos in HD quality for free. Fast and easy.",
+  title: "Dailymotion Video Downloader — Save DM Videos Free",
+  description: "Download Dailymotion videos online for free. Paste any Dailymotion link and save as MP4. No signup required.",
   keywords: "Dailymotion downloader, Dailymotion video download, save Dailymotion video",
-  openGraph: { title: "Dailymotion Video Downloader | LoveConverts", description: "Download Dailymotion videos for free.", images: ["/og-image.png"] },
+  alternates: { canonical: "https://loveconverts.com/downloaders/dailymotion" },
+  openGraph: { url: "https://loveconverts.com/downloaders/dailymotion", title: "Dailymotion Video Downloader | LoveConverts", description: "Download Dailymotion videos for free.", images: ["/og-image.png"] },
 };
 
 const ICON = (

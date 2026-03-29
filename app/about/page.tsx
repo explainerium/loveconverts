@@ -4,9 +4,10 @@ import { ImageIcon, Code2, Server, Zap, Shield, Heart } from "lucide-react";
 import DonateButton from "./DonateButton";
 
 export const metadata: Metadata = {
-  title: "About",
+  title: "About LoveConverts — Free Image & Media Tools",
   description:
-    "Learn about LoveConverts — a free media converter and video downloader. Convert images, download videos from YouTube, Instagram, Facebook, TikTok and more.",
+    "LoveConverts is a free image conversion and media downloading platform built by Explainerium. No signup, no file storage, always free.",
+  alternates: { canonical: "https://loveconverts.com/about" },
 };
 
 const STACK = [

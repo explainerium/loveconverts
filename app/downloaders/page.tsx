@@ -3,12 +3,14 @@ import type { Metadata } from "next";
 import { AlertTriangle } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Free Video & Social Media Downloaders | LoveConverts",
-  description: "Download videos from TikTok, Instagram, YouTube, Facebook, Twitter, Pinterest, SoundCloud, Vimeo, and more — free and fast.",
+  title: "Free Social Media Video Downloader — TikTok Instagram",
+  description: "Download videos from TikTok, Instagram, Facebook, Twitter and more. Free, fast, no signup. For personal use only.",
   keywords: "video downloader, TikTok downloader, Instagram downloader, YouTube downloader, Facebook video downloader",
+  alternates: { canonical: "https://loveconverts.com/downloaders" },
   openGraph: {
     title: "Free Video & Social Media Downloaders | LoveConverts",
     description: "Download from 10+ platforms — TikTok, Instagram, YouTube, and more.",
+    url: "https://loveconverts.com/downloaders",
     images: ["/og-image.png"],
   },
 };
