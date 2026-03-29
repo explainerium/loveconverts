@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, FormEvent, Suspense, useEffect } from "react";
+import { useState, FormEvent, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { signIn, useSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import { ImageIcon, Eye, EyeOff, Loader2, AlertCircle } from "lucide-react";
 
 function SignInForm() {
@@ -11,14 +11,6 @@ function SignInForm() {
   const searchParams = useSearchParams();
   const callbackUrl  = searchParams.get("callbackUrl") || "/dashboard";
   const urlError     = searchParams.get("error");
-  const { data: session } = useSession();
-
-  // If already logged in, redirect to callbackUrl
-  useEffect(() => {
-    if (session?.user) {
-      router.push(callbackUrl);
-    }
-  }, [session, callbackUrl, router]);
 
   const [email,    setEmail]    = useState("");
   const [password, setPassword] = useState("");
