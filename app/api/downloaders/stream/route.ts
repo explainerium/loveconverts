@@ -279,3 +279,74 @@ export async function POST(req: NextRequest) {
     return Response.json({ error: "Failed to download. Please try again." }, { status: 500 });
   }
 }
+
+// GET handler for direct download links (no JS fetch needed — browser downloads natively)
+export async function GET(req: NextRequest) {
+  const ip = getClientIp(req);
+  if (!checkStreamLimit(ip)) {
+    return Response.json({ error: "Download limit reached." }, { status: 429 });
+  }
+
+  const { searchParams } = new URL(req.url);
+  const mediaUrl = searchParams.get("url");
+  const title = searchParams.get("title") || "download";
+  const ext = searchParams.get("ext") || "mp4";
+  const filename = `${sanitizeFilename(title)}.${ext}`;
+
+  if (!mediaUrl) {
+    return Response.json({ error: "Missing url parameter" }, { status: 400 });
+  }
+
+  try {
+    const parsed = new URL(mediaUrl);
+    if (!["http:", "https:"].includes(parsed.protocol)) {
+      return Response.json({ error: "Invalid URL" }, { status: 400 });
+    }
+  } catch {
+    return Response.json({ error: "Invalid URL" }, { status: 400 });
+  }
+
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 120_000);
+
+    const upstream = await fetch(mediaUrl, {
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+        Accept: "*/*",
+        "Accept-Encoding": "identity",
+        Referer: mediaUrl,
+      },
+      redirect: "follow",
+      signal: controller.signal,
+    });
+
+    clearTimeout(timeout);
+
+    if (!upstream.ok) {
+      return Response.json({ error: `Source returned ${upstream.status}.` }, { status: 502 });
+    }
+
+    const ct = upstream.headers.get("content-type") || "";
+    if (ct.includes("text/html") || ct.includes("application/json")) {
+      return Response.json({ error: "Download link expired. Please re-fetch." }, { status: 410 });
+    }
+
+    const contentLength = upstream.headers.get("content-length");
+    const headers: Record<string, string> = {
+      "Content-Disposition": `attachment; filename="${filename}"`,
+      "Content-Type": ct || "application/octet-stream",
+      "Cache-Control": "no-store",
+      "X-Content-Type-Options": "nosniff",
+    };
+    if (contentLength) headers["Content-Length"] = contentLength;
+
+    return new Response(upstream.body, { status: 200, headers });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    if (msg.includes("abort")) {
+      return Response.json({ error: "Download timed out." }, { status: 504 });
+    }
+    return Response.json({ error: "Failed to download." }, { status: 500 });
+  }
+}

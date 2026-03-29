@@ -172,70 +172,73 @@ export default function DownloaderTemplate({ config }: { config: PlatformConfig 
   async function handleDownload(downloadUrl: string, label?: string) {
     const title = result?.title || "download";
     const ext = format === "MP3" ? "mp3" : format === "GIF" ? "gif" : format === "JPG" ? "jpg" : "mp4";
+    const safeTitle = title.replace(/[<>:"/\\|?*]/g, "_");
 
     setDownloading(true);
-    setDownloadProgress("Connecting to server...");
+    setDownloadProgress("Starting download...");
 
     try {
-      // POST to our server-side proxy.
-      // For YouTube: uses yt-dlp to download directly (CDN URLs are signature-locked)
-      // For others: proxies the CDN URL server-side
-      setDownloadProgress(
-        result?.useYtDlp
-          ? "Downloading via yt-dlp (may take a moment)..."
-          : "Downloading via server..."
-      );
-      const res = await fetch("/api/downloaders/stream", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          url: downloadUrl,
-          title,
-          ext,
-          pageUrl: result?.pageUrl,
-          useYtDlp: result?.useYtDlp,
-        }),
-      });
+      // For yt-dlp downloads (YouTube etc.), use the server proxy with blob approach
+      // since yt-dlp needs to process the video server-side
+      if (result?.useYtDlp && result?.pageUrl) {
+        setDownloadProgress("Downloading via yt-dlp (may take a moment)...");
+        const res = await fetch("/api/downloaders/stream", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            url: downloadUrl,
+            title: safeTitle,
+            ext,
+            pageUrl: result.pageUrl,
+            useYtDlp: true,
+          }),
+        });
 
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({ error: "Download failed" }));
-        toast.error(data.error || `Download failed (${res.status}). Try fetching the link again.`);
-        return;
-      }
-
-      setDownloadProgress("Saving file...");
-
-      // Read as blob for reliable binary handling
-      const blob = await res.blob();
-
-      if (blob.size < 1000 && blob.type.includes("json")) {
-        // Server returned an error as JSON despite 200 (shouldn't happen, but safety check)
-        const text = await blob.text();
-        try {
-          const err = JSON.parse(text);
-          toast.error(err.error || "Download failed");
-        } catch {
-          toast.error("Download failed — received invalid data");
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({ error: "Download failed" }));
+          toast.error(data.error || `Download failed (${res.status}). Try fetching the link again.`);
+          return;
         }
+
+        setDownloadProgress("Saving file...");
+        const blob = await res.blob();
+        if (blob.size < 1000 && blob.type.includes("json")) {
+          const text = await blob.text();
+          try { toast.error(JSON.parse(text).error || "Download failed"); } catch { toast.error("Download failed"); }
+          return;
+        }
+        const blobUrl = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = blobUrl;
+        a.download = `${safeTitle}.${ext}`;
+        a.style.display = "none";
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(blobUrl); }, 500);
+        toast.success(`${label || format} downloaded successfully!`);
         return;
       }
 
-      // Create a blob URL and trigger download
-      const blobUrl = URL.createObjectURL(blob);
+      // For direct CDN URLs (Instagram embed, TikTok, Facebook etc.),
+      // use an iframe/link approach for instant download without buffering
+      setDownloadProgress("Downloading...");
+
+      // Try opening download via hidden iframe for instant save
+      const proxyUrl = `/api/downloaders/stream?` + new URLSearchParams({
+        url: downloadUrl,
+        title: safeTitle,
+        ext,
+      }).toString();
+
       const a = document.createElement("a");
-      a.href = blobUrl;
-      a.download = `${title.replace(/[<>:"/\\|?*]/g, "_")}.${ext}`;
+      a.href = proxyUrl;
+      a.download = `${safeTitle}.${ext}`;
       a.style.display = "none";
       document.body.appendChild(a);
       a.click();
+      setTimeout(() => document.body.removeChild(a), 1000);
 
-      // Cleanup
-      setTimeout(() => {
-        document.body.removeChild(a);
-        URL.revokeObjectURL(blobUrl);
-      }, 500);
-
-      toast.success(`${label || format} downloaded successfully!`);
+      toast.success(`${label || format} download started!`);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Network error";
       toast.error(`Download failed: ${msg}. Try fetching the link again.`);
