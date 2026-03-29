@@ -41,7 +41,12 @@ function sanitizeUrl(url: string): string | null {
     const parsed = new URL(url);
     if (!["http:", "https:"].includes(parsed.protocol)) return null;
     if (url.length > 500) return null;
-    return url;
+    // Normalize web.facebook.com → www.facebook.com (avoids redirect loops)
+    let normalized = url;
+    normalized = normalized.replace(/^(https?:\/\/)web\.facebook\.com/, "$1www.facebook.com");
+    // Normalize m.facebook.com → www.facebook.com
+    normalized = normalized.replace(/^(https?:\/\/)m\.facebook\.com/, "$1www.facebook.com");
+    return normalized;
   } catch {
     return null;
   }
@@ -169,6 +174,7 @@ export async function POST(req: NextRequest) {
       dumpSingleJson: true,
       noWarnings: true,
       noCheckCertificates: true,
+      userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
       // Do NOT set preferFreeFormats — VP9 is not compatible with QuickTime/iOS
       // Do NOT set youtubeSkipDashManifest — needed for YouTube format discovery
     };
