@@ -208,6 +208,25 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  // Instagram: try embed approach FIRST (faster, doesn't need cookies)
+  if (platform === "instagram") {
+    const igData = await fetchInstagramDirect(url);
+    if (igData && igData.url) {
+      logStat(platform, format, true);
+      return Response.json({
+        success: true,
+        title: igData.title || "Instagram Video",
+        thumbnail: igData.thumbnail || null,
+        duration: "",
+        downloadUrl: igData.url as string,
+        formats: [{ label: "MP4", url: igData.url as string, ext: "mp4" }],
+        pageUrl: url,
+        useYtDlp: false,
+      });
+    }
+    // If embed fails, fall through to yt-dlp
+  }
+
   try {
     // Build yt-dlp CLI args directly for full control over flags
     const fs2 = await import("fs");
@@ -313,7 +332,9 @@ export async function POST(req: NextRequest) {
 
     // These platforms have CDN URLs that block VPS IPs or require authentication.
     // Use yt-dlp for the actual download instead of proxying CDN URLs.
-    const useYtDlpPlatforms = ["youtube", "youtube-shorts", "facebook", "instagram", "tiktok"];
+    // Only use yt-dlp for download on platforms where CDN URLs are signature-locked.
+    // Instagram uses embed fallback with direct CDN URLs that can be proxied.
+    const useYtDlpPlatforms = ["youtube", "youtube-shorts", "facebook", "tiktok"];
     const shouldUseYtDlp = useYtDlpPlatforms.includes(platform);
 
     logStat(platform, format, true);
