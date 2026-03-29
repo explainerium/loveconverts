@@ -174,19 +174,10 @@ export async function POST(req: NextRequest) {
       "--user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
     ];
 
-    // For YouTube: add JS runtime (Node.js) and use web client to bypass bot detection
+    // For YouTube: use mediaconnect player client to bypass bot detection on VPS
     const isYouTubePlatform = ["youtube", "youtube-shorts"].includes(platform);
     if (isYouTubePlatform) {
-      // Find Node.js path for yt-dlp JS runtime
-      try {
-        const nodePath = execSync("which node", { encoding: "utf-8" }).trim();
-        if (nodePath) {
-          ytArgs.push("--js-runtimes", `nodejs:${nodePath}`);
-        }
-      } catch { /* node not found on PATH, skip */ }
-
-      // Use web player client to reduce bot detection
-      ytArgs.push("--extractor-args", "youtube:player_client=web,default");
+      ytArgs.push("--extractor-args", "youtube:player_client=mediaconnect");
     }
 
     // Use cookies file if available (needed for YouTube bot detection on VPS)

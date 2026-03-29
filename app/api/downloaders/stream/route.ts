@@ -76,17 +76,10 @@ function downloadWithYtDlp(
       "-", // output to stdout
     ];
 
-    // For YouTube: add JS runtime and web player client to bypass bot detection
+    // For YouTube: use mediaconnect player client to bypass bot detection on VPS
     const isYouTube = pageUrl.includes("youtube.com") || pageUrl.includes("youtu.be");
     if (isYouTube) {
-      const { execSync } = require("child_process");
-      try {
-        const nodePath = execSync("which node", { encoding: "utf-8" }).trim();
-        if (nodePath) {
-          args.push("--js-runtimes", `nodejs:${nodePath}`);
-        }
-      } catch { /* skip */ }
-      args.push("--extractor-args", "youtube:player_client=web,default");
+      args.push("--extractor-args", "youtube:player_client=mediaconnect");
     }
 
     // Add cookies if available
