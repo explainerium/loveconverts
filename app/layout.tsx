@@ -16,16 +16,32 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "LoveConverts — Free Image Converter",
+    default: "LoveConverts — Free Media Converter & Downloader",
     template: "%s | LoveConverts",
   },
   description:
-    "Convert images between JPG, PNG, WEBP, AVIF, GIF, BMP, TIFF, ICO and more. Fast, free, server-side conversion — no files stored, no sign-up required.",
-  keywords: ["image converter", "convert image", "jpg to png", "webp converter", "avif converter", "free image conversion"],
+    "Convert images between JPG, PNG, WEBP, AVIF, GIF, BMP, TIFF, ICO and more. Download videos from YouTube, Instagram, Facebook, TikTok & 10+ platforms. 100% free, fast, no sign-up required.",
+  keywords: [
+    "image converter", "convert image", "jpg to png", "webp converter", "avif converter", "free image conversion",
+    "video downloader", "youtube downloader", "instagram downloader", "facebook video downloader", "tiktok downloader",
+    "free media converter", "online converter", "loveconverts",
+  ],
+  metadataBase: new URL("https://loveconverts.com"),
   openGraph: {
-    title: "LoveConverts — Free Image Converter",
-    description: "Convert images between 8+ formats. Free, fast, server-side.",
+    title: "LoveConverts — Free Media Converter & Downloader",
+    description: "Convert images & download videos from 10+ platforms. 100% free, fast, no sign-up.",
     type: "website",
+    siteName: "LoveConverts",
+    url: "https://loveconverts.com",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "LoveConverts — Free Media Converter & Downloader",
+    description: "Convert images & download videos from 10+ platforms. 100% free, fast, no sign-up.",
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
 };
 

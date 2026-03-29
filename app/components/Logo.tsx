@@ -67,7 +67,7 @@ export default function Logo({ size = "md" }: { size?: "sm" | "md" | "lg" }) {
               textTransform: "uppercase",
             }}
           >
-            Free Image Conversion
+            Free Media Converter & Downloader
           </div>
         )}
       </div>

@@ -66,14 +66,14 @@ export default function Footer() {
           <div className="space-y-4">
             <Logo size="sm" />
             <p className="text-[#94A3B8] text-[13px] leading-[1.7]">
-              Free image conversion and media downloading at{" "}
+              Free media conversion and video downloading at{" "}
               <a
-                href="https://loveconvertimg.com"
+                href="https://loveconverts.com"
                 className="text-[#FF8C42] hover:underline font-medium"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                loveconvertimg.com
+                loveconverts.com
               </a>
               . No signup required. Your files stay private — never stored on our servers.
             </p>
@@ -100,7 +100,7 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-[12px] text-[#475569]">
-            &copy; {new Date().getFullYear()} LoveConverts &middot; loveconvertimg.com &middot; All rights reserved
+            &copy; {new Date().getFullYear()} LoveConverts &middot; loveconverts.com &middot; All rights reserved
           </p>
 
           {/* Explainerium credit */}

@@ -6,7 +6,7 @@ import DonateButton from "./DonateButton";
 export const metadata: Metadata = {
   title: "About",
   description:
-    "Learn about LoveConverts — a free, open-source image converter built with Next.js, Sharp, TypeScript, and Tailwind CSS.",
+    "Learn about LoveConverts — a free media converter and video downloader. Convert images, download videos from YouTube, Instagram, Facebook, TikTok and more.",
 };
 
 const STACK = [
