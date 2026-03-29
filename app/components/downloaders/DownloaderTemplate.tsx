@@ -311,17 +311,17 @@ export default function DownloaderTemplate({ config }: { config: PlatformConfig 
               <label className="block text-sm font-semibold text-[#1A1A2E] mb-2">
                 Paste {config.name} URL
               </label>
-              <div className="relative">
+              <div>
                 <input
                   ref={inputRef}
                   type="url"
                   value={url}
                   onChange={e => handleUrlChange(e.target.value)}
                   placeholder={config.urlExamples[0]}
-                  className="w-full px-4 py-3 border border-[#E2E8F0] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#FF4747]/30 focus:border-[#FF4747] pr-36 transition-colors"
+                  className="w-full px-4 py-3 border border-[#E2E8F0] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#FF4747]/30 focus:border-[#FF4747] transition-colors"
                 />
                 {urlDetected && url && (
-                  <span className="absolute right-20 top-1/2 -translate-y-1/2 flex items-center gap-1 text-xs text-green-600 font-medium">
+                  <span className="flex items-center gap-1 text-xs text-green-600 font-medium mt-1.5 ml-1">
                     <CheckCircle size={12} />
                     Detected
                   </span>

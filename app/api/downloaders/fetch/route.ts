@@ -291,8 +291,11 @@ export async function POST(req: NextRequest) {
     let errorMessage = "Failed to fetch media information.";
     let errorType = "unknown";
 
-    if (msg.includes("Private") || msg.includes("private") || msg.includes("login required")) {
-      errorMessage = "Private video — cannot access private content.";
+    if (msg.includes("login required") || msg.includes("Login required")) {
+      errorMessage = "This content requires login to access. Please make sure the post is public and try again.";
+      errorType = "login_required";
+    } else if (msg.includes("Private") || msg.includes("private")) {
+      errorMessage = "This content is private. Only public posts can be downloaded.";
       errorType = "private";
     } else if (msg.includes("not available") || msg.includes("removed") || msg.includes("deleted")) {
       errorMessage = "This video is unavailable or has been removed.";
