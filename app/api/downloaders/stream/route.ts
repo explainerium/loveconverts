@@ -42,10 +42,12 @@ function checkStreamLimit(ip: string): boolean {
 
 function sanitizeFilename(name: string): string {
   return name
-    .replace(/[<>:"/\\|?*\x00-\x1F]/g, "_")
+    // Remove non-ASCII characters (emoji, Bengali, Arabic, etc.) to avoid ByteString errors
+    .replace(/[^\x20-\x7E]/g, "")
+    .replace(/[<>:"/\\|?*]/g, "_")
     .replace(/\s+/g, "_")
     .replace(/_+/g, "_")
-    .slice(0, 200);
+    .slice(0, 200) || "download";
 }
 
 /**
