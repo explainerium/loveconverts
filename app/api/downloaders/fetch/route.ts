@@ -164,13 +164,24 @@ export async function POST(req: NextRequest) {
     // Create instance with the yt-dlp binary path
     const youtubeDl = create(ytDlpPath);
 
-    // Use dumpSingleJson to get metadata without downloading
-    const info = await youtubeDl(url, {
+    // Build yt-dlp options
+    const ytDlpOptions: Record<string, unknown> = {
       dumpSingleJson: true,
       noWarnings: true,
+      noCheckCertificates: true,
       // Do NOT set preferFreeFormats — VP9 is not compatible with QuickTime/iOS
       // Do NOT set youtubeSkipDashManifest — needed for YouTube format discovery
-    }) as Record<string, unknown>;
+    };
+
+    // Use cookies file if available (needed for YouTube bot detection on VPS)
+    const fs2 = await import("fs");
+    const cookiesPath = process.env.YT_DLP_COOKIES || "/var/www/loveconverts/cookies.txt";
+    if (fs2.existsSync(cookiesPath)) {
+      ytDlpOptions.cookies = cookiesPath;
+    }
+
+    // Use dumpSingleJson to get metadata without downloading
+    const info = await youtubeDl(url, ytDlpOptions) as Record<string, unknown>;
 
     const title = (info.title as string) || "Media";
     const thumbnail = (info.thumbnail as string) || null;
