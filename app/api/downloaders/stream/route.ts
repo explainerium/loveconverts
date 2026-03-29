@@ -59,7 +59,7 @@ function downloadWithYtDlp(
 ): Promise<Buffer> {
   const ytDlpPath =
     process.env.YT_DLP_PATH ||
-    "/Users/explainerium/Library/Python/3.9/bin/yt-dlp";
+    "/usr/local/bin/yt-dlp";
 
   return new Promise((resolve, reject) => {
     const args = [
@@ -68,10 +68,19 @@ function downloadWithYtDlp(
       "--no-warnings",
       "--no-playlist",
       "--no-check-certificates",
+      "--user-agent",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
       "-o",
       "-", // output to stdout
       pageUrl,
     ];
+
+    // Add cookies if available
+    const fs = require("fs");
+    const cookiesPath = process.env.YT_DLP_COOKIES || "/var/www/loveconverts/cookies.txt";
+    if (fs.existsSync(cookiesPath)) {
+      args.splice(args.length - 1, 0, "--cookies", cookiesPath);
+    }
 
     const child = spawn(ytDlpPath, args, { timeout: 120000 });
     const chunks: Buffer[] = [];
