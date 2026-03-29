@@ -79,6 +79,52 @@ function formatDuration(seconds: number): string {
   return `${m}:${String(s).padStart(2, "0")}`;
 }
 
+// Instagram fallback: use embed/graphql endpoint when yt-dlp fails
+async function fetchInstagramDirect(url: string): Promise<Record<string, unknown> | null> {
+  try {
+    // Extract shortcode from URL
+    const match = url.match(/\/(p|reel|reels|tv)\/([A-Za-z0-9_-]+)/);
+    if (!match) return null;
+    const shortcode = match[2];
+
+    // Try the embed page which is publicly accessible
+    const embedUrl = `https://www.instagram.com/p/${shortcode}/embed/`;
+    const res = await fetch(embedUrl, {
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml",
+        "Accept-Language": "en-US,en;q=0.9",
+      },
+    });
+
+    if (!res.ok) return null;
+    const html = await res.text();
+
+    // Extract video URL from embed HTML
+    const videoMatch = html.match(/"video_url"\s*:\s*"([^"]+)"/);
+    const titleMatch = html.match(/"caption"\s*:\s*\{[^}]*"text"\s*:\s*"([^"]*)"/) ||
+                       html.match(/<title>([^<]*)<\/title>/);
+    const thumbMatch = html.match(/"display_url"\s*:\s*"([^"]+)"/) ||
+                       html.match(/"thumbnail_src"\s*:\s*"([^"]+)"/);
+
+    if (!videoMatch && !thumbMatch) return null;
+
+    const videoUrl = videoMatch ? videoMatch[1].replace(/\\u0026/g, "&").replace(/\\/g, "") : null;
+    const title = titleMatch ? titleMatch[1].replace(/\\n/g, " ").slice(0, 200) : "Instagram Video";
+    const thumbnail = thumbMatch ? thumbMatch[1].replace(/\\u0026/g, "&").replace(/\\/g, "") : null;
+
+    return {
+      title,
+      thumbnail,
+      url: videoUrl,
+      formats: videoUrl ? [{ url: videoUrl, ext: "mp4", height: null, acodec: "aac", vcodec: "h264" }] : [],
+      duration: null,
+    };
+  } catch {
+    return null;
+  }
+}
+
 export async function POST(req: NextRequest) {
   const ip = getClientIp(req);
 
@@ -288,10 +334,30 @@ export async function POST(req: NextRequest) {
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);
 
+    // Instagram fallback: try embed/graphql when yt-dlp fails
+    if (platform === "instagram") {
+      const igData = await fetchInstagramDirect(url);
+      if (igData) {
+        const igVideo = igData.url as string | null;
+        logStat(platform, format, true);
+        return Response.json({
+          success: true,
+          title: igData.title || "Instagram Video",
+          thumbnail: igData.thumbnail || null,
+          duration: "",
+          downloadUrl: igVideo || undefined,
+          formats: igVideo ? [{ label: "MP4", url: igVideo, ext: "mp4" }] : undefined,
+          pageUrl: url,
+          useYtDlp: false, // embed URLs can be proxied directly
+        });
+      }
+    }
+
     let errorMessage = "Failed to fetch media information.";
     let errorType = "unknown";
 
-    if (msg.includes("login required") || msg.includes("Login required")) {
+    if (msg.includes("login required") || msg.includes("Login required") ||
+        msg.includes("not granting access") || msg.includes("empty media response")) {
       errorMessage = "This content requires login to access. Please make sure the post is public and try again.";
       errorType = "login_required";
     } else if (msg.includes("Private") || msg.includes("private")) {
