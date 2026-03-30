@@ -33,7 +33,7 @@ function parseNum(val: string | null, def: number): number {
 
 // Mode presets — fun kid-friendly names map to these on the backend
 const MODE_PRESETS: Record<string, Record<string, number>> = {
-  auto:      { denoise: 25, sharpen: 45, clarity: 30, vibrance: 20, contrast: 10, brightness: 5 },
+  auto:      { denoise: 20, sharpen: 55, clarity: 40, vibrance: 30, contrast: 15, brightness: 5 },
   upscale:   { sharpen: 55, clarity: 20, denoise: 15 },
   portrait:  { denoise: 30, sharpen: 35, clarity: 20, vibrance: 15, brightness: 5, warmth: 5 },
   denoise:   { denoise: 70, sharpen: 20, clarity: 10 },

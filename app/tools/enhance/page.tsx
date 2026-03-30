@@ -176,13 +176,34 @@ export default function EnhancePage() {
     setFile(f);
     setResultUrl(""); setResultSize(0);
     setParams({ ...DEFAULT, mode: "auto" });
-    const reader = new FileReader();
-    reader.onload = () => setImgSrc(reader.result as string);
-    reader.readAsDataURL(f);
+
+    const isHeic = f.name.toLowerCase().endsWith(".heic") || f.name.toLowerCase().endsWith(".heif") || f.type === "image/heic" || f.type === "image/heif";
+
+    if (isHeic) {
+      // HEIC is not supported by most browsers for preview.
+      // Convert to JPG server-side for the preview thumbnail.
+      const fd = new FormData();
+      fd.append("file", f);
+      fd.append("preview", "true");
+      fd.append("mode", "custom");
+      fd.append("outputFormat", "jpg");
+      fd.append("quality", "85");
+      // Send with zero enhancements to get a plain conversion
+      fetch("/api/tools/enhance", { method: "POST", body: fd })
+        .then((res) => res.ok ? res.blob() : null)
+        .then((blob) => {
+          if (blob) setImgSrc(URL.createObjectURL(blob));
+        })
+        .catch(() => {});
+    } else {
+      const reader = new FileReader();
+      reader.onload = () => setImgSrc(reader.result as string);
+      reader.readAsDataURL(f);
+    }
   }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop, accept: { "image/*": [] }, maxFiles: 1,
+    onDrop, accept: { "image/*": [], "image/heic": [".heic"], "image/heif": [".heif"] }, maxFiles: 1,
   });
 
   const handleSave = async () => {
