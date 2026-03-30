@@ -6,9 +6,13 @@ import type { NextAuthConfig } from "next-auth";
 import bcrypt from "bcryptjs";
 
 function getDb() {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const db = require("./lib/db").default;
-  return db;
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const db = require("./lib/db").default;
+    return db;
+  } catch {
+    return null;
+  }
 }
 
 const config: NextAuthConfig = {
@@ -68,61 +72,76 @@ const config: NextAuthConfig = {
   callbacks: {
     signIn: async ({ user, account }) => {
       if (account?.provider === "google" || account?.provider === "github") {
-        const db = getDb();
-        if (!db) return true;
+        try {
+          const db = getDb();
+          if (!db) return true;
 
-        const existing = db
-          .prepare("SELECT id FROM users WHERE email = ?")
-          .get(user.email) as { id: string } | undefined;
+          const existing = db
+            .prepare("SELECT id FROM users WHERE email = ?")
+            .get(user.email) as { id: string } | undefined;
 
-        if (!existing) {
-          db.prepare(
-            "INSERT INTO users (id, email, name, plan, is_admin) VALUES (?, ?, ?, 'free', 0)"
-          ).run(crypto.randomUUID(), user.email, user.name ?? null);
+          if (!existing) {
+            db.prepare(
+              "INSERT INTO users (id, email, name, plan, is_admin) VALUES (?, ?, ?, 'free', 0)"
+            ).run(crypto.randomUUID(), user.email, user.name ?? null);
+          }
+        } catch {
+          // DB error — still allow sign-in, JWT callback will handle missing user
         }
       }
       return true;
     },
 
     jwt: async ({ token, user, account }) => {
-      // Look up user in DB on initial sign-in or if token is missing id
-      if (user || account || !token.id) {
-        const db = getDb();
-        if (db) {
-          const email = token.email || user?.email;
-          if (email) {
-            let row = db
-              .prepare("SELECT id, plan, is_admin FROM users WHERE email = ?")
-              .get(email) as { id: string; plan: string; is_admin: number } | undefined;
+      // Only look up DB on initial sign-in (when user or account is present)
+      // For subsequent requests, trust what's already in the token
+      if (user || account) {
+        try {
+          const db = getDb();
+          if (db) {
+            const email = token.email || user?.email;
+            if (email) {
+              let row = db
+                .prepare("SELECT id, plan, is_admin FROM users WHERE email = ?")
+                .get(email) as { id: string; plan: string; is_admin: number } | undefined;
 
-            // If user doesn't exist in DB yet, create them (OAuth first-login edge case)
-            if (!row) {
-              const newId = crypto.randomUUID();
-              try {
-                db.prepare(
-                  "INSERT INTO users (id, email, name, plan, is_admin) VALUES (?, ?, ?, 'free', 0)"
-                ).run(newId, email, token.name || user?.name || null);
-                row = { id: newId, plan: "free", is_admin: 0 };
-              } catch { /* user might have been created by another request */
-                row = db.prepare("SELECT id, plan, is_admin FROM users WHERE email = ?")
-                  .get(email) as { id: string; plan: string; is_admin: number } | undefined;
+              if (!row) {
+                // Create user if missing (OAuth edge case)
+                const newId = crypto.randomUUID();
+                try {
+                  db.prepare(
+                    "INSERT INTO users (id, email, name, plan, is_admin) VALUES (?, ?, ?, 'free', 0)"
+                  ).run(newId, email, token.name || user?.name || null);
+                  row = { id: newId, plan: "free", is_admin: 0 };
+                } catch {
+                  row = db.prepare("SELECT id, plan, is_admin FROM users WHERE email = ?")
+                    .get(email) as { id: string; plan: string; is_admin: number } | undefined;
+                }
+              }
+
+              if (row) {
+                token.id       = row.id;
+                token.plan     = row.plan as "free" | "pro";
+                token.is_admin = row.is_admin === 1;
               }
             }
-
-            if (row) {
-              token.id       = row.id;
-              token.plan     = row.plan as "free" | "pro";
-              token.is_admin = row.is_admin === 1;
-            }
           }
+        } catch {
+          // DB error — use fallbacks below
         }
       }
+
+      // Ensure token always has safe fallback values
+      token.id       = token.id ?? token.sub ?? "";
+      token.plan     = token.plan ?? "free";
+      token.is_admin = token.is_admin ?? false;
+
       return token;
     },
 
     session: async ({ session, token }) => {
-      if (token) {
-        session.user.id       = (token.id as string) || "";
+      if (session.user) {
+        session.user.id       = (token.id as string) || token.sub || "";
         session.user.plan     = (token.plan as "free" | "pro") || "free";
         session.user.is_admin = Boolean(token.is_admin);
       }

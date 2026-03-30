@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, FormEvent, Suspense, useEffect } from "react";
+import { useState, FormEvent, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { signIn, useSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import { ImageIcon, Eye, EyeOff, Loader2, AlertCircle } from "lucide-react";
 
 function SignInForm() {
@@ -11,23 +11,6 @@ function SignInForm() {
   const searchParams = useSearchParams();
   const callbackUrl  = searchParams.get("callbackUrl") || "/dashboard";
   const urlError     = searchParams.get("error");
-  const { status }   = useSession();
-
-  // Client-side redirect if already logged in (safety net for proxy)
-  useEffect(() => {
-    if (status === "authenticated") {
-      router.replace(callbackUrl);
-    }
-  }, [status, callbackUrl, router]);
-
-  if (status === "authenticated") {
-    return (
-      <div className="bg-card border border-border rounded-2xl p-6 shadow-sm flex items-center justify-center">
-        <Loader2 size={20} className="animate-spin text-primary" />
-        <span className="ml-2 text-sm text-muted">Redirecting...</span>
-      </div>
-    );
-  }
 
   const [email,    setEmail]    = useState("");
   const [password, setPassword] = useState("");
