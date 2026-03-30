@@ -225,7 +225,7 @@ export default function EnhancePage() {
 
         <div className="relative max-w-5xl mx-auto px-4 text-center">
           <div className="inline-flex items-center gap-2 bg-gradient-to-r from-violet-100 to-pink-100 text-violet-700 text-sm font-bold px-5 py-2 rounded-full border border-violet-200 mb-5">
-            <Sparkles size={16} /> AI Photo Enhancer for Kids
+            <Sparkles size={16} /> AI Photo Enhancer
           </div>
           <h1 className="text-4xl sm:text-5xl font-extrabold text-foreground leading-tight">
             Make Your Photos{" "}
