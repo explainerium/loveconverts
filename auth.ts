@@ -85,16 +85,29 @@ const config: NextAuthConfig = {
     },
 
     jwt: async ({ token, user, account }) => {
-      // Look up user in DB if token is missing our custom fields
-      // Runs on initial sign-in AND on token refresh if fields are missing
+      // Look up user in DB on initial sign-in or if token is missing id
       if (user || account || !token.id) {
         const db = getDb();
         if (db) {
           const email = token.email || user?.email;
           if (email) {
-            const row = db
+            let row = db
               .prepare("SELECT id, plan, is_admin FROM users WHERE email = ?")
               .get(email) as { id: string; plan: string; is_admin: number } | undefined;
+
+            // If user doesn't exist in DB yet, create them (OAuth first-login edge case)
+            if (!row) {
+              const newId = crypto.randomUUID();
+              try {
+                db.prepare(
+                  "INSERT INTO users (id, email, name, plan, is_admin) VALUES (?, ?, ?, 'free', 0)"
+                ).run(newId, email, token.name || user?.name || null);
+                row = { id: newId, plan: "free", is_admin: 0 };
+              } catch { /* user might have been created by another request */
+                row = db.prepare("SELECT id, plan, is_admin FROM users WHERE email = ?")
+                  .get(email) as { id: string; plan: string; is_admin: number } | undefined;
+              }
+            }
 
             if (row) {
               token.id       = row.id;

@@ -76,9 +76,9 @@ const PRO_FEATURES = [
 
 export default async function DashboardPage() {
   const session = await auth();
-  if (!session?.user?.id) redirect("/auth/signin");
+  if (!session?.user) redirect("/auth/signin");
 
-  const uid   = session.user.id;
+  const uid   = session.user.id || "";
   const plan  = session.user.plan ?? "free";
   const today = new Date().toISOString().slice(0, 10);
 
