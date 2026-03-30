@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Minimize2, Maximize2, Crop, FileImage, Wand2, ImageIcon, Sparkles } from "lucide-react";
+import { Minimize2, Maximize2, Crop, FileImage, Wand2, ImageIcon, Sparkles, Droplets, FileOutput, Eraser, ArrowUpCircle } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "All Free Image Tools: Converter Compressor Resizer",
-  description: "All free image tools in one place. Convert, compress, resize, crop and edit images online. No signup, no file storage, always free.",
+  description: "All free image tools in one place. Convert, compress, resize, crop, edit, watermark, upscale, remove background, and convert to PDF. No signup, always free.",
   alternates: { canonical: "https://loveconverts.com/tools" },
   openGraph: { url: "https://loveconverts.com/tools" },
 };
@@ -55,7 +55,7 @@ const TOOLS = [
     icon: Sparkles,
     label: "AI Enhance",
     desc: "Upscale 2x/4x, denoise, sharpen, HDR, portrait mode, and auto-enhance.",
-    badge: "New",
+    badge: null,
     color: "bg-violet-50 text-violet-600 border-violet-100",
   },
   {
@@ -66,14 +66,46 @@ const TOOLS = [
     badge: null,
     color: "bg-primary-light text-primary border-primary/20",
   },
-];
-
-const COMING_SOON = [
-  { label: "Remove Background", desc: "AI-powered background removal" },
-  { label: "Add Watermark",     desc: "Protect your images with a watermark" },
-  { label: "Image to PDF",      desc: "Bundle images into a PDF document" },
-  { label: "PDF to Image",      desc: "Extract pages from PDF as images" },
-  { label: "Upscale Image (AI)", desc: "Enlarge images with AI upscaling" },
+  {
+    href: "/tools/remove-background",
+    icon: Eraser,
+    label: "Remove Background",
+    desc: "Remove image backgrounds and get a transparent PNG. Adjust sensitivity.",
+    badge: "New",
+    color: "bg-pink-50 text-pink-600 border-pink-100",
+  },
+  {
+    href: "/tools/watermark",
+    icon: Droplets,
+    label: "Add Watermark",
+    desc: "Add text watermarks to your images. Choose position, opacity, size, and color.",
+    badge: "New",
+    color: "bg-cyan-50 text-cyan-600 border-cyan-100",
+  },
+  {
+    href: "/tools/image-to-pdf",
+    icon: FileImage,
+    label: "Image to PDF",
+    desc: "Combine multiple images into a single PDF document with page size options.",
+    badge: "New",
+    color: "bg-red-50 text-red-600 border-red-100",
+  },
+  {
+    href: "/tools/pdf-to-image",
+    icon: FileOutput,
+    label: "PDF to Image",
+    desc: "Extract pages from a PDF as JPG or PNG images. Select pages or convert all.",
+    badge: "New",
+    color: "bg-indigo-50 text-indigo-600 border-indigo-100",
+  },
+  {
+    href: "/tools/upscale",
+    icon: ArrowUpCircle,
+    label: "Upscale Image",
+    desc: "Enlarge images 2x or 4x using Lanczos3 resampling. Keep sharpness at higher resolution.",
+    badge: "New",
+    color: "bg-emerald-50 text-emerald-600 border-emerald-100",
+  },
 ];
 
 export default function ToolsPage() {
@@ -91,12 +123,12 @@ export default function ToolsPage() {
           </p>
         </div>
 
-        {/* Available tools */}
+        {/* All tools */}
         <div>
           <h2 className="text-sm font-bold text-muted uppercase tracking-wider mb-5">Available Now</h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {TOOLS.map(({ href, icon: Icon, label, desc, badge, color }) => (
-              <Link key={href} href={href}
+              <Link key={label} href={href}
                 className="group bg-card border border-border rounded-2xl p-5 hover:shadow-md hover:border-primary/30 transition-all">
                 <div className="flex items-start justify-between mb-3">
                   <div className={`w-10 h-10 rounded-xl border flex items-center justify-center ${color}`}>
@@ -115,25 +147,6 @@ export default function ToolsPage() {
                 <h3 className="font-bold text-foreground group-hover:text-primary transition-colors">{label}</h3>
                 <p className="text-sm text-muted mt-1 leading-relaxed">{desc}</p>
               </Link>
-            ))}
-          </div>
-        </div>
-
-        {/* Coming soon */}
-        <div>
-          <h2 className="text-sm font-bold text-muted uppercase tracking-wider mb-5">Coming Soon</h2>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {COMING_SOON.map(({ label, desc }) => (
-              <div key={label} className="bg-card border border-border rounded-2xl p-5 opacity-60">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="w-10 h-10 rounded-xl border border-border bg-gray-50 flex items-center justify-center">
-                    <ImageIcon size={18} className="text-gray-400" />
-                  </div>
-                  <span className="text-[10px] font-bold bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">SOON</span>
-                </div>
-                <h3 className="font-bold text-foreground">{label}</h3>
-                <p className="text-sm text-muted mt-1">{desc}</p>
-              </div>
             ))}
           </div>
         </div>
