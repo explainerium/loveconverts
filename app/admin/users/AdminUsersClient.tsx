@@ -160,7 +160,7 @@ export default function AdminUsersClient({
       {totalPages > 1 && (
         <div className="flex items-center justify-between">
           <p className="text-xs text-muted">
-            {(page - 1) * 20 + 1}–{Math.min(page * 20, total)} of {total}
+            {(page - 1) * 20 + 1} to {Math.min(page * 20, total)} of {total}
           </p>
           <div className="flex items-center gap-2">
             <Link href={buildUrl({ page: page - 1 })} className={`p-1.5 rounded-lg border border-border text-muted ${page <= 1 ? "opacity-40 pointer-events-none" : "hover:bg-gray-100"}`}>

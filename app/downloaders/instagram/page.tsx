@@ -2,7 +2,7 @@ import DownloaderTemplate from "@/app/components/downloaders/DownloaderTemplate"
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Instagram Video & Reels Downloader — Save IG Videos",
+  title: "Instagram Video and Reels Downloader: Save IG Videos",
   description: "Download Instagram Reels, videos and photos online. Paste any Instagram link and save as MP4 or JPG. Free, no signup required.",
   keywords: "Instagram downloader, Instagram Reels download, Instagram video download",
   alternates: { canonical: "https://loveconverts.com/downloaders/instagram" },

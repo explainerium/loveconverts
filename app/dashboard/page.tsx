@@ -226,7 +226,7 @@ export default async function DashboardPage() {
           </div>
           <div className="flex items-center gap-4 flex-wrap">
             <button className="px-5 py-2.5 bg-white text-primary font-bold text-sm rounded-xl hover:bg-white/90 transition-colors shadow-md">
-              $4.99/month — Upgrade Now
+              $4.99/month: Upgrade Now
             </button>
             <span className="text-white/70 text-xs">or $39.99/year (save 33%)</span>
           </div>

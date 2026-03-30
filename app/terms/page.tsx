@@ -26,7 +26,7 @@ const SECTIONS = [
   },
   {
     title: "5. Free and Pro Tiers",
-    body: `The free tier allows up to 20 conversions per day and a maximum file size of 10 MB. Pro subscribers receive unlimited conversions and a 50 MB file limit. Abuse of the free tier may result in temporary rate limiting.`,
+    body: `The free tier allows up to 20 conversions per day and a maximum file size of 20 MB. Pro subscribers receive unlimited conversions and a 50 MB file limit. Abuse of the free tier may result in temporary rate limiting.`,
   },
   {
     title: "6. Accounts",
@@ -38,7 +38,7 @@ const SECTIONS = [
   },
   {
     title: "8. Disclaimer of Warranties",
-    body: `The Service is provided without warranties of any kind. We do not guarantee uninterrupted availability or error-free processing. Image conversion is lossy in some cases — please keep originals.`,
+    body: `The Service is provided without warranties of any kind. We do not guarantee uninterrupted availability or error-free processing. Image conversion is lossy in some cases. Please keep originals.`,
   },
   {
     title: "9. Limitation of Liability",

@@ -2,7 +2,7 @@ import DownloaderTemplate from "@/app/components/downloaders/DownloaderTemplate"
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "SoundCloud Downloader — Save SoundCloud Tracks Free",
+  title: "SoundCloud Downloader: Save SoundCloud Tracks Free",
   description: "Download SoundCloud tracks online for free. Paste any SoundCloud URL and save as MP3. For personal use only.",
   keywords: "SoundCloud downloader, SoundCloud MP3 download, download SoundCloud tracks",
   alternates: { canonical: "https://loveconverts.com/downloaders/soundcloud" },

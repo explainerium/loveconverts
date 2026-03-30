@@ -59,7 +59,7 @@ const FAQ = [
   },
   {
     q: "Is there a refund policy?",
-    a: "Yes — we offer a full refund within 7 days of purchase if you're not satisfied, no questions asked.",
+    a: "Yes, we offer a full refund within 7 days of purchase if you're not satisfied, no questions asked.",
   },
   {
     q: "Do I need an account for the free tier?",
@@ -67,7 +67,7 @@ const FAQ = [
   },
   {
     q: "What happens when I hit the free limit?",
-    a: "You'll see a friendly prompt to upgrade. Your conversions won't be lost — just wait until the next day or upgrade for instant access.",
+    a: "You'll see a friendly prompt to upgrade. Your conversions won't be lost. Just wait until the next day or upgrade for instant access.",
   },
 ];
 
@@ -336,7 +336,7 @@ export default function UpgradePage() {
                 className="px-8 py-3 rounded-xl text-sm font-bold text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
                 style={{ background: "linear-gradient(135deg, #FF4747, #FF8C42)" }}
               >
-                Upgrade Now — ${billing === "yearly" ? `${yearlyPrice}/yr` : `${monthlyPrice}/mo`}
+                Upgrade Now: ${billing === "yearly" ? `${yearlyPrice}/yr` : `${monthlyPrice}/mo`}
               </button>
               <Link href="/" className="px-6 py-3 rounded-xl text-sm font-semibold text-white/60 hover:text-white transition-colors">
                 Try free first &rarr;

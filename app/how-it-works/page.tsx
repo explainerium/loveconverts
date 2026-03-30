@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "How It Works — Image Converter & Video Downloader",
+  title: "How It Works: Image Converter and Video Downloader",
   description:
     "Learn how LoveConverts converts images and downloads videos. Three simple steps: upload or paste a link, choose settings, download instantly.",
   alternates: { canonical: "https://loveconverts.com/how-it-works" },
@@ -22,7 +22,7 @@ const STEPS = [
     icon: Upload,
     step: "01",
     title: "Upload your images",
-    desc: "Drag & drop or click to browse. You can upload multiple images at once. Supports JPG, PNG, WEBP, GIF, BMP, TIFF, AVIF, ICO up to 20 MB each.",
+    desc: "Drag and drop your files or click to browse. You can upload several images at the same time. Supports JPG, PNG, WEBP, GIF, BMP, TIFF, AVIF, ICO up to 20 MB each.",
     color: "bg-blue-50 text-blue-600",
     border: "border-blue-200",
   },
@@ -30,7 +30,7 @@ const STEPS = [
     icon: Settings2,
     step: "02",
     title: "Choose format & settings",
-    desc: "Pick your target format from 7 options. Adjust quality, resize dimensions, rotate, flip, apply grayscale, and more — all optional.",
+    desc: "Pick your target format from 7 options. Adjust quality, resize dimensions, rotate, flip, apply grayscale, and more. All optional.",
     color: "bg-orange-50 text-orange-600",
     border: "border-orange-200",
   },
@@ -38,7 +38,7 @@ const STEPS = [
     icon: Download,
     step: "03",
     title: "Convert & download",
-    desc: "Hit Convert and your images are processed server-side using Sharp. Download individually or grab all as a ZIP bundle.",
+    desc: "Click Convert and your images are processed on our server. Download them one by one or as a single ZIP file.",
     color: "bg-green-50 text-green-700",
     border: "border-green-200",
   },
@@ -48,28 +48,28 @@ const FEATURES = [
   {
     icon: Zap,
     title: "100% Free",
-    desc: "No paywalls, no credits, no premium tiers. Convert as many images as you need.",
+    desc: "No paywalls, no credits. Convert as many images as you want.",
     color: "text-yellow-500",
     bg: "bg-yellow-50",
   },
   {
     icon: Shield,
     title: "No Sign-up",
-    desc: "No account required. No email, no password. Just open the tool and start converting.",
+    desc: "No account needed. Open the page and start converting straight away.",
     color: "text-primary",
     bg: "bg-primary-light",
   },
   {
     icon: Server,
     title: "Server-side Processing",
-    desc: "Conversions happen on our server using Sharp — high quality, fast, and reliable.",
+    desc: "Conversions happen on our server using Sharp. High quality, fast, and reliable.",
     color: "text-blue-600",
     bg: "bg-blue-50",
   },
   {
     icon: Layers,
     title: "8+ Formats Supported",
-    desc: "JPG, PNG, WEBP, GIF, TIFF, AVIF, ICO — and more input formats like BMP and SVG.",
+    desc: "JPG, PNG, WEBP, GIF, TIFF, AVIF, ICO, and more input formats like BMP and SVG.",
     color: "text-green-600",
     bg: "bg-green-50",
   },
@@ -97,8 +97,8 @@ export default function HowItWorksPage() {
           How It Works
         </h1>
         <p className="text-muted text-lg max-w-xl mx-auto">
-          LoveConverts makes image conversion dead simple. No complicated settings,
-          no waiting — just results.
+          LoveConverts keeps image conversion straightforward. Upload your files,
+          pick a format, and download. That is it.
         </p>
       </section>
 
@@ -129,7 +129,7 @@ export default function HowItWorksPage() {
             className="inline-flex items-center gap-2 px-8 py-3.5 rounded-2xl text-base font-bold text-white bg-gradient-to-r from-primary to-orange-500 hover:from-primary-hover hover:to-orange-600 shadow-md transition-all active:scale-95"
           >
             <Upload size={18} />
-            Try it now — it&apos;s free
+            Try it now, it is free
           </Link>
         </div>
       </section>

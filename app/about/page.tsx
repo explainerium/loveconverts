@@ -4,7 +4,7 @@ import { ImageIcon, Code2, Server, Zap, Shield, Heart } from "lucide-react";
 import DonateButton from "./DonateButton";
 
 export const metadata: Metadata = {
-  title: "About LoveConverts — Free Image & Media Tools",
+  title: "About LoveConverts: Free Image and Media Tools",
   description:
     "LoveConverts is a free image conversion and media downloading platform built by Explainerium. No signup, no file storage, always free.",
   alternates: { canonical: "https://loveconverts.com/about" },
@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 const STACK = [
   {
     icon: Code2,
-    name: "Next.js 16",
+    name: "Next.js 15",
     desc: "React framework for server-side rendering and API routes",
     color: "text-foreground",
     bg: "bg-gray-100",
@@ -45,17 +45,17 @@ const VALUES = [
   {
     icon: Zap,
     title: "Fast",
-    desc: "Server-side processing with Sharp (libvips) means conversions complete in milliseconds.",
+    desc: "Processing happens on our server using Sharp, so conversions are fast regardless of your device.",
   },
   {
     icon: Shield,
     title: "Private",
-    desc: "Your images never touch our disk. Processed in memory, gone when done.",
+    desc: "Your images are processed in memory and deleted straight after. We never write anything to disk.",
   },
   {
     icon: Heart,
     title: "Free forever",
-    desc: "No freemium, no ads, no tracking. LoveConverts is a tool built for people, not profit.",
+    desc: "The core tools are free and will stay free. No ads, no tracking, no tricks.",
   },
 ];
 
@@ -73,9 +73,9 @@ export default function AboutPage() {
           About LoveConverts
         </h1>
         <p className="text-muted text-lg leading-relaxed max-w-2xl mx-auto">
-          LoveConverts is a free, fast, privacy-respecting image converter that
-          runs server-side. No sign-up, no file storage, no nonsense — just
-          paste in your images and get results.
+          LoveConverts is a free image converter that runs on our server. No
+          account needed, no files stored. Upload your image, pick a format,
+          download the result.
         </p>
       </section>
 
@@ -84,21 +84,21 @@ export default function AboutPage() {
         <div className="max-w-3xl mx-auto">
           <h2 className="text-2xl font-extrabold text-foreground mb-5">Our Mission</h2>
           <p className="text-muted leading-relaxed mb-4">
-            Image conversion shouldn&apos;t require installing software, creating an
-            account, or uploading your files to some third-party service that
-            stores them indefinitely. LoveConverts exists to solve this problem
-            simply and cleanly.
+            Most image converters ask you to sign up, show you ads, or keep
+            your files on their servers. We built LoveConverts because we wanted
+            something that just works without any of that.
           </p>
           <p className="text-muted leading-relaxed mb-4">
             We support 7 output formats (JPG, PNG, WEBP, AVIF, GIF, TIFF, ICO)
             with full control over quality, resize, rotation, grayscale, and
-            more — all processed using Sharp, one of the fastest image
+            more, all processed using Sharp, one of the fastest image
             processing libraries available.
           </p>
           <p className="text-muted leading-relaxed">
             Every image you upload is processed in memory on our server and
-            discarded immediately after the response is sent. We collect no
-            analytics and track no users.
+            discarded immediately after the response is sent. We use Google
+            Analytics to understand how the site is being used. No images or
+            personal files are tracked.
           </p>
         </div>
       </section>
@@ -143,9 +143,9 @@ export default function AboutPage() {
       <section className="max-w-2xl mx-auto px-4 sm:px-6 py-16 text-center space-y-5">
         <h2 className="text-2xl font-extrabold text-foreground">Support the project</h2>
         <p className="text-muted leading-relaxed">
-          LoveConverts is free and will always stay free. If it saves you time,
-          consider sharing it with a colleague or giving the project a star on
-          GitHub. Every bit of support helps keep the lights on.
+          LoveConverts is free and that is not changing. If you find it useful,
+          share it with someone who needs it. That is the best way to support
+          the project.
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <DonateButton />

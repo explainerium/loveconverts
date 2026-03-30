@@ -17,7 +17,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "LoveConverts — Free Image Converter & Downloader",
+    default: "LoveConverts: Free Image Converter and Downloader",
     template: "%s | LoveConverts",
   },
   description:
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   ],
   metadataBase: new URL("https://loveconverts.com"),
   openGraph: {
-    title: "LoveConverts — Free Image Converter & Downloader",
+    title: "LoveConverts: Free Image Converter and Downloader",
     description: "Convert images & download videos from 10+ platforms. 100% free, fast, no sign-up.",
     type: "website",
     siteName: "LoveConverts",
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "LoveConverts — Free Image Converter & Downloader",
+    title: "LoveConverts: Free Image Converter and Downloader",
     description: "Convert images & download videos from 10+ platforms. 100% free, fast, no sign-up.",
   },
   robots: {

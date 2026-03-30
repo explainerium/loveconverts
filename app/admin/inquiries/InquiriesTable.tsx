@@ -170,7 +170,7 @@ export default function InquiriesTable({
       {totalPages > 1 && (
         <div className="flex items-center justify-between">
           <p className="text-xs text-muted">
-            Showing {(page - 1) * 15 + 1}–{Math.min(page * 15, total)} of {total}
+            Showing {(page - 1) * 15 + 1} to {Math.min(page * 15, total)} of {total}
           </p>
           <div className="flex items-center gap-2">
             <Link

@@ -3,7 +3,7 @@ import FaqAccordion from "./FaqAccordion";
 import JsonLd from "../components/JsonLd";
 
 export const metadata: Metadata = {
-  title: "FAQ — Frequently Asked Questions",
+  title: "FAQ: Frequently Asked Questions",
   description:
     "Answers to common questions about LoveConverts image tools and video downloaders. File size limits, supported formats, privacy and more.",
   alternates: { canonical: "https://loveconverts.com/faq" },

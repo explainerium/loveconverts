@@ -2,7 +2,7 @@ import DownloaderTemplate from "@/app/components/downloaders/DownloaderTemplate"
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Twitter / X Video Downloader — Save Tweets as MP4",
+  title: "Twitter and X Video Downloader: Save Tweets as MP4",
   description: "Download videos and GIFs from Twitter and X online. Paste any tweet link and save as MP4 or GIF. Free, no signup needed.",
   keywords: "Twitter video downloader, X video download, download tweet video, Twitter GIF download",
   alternates: { canonical: "https://loveconverts.com/downloaders/twitter" },

@@ -237,7 +237,7 @@ export default function EnhancePage() {
             </span>
           </h1>
           <p className="text-muted mt-3 max-w-lg mx-auto">
-            Choose a magic style, see the preview, and download your enhanced photo. All features are <strong className="text-green-600">100% free</strong> — no limits!
+            Choose a magic style, see the preview, and download your enhanced photo. All features are <strong className="text-green-600">100% free</strong>, no limits!
           </p>
         </div>
       </section>
@@ -255,7 +255,7 @@ export default function EnhancePage() {
             <p className="font-bold text-xl text-foreground">
               {isDragActive ? "Drop it right here!" : "Drop your photo here or click to pick one!"}
             </p>
-            <p className="text-sm text-muted mt-2">JPG, PNG, WEBP — up to 50 MB — totally free!</p>
+            <p className="text-sm text-muted mt-2">JPG, PNG, WEBP. Up to 50 MB. Totally free!</p>
           </div>
         )}
 
@@ -381,7 +381,7 @@ export default function EnhancePage() {
                       <span className="text-sm font-bold text-foreground">{MODES.find(m => m.key === params.mode)?.label}</span>
                     </div>
                     <p className="text-[11px] text-muted">
-                      {MODES.find(m => m.key === params.mode)?.desc} — Click &quot;Advanced&quot; to tweak!
+                      {MODES.find(m => m.key === params.mode)?.desc} . Click &quot;Advanced&quot; to tweak!
                     </p>
                   </div>
                 )}
@@ -501,7 +501,7 @@ export default function EnhancePage() {
               { emoji: "\u2728", title: "Magic Fix",      desc: "One click and your photo looks amazing! The AI picks the best settings for you.", color: "border-violet-200 bg-violet-50" },
               { emoji: "\uD83D\uDD0D", title: "Super Zoom",     desc: "Make your photos 2x or 4x bigger without making them blurry. Like a magnifying glass!", color: "border-blue-200 bg-blue-50" },
               { emoji: "\uD83D\uDC7E", title: "Fun Filters",    desc: "Turn your photos into cartoons, sketches, neon art, pop art, and more cool styles!", color: "border-pink-200 bg-pink-50" },
-              { emoji: "\uD83E\uDDB8", title: "Superhero Mode", desc: "Make any photo look dramatic and epic — like a movie poster!", color: "border-red-200 bg-red-50" },
+              { emoji: "\uD83E\uDDB8", title: "Superhero Mode", desc: "Make any photo look dramatic and epic, like a movie poster!", color: "border-red-200 bg-red-50" },
             ].map(({ emoji, title, desc, color }) => (
               <div key={title} className={`border-2 rounded-2xl p-5 ${color}`}>
                 <span className="text-3xl">{emoji}</span>
@@ -515,7 +515,7 @@ export default function EnhancePage() {
         {/* ── All Free badge ─────────────────────────────────────────────── */}
         <div className="text-center py-6">
           <div className="inline-flex items-center gap-2 bg-green-50 border-2 border-green-200 text-green-700 text-sm font-bold px-6 py-3 rounded-full">
-            {"\uD83C\uDD93"} All Features Are 100% Free — No Limits, No Sign-Up!
+            {"\uD83C\uDD93"} All Features Are 100% Free. No Limits, No Sign-Up!
           </div>
         </div>
 

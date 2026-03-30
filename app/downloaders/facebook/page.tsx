@@ -2,7 +2,7 @@ import DownloaderTemplate from "@/app/components/downloaders/DownloaderTemplate"
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Facebook Video Downloader — Save FB Videos Free",
+  title: "Facebook Video Downloader: Save FB Videos Free",
   description: "Download Facebook videos and Reels online for free. Paste any Facebook video link and save as MP4. No signup, personal use only.",
   keywords: "Facebook video downloader, Facebook Reels download, download Facebook video",
   alternates: { canonical: "https://loveconverts.com/downloaders/facebook" },

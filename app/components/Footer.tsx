@@ -66,16 +66,7 @@ export default function Footer() {
           <div className="space-y-4">
             <Logo size="sm" />
             <p className="text-[#94A3B8] text-[13px] leading-[1.7]">
-              Free media conversion and video downloading at{" "}
-              <a
-                href="https://loveconverts.com"
-                className="text-[#FF8C42] hover:underline font-medium"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                loveconverts.com
-              </a>
-              . No signup required. Your files stay private — never stored on our servers.
+              Free image conversion and video downloading. No signup required. Your files are processed in memory and never stored.
             </p>
             {/* Social icons */}
             <div className="flex gap-3 pt-1">

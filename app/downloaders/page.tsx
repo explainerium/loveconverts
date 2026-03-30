@@ -3,13 +3,13 @@ import type { Metadata } from "next";
 import { AlertTriangle } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Free Social Media Video Downloader — TikTok Instagram",
+  title: "Free Social Media Video Downloader: TikTok Instagram",
   description: "Download videos from TikTok, Instagram, Facebook, Twitter and more. Free, fast, no signup. For personal use only.",
   keywords: "video downloader, TikTok downloader, Instagram downloader, YouTube downloader, Facebook video downloader",
   alternates: { canonical: "https://loveconverts.com/downloaders" },
   openGraph: {
     title: "Free Video & Social Media Downloaders | LoveConverts",
-    description: "Download from 10+ platforms — TikTok, Instagram, YouTube, and more.",
+    description: "Download from 10+ platforms. TikTok, Instagram, YouTube, and more.",
     url: "https://loveconverts.com/downloaders",
     images: ["/og-image.png"],
   },
@@ -88,7 +88,7 @@ const PLATFORMS = [
     name: "YouTube",
     accent: "#FF0000",
     bg: "#fff5f5",
-    desc: "Download YouTube videos — personal use only",
+    desc: "Download YouTube videos, personal use only",
     formats: ["MP4"],
     warn: true,
     icon: (
@@ -193,7 +193,7 @@ export default function DownloadersPage() {
             </span>
           </h1>
           <p className="text-white/70 text-lg max-w-2xl mx-auto">
-            Save videos, audio, and images from your favorite platforms — fast, free, and without watermarks.
+            Save videos, audio, and images from your favorite platforms. Fast, free, and without watermarks.
           </p>
         </div>
       </section>
@@ -247,10 +247,9 @@ export default function DownloadersPage() {
           <div className="flex items-start gap-3">
             <AlertTriangle size={20} className="text-amber-600 flex-shrink-0 mt-0.5" />
             <div>
-              <h3 className="font-bold text-amber-900 mb-1">Important — Personal Use Only</h3>
+              <h3 className="font-bold text-amber-900 mb-1">Important: Personal Use Only</h3>
               <p className="text-amber-800 text-sm leading-relaxed">
-                These tools are provided for personal, lawful use only. <strong>Only download content you own or have explicit rights to.</strong> Downloading copyrighted content without permission may violate platform Terms of Service and applicable copyright laws (DMCA, EU Copyright Directive, etc.). By using these tools you agree to our{" "}
-                <Link href="/terms" className="underline font-semibold">Terms of Service</Link>. We do not host or store any downloaded content on our servers.
+                These tools are for personal use only. Only download content you have created or have permission to download. Downloading content you do not own may break the platform's terms and copyright law. We do not store any downloaded content on our servers.
               </p>
             </div>
           </div>

@@ -180,7 +180,7 @@ export async function POST(req: NextRequest) {
       return Response.json(
         {
           error: isYouTubeBlock
-            ? "YouTube is currently blocking automated downloads. This is a known limitation — YouTube actively prevents third-party tools from downloading videos. Please try a different video or try again later."
+            ? "YouTube is currently blocking automated downloads. This is a known limitation. YouTube actively prevents third-party tools from downloading videos. Please try a different video or try again later."
             : msg || "Download failed. The video may be private or unavailable.",
         },
         { status: isYouTubeBlock ? 403 : 500 }

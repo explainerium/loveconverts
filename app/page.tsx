@@ -3,11 +3,11 @@ import ImageConverter from "./components/ImageConverter";
 import JsonLd from "./components/JsonLd";
 
 export const metadata: Metadata = {
-  title: "Free Image Converter — JPG PNG WEBP AVIF Online",
+  title: "Free Image Converter: JPG PNG WEBP AVIF Online",
   description:
     "Convert images between JPG, PNG, WEBP, AVIF, GIF, BMP, TIFF and ICO formats. Free, fast, server-side processing. No signup. No file storage.",
   openGraph: {
-    title: "Free Image Converter — JPG PNG WEBP AVIF Online",
+    title: "Free Image Converter: JPG PNG WEBP AVIF Online",
     description:
       "Convert images between JPG, PNG, WEBP, AVIF, GIF, BMP, TIFF and ICO formats. Free, fast, server-side processing. No signup. No file storage.",
     url: "https://loveconverts.com",

@@ -22,10 +22,10 @@ const SUBJECTS = [
 ];
 
 const PRIORITIES = [
-  { value: "low",    label: "Low — Not urgent"         },
-  { value: "medium", label: "Medium — Affects workflow" },
-  { value: "high",   label: "High — Blocking me"       },
-  { value: "urgent", label: "Urgent — Critical issue"  },
+  { value: "low",    label: "Low: Not urgent"         },
+  { value: "medium", label: "Medium: Affects workflow" },
+  { value: "high",   label: "High: Blocking me"       },
+  { value: "urgent", label: "Urgent: Critical issue"  },
 ];
 
 const TOOLS = [

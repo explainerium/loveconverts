@@ -2,7 +2,7 @@ import DownloaderTemplate from "@/app/components/downloaders/DownloaderTemplate"
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Dailymotion Video Downloader — Save DM Videos Free",
+  title: "Dailymotion Video Downloader: Save DM Videos Free",
   description: "Download Dailymotion videos online for free. Paste any Dailymotion link and save as MP4. No signup required.",
   keywords: "Dailymotion downloader, Dailymotion video download, save Dailymotion video",
   alternates: { canonical: "https://loveconverts.com/downloaders/dailymotion" },

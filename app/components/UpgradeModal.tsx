@@ -60,7 +60,7 @@ export default function UpgradeModal({ isOpen, onClose }: Props) {
               <span className="text-3xl font-extrabold text-foreground">$4.99</span>
               <span className="text-muted text-sm">/month</span>
             </div>
-            <p className="text-xs text-muted">or <strong className="text-foreground">$39.99/year</strong> — save 33%</p>
+            <p className="text-xs text-muted">or <strong className="text-foreground">$39.99/year</strong> , save 33%</p>
           </div>
 
           <Link
@@ -68,7 +68,7 @@ export default function UpgradeModal({ isOpen, onClose }: Props) {
             onClick={onClose}
             className="block w-full text-center py-3 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-primary to-orange-500 hover:from-primary-hover hover:to-orange-600 transition-all shadow-md"
           >
-            Upgrade Now — $4.99/month
+            Upgrade Now: $4.99/month
           </Link>
 
           <button

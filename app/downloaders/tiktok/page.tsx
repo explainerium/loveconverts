@@ -2,7 +2,7 @@ import DownloaderTemplate from "@/app/components/downloaders/DownloaderTemplate"
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "TikTok Video Downloader — Save TikTok Without Watermark",
+  title: "TikTok Video Downloader: Save Without Watermark",
   description: "Download TikTok videos without watermark in HD quality. Paste any TikTok link and save as MP4. Free, no signup, personal use only.",
   keywords: "TikTok downloader, TikTok video download, TikTok no watermark",
   alternates: { canonical: "https://loveconverts.com/downloaders/tiktok" },

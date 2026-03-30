@@ -2,7 +2,7 @@ import DownloaderTemplate from "@/app/components/downloaders/DownloaderTemplate"
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Vimeo Video Downloader — Save Vimeo Videos Free",
+  title: "Vimeo Video Downloader: Save Vimeo Videos Free",
   description: "Download Vimeo videos online for free. Paste any Vimeo URL and save as MP4. Fast, free, no signup required.",
   keywords: "Vimeo downloader, Vimeo video download, download Vimeo HD",
   alternates: { canonical: "https://loveconverts.com/downloaders/vimeo" },

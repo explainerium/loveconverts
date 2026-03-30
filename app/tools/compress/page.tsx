@@ -265,7 +265,7 @@ export default function CompressPage() {
           </div>
           <p className="text-sm text-muted leading-relaxed">
             Your images are compressed server-side using libvips (via Sharp). We apply format-specific
-            optimisation — mozjpeg for JPEG, pngquant-style quantisation for PNG, and Google&apos;s encoder for WEBP.
+            optimisation: mozjpeg for JPEG, pngquant-style quantisation for PNG, and Google&apos;s encoder for WEBP.
             Files are never stored on our servers.
           </p>
         </div>

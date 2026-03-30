@@ -131,7 +131,7 @@ export async function POST(req: NextRequest) {
   // Rate limit
   if (!checkRateLimit(ip)) {
     return Response.json(
-      { success: false, error: "Rate limit reached — please wait before trying again (20 requests/hour)." },
+      { success: false, error: "Rate limit reached. Please wait before trying again (20 requests/hour)." },
       { status: 429 }
     );
   }
@@ -388,7 +388,7 @@ export async function POST(req: NextRequest) {
       errorMessage = "This video is unavailable or has been removed.";
       errorType = "unavailable";
     } else if (msg.includes("Unsupported URL") || msg.includes("unsupported")) {
-      errorMessage = "Unsupported URL — please check the link and try again.";
+      errorMessage = "Unsupported URL. Please check the link and try again.";
       errorType = "unsupported";
     } else if (msg.includes("rate") || msg.includes("429")) {
       errorMessage = "The platform is rate-limiting requests. Please try again in a moment.";

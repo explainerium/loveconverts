@@ -23,7 +23,7 @@ const FAQS = [
   },
   {
     q: "What is WebP and should I use it?",
-    a: "WebP is a modern image format developed by Google. It produces files about 25–34% smaller than JPEG at equivalent quality, while also supporting transparency like PNG. It's ideal for websites and web apps — all modern browsers support it.",
+    a: "WebP is an image format made by Google. Files are roughly 25 to 34% smaller than JPG at the same quality, and it supports transparency like PNG. Every major browser supports it, so it is a good choice for websites.",
   },
   {
     q: "Can I convert multiple files at once?",
@@ -35,7 +35,7 @@ const FAQS = [
   },
   {
     q: "What is AVIF format?",
-    a: "AVIF is a next-generation image format offering significantly better compression than both JPEG and WebP. It supports HDR, wide color gamut, and transparency. It's fully supported in Chrome, Firefox, and Safari — though it may not be supported by all software or older browsers.",
+    a: "AVIF is a next-generation image format offering significantly better compression than both JPEG and WebP. It supports HDR, wide color gamut, and transparency. It's fully supported in Chrome, Firefox, and Safari, though it may not be supported by all software or older browsers.",
   },
   {
     q: "Does LoveConverts work on mobile?",
@@ -43,7 +43,7 @@ const FAQS = [
   },
   {
     q: "Is there a rate limit?",
-    a: "There is no enforced rate limit for normal usage. However, very large batches or unusually high traffic may slow things down for everyone, so please be considerate.",
+    a: "There is no strict rate limit for normal use. If you are converting very large batches, it may be slower during busy periods.",
   },
   {
     q: "What technology powers LoveConverts?",
@@ -51,7 +51,7 @@ const FAQS = [
   },
   {
     q: "Do I need to install anything?",
-    a: "No. LoveConverts runs entirely in your browser — there is nothing to install or configure. Just open the page and start converting.",
+    a: "No. LoveConverts runs entirely in your browser. There is nothing to install or configure. Just open the page and start converting.",
   },
 ];
 
@@ -110,11 +110,11 @@ export default function FaqAccordion() {
         </span>
         <h1 className="text-4xl sm:text-5xl font-extrabold text-foreground">FAQ</h1>
         <p className="text-muted text-lg max-w-xl mx-auto">
-          Everything you need to know about LoveConverts. Can&apos;t find an answer?{" "}
+          Common questions about LoveConverts. If something is missing, use the{" "}
           <Link href="/about" className="text-primary hover:underline">
-            Reach out
-          </Link>
-          .
+            support page
+          </Link>{" "}
+          and we will get back to you.
         </p>
       </section>
 

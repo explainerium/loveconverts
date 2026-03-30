@@ -207,7 +207,7 @@ export default function ConvertToJpgPage() {
           <h3 className="text-sm font-bold text-foreground mb-2">Why convert to JPG?</h3>
           <p className="text-sm text-muted leading-relaxed">
             JPG (JPEG) is the most universally supported image format. It offers excellent compression with
-            very small file sizes — perfect for photos, email attachments, web pages, and anywhere you need
+            very small file sizes, perfect for photos, email attachments, web pages, and anywhere you need
             broad compatibility. Transparency is replaced with a solid background color during conversion.
           </p>
         </div>

@@ -564,7 +564,7 @@ function OptionsPanel({
               disabled={!showQuality}
             />
             <div className="flex justify-between text-[11px] text-muted">
-              <span>1 — smallest</span><span>100 — best</span>
+              <span>1 = smallest</span><span>100 = best</span>
             </div>
           </div>
 
@@ -779,7 +779,7 @@ export default function ImageConverter() {
   const onDrop = useCallback(
     async (accepted: File[], rejected: any[]) => {
       if (rejected.length > 0) {
-        addToast(`${rejected.length} file(s) rejected — unsupported type or too large.`, "error");
+        addToast(`${rejected.length} file(s) rejected. Unsupported type or too large.`, "error");
       }
       const newItems: ImageItem[] = [];
       for (const file of accepted) {
@@ -904,7 +904,7 @@ export default function ImageConverter() {
         setImages((prev) =>
           prev.map((i) => (i.id === id ? { ...i, status: "error", errorMessage: msg } : i))
         );
-        addToast(`Failed: "${item.file.name}" — ${msg}`, "error");
+        addToast(`Failed: "${item.file.name}". ${msg}`, "error");
       }
     },
     [targetFormat, options, pushHistory, addToast]
@@ -1013,7 +1013,7 @@ export default function ImageConverter() {
           </h1>
 
           <p className="text-muted text-base sm:text-lg max-w-xl mx-auto">
-            JPG, PNG, WEBP, AVIF, GIF, TIFF, ICO — converted securely on our server. No files stored, no limits.
+            JPG, PNG, WEBP, AVIF, GIF, TIFF, ICO, all converted securely on our server. No files stored, no limits.
           </p>
 
           {/* Upload zone */}
@@ -1045,7 +1045,7 @@ export default function ImageConverter() {
                 {isDragActive ? "Release to upload" : "Drop images here or click to browse"}
               </p>
               <p className="text-sm text-muted mt-1">
-                JPG, PNG, WEBP, GIF, BMP, TIFF, AVIF, ICO — up to 20 MB each
+                JPG, PNG, WEBP, GIF, BMP, TIFF, AVIF, ICO. Up to 20 MB each
               </p>
             </div>
           </div>
