@@ -29,7 +29,7 @@ export default async function InquiryDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const session = await auth();
-  if (!session?.user?.id) redirect("/auth/signin");
+  if (!session?.user) redirect("/auth/signin");
 
   const { id } = await params;
   if (!db) notFound();

@@ -32,7 +32,7 @@ export default async function AdminInquiriesPage({
   searchParams: Promise<SearchParams>;
 }) {
   const session = await auth();
-  if (!session?.user?.id) redirect("/auth/signin");
+  if (!session?.user) redirect("/auth/signin");
 
   const sp     = await searchParams;
   const status   = sp.status   || "";

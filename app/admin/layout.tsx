@@ -5,11 +5,14 @@ import AdminSidebar from "./AdminSidebar";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
-  if (!session?.user?.id) redirect("/auth/signin");
+  if (!session?.user) redirect("/auth/signin");
 
   if (!db) redirect("/dashboard");
 
-  const user = db.prepare("SELECT is_admin FROM users WHERE id = ?").get(session.user.id) as
+  const uid = session.user.id || session.user.email;
+  if (!uid) redirect("/auth/signin");
+
+  const user = db.prepare("SELECT is_admin FROM users WHERE id = ? OR email = ?").get(uid, session.user.email) as
     | { is_admin: number }
     | undefined;
 
