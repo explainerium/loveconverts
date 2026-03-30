@@ -364,7 +364,7 @@ export default function EnhancePage() {
                     </div>
                   ) : (
                     /* eslint-disable-next-line @next/next/no-img-element */
-                    <img src={previewUrl || imgSrc} alt="Preview"
+                    <img src={previewUrl || imgSrc || undefined} alt="Preview"
                       className="max-w-full max-h-[500px] object-contain transition-opacity rounded-lg"
                       style={{ opacity: previewLoading ? 0.5 : 1 }} />
                   )}
