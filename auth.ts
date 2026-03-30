@@ -85,9 +85,9 @@ const config: NextAuthConfig = {
     },
 
     jwt: async ({ token, user, account }) => {
-      // On initial sign-in, look up the user in our DB by email
-      // This works for both credentials and OAuth providers
-      if (user || account) {
+      // Look up user in DB if token is missing our custom fields
+      // Runs on initial sign-in AND on token refresh if fields are missing
+      if (user || account || !token.id) {
         const db = getDb();
         if (db) {
           const email = token.email || user?.email;
