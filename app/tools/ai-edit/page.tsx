@@ -3,7 +3,7 @@
 import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import {
-  Eraser, Upload, Download, AlertCircle, Loader2, Zap,
+  Wand2, Upload, Download, AlertCircle, Loader2, Zap,
   Minimize2, Maximize2, Crop, Sparkles,
 } from "lucide-react";
 import Link from "next/link";
@@ -14,9 +14,19 @@ function fmtBytes(n: number) {
   return (n / (1024 * 1024)).toFixed(2) + " MB";
 }
 
-export default function RemoveBackgroundPage() {
+const EXAMPLE_PROMPTS = [
+  "Make the background blue",
+  "Add snow falling",
+  "Turn into oil painting",
+  "Make it look cinematic",
+  "Add sunset lighting",
+  "Make it black and white",
+];
+
+export default function AiEditPage() {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const [prompt, setPrompt] = useState("");
   const [resultUrl, setResultUrl] = useState<string | null>(null);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -51,10 +61,11 @@ export default function RemoveBackgroundPage() {
     setPreview(null);
     setResultUrl(null);
     setError(null);
+    setPrompt("");
   };
 
-  const removeBackground = async () => {
-    if (!file) return;
+  const editImage = async () => {
+    if (!file || !prompt.trim()) return;
     setProcessing(true);
     setError(null);
     setResultUrl(null);
@@ -62,8 +73,9 @@ export default function RemoveBackgroundPage() {
     try {
       const fd = new FormData();
       fd.append("file", file);
+      fd.append("prompt", prompt.trim());
 
-      const res = await fetch("/api/tools/remove-background", {
+      const res = await fetch("/api/tools/ai-edit", {
         method: "POST",
         body: fd,
       });
@@ -71,7 +83,7 @@ export default function RemoveBackgroundPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || "Background removal failed");
+        setError(data.error || "AI editing failed");
         return;
       }
 
@@ -81,7 +93,7 @@ export default function RemoveBackgroundPage() {
         setError("No result returned from AI.");
       }
     } catch {
-      setError("Background removal failed. Please try again.");
+      setError("AI editing failed. Please try again.");
     } finally {
       setProcessing(false);
     }
@@ -93,13 +105,14 @@ export default function RemoveBackgroundPage() {
         {/* Hero */}
         <div className="text-center space-y-2">
           <div className="inline-flex items-center gap-2 bg-primary-light text-primary text-xs font-bold px-3 py-1 rounded-full mb-2">
-            <Eraser size={12} /> REMOVE BACKGROUND
+            <Wand2 size={12} /> AI IMAGE EDITOR
           </div>
           <h1 className="text-3xl font-extrabold text-foreground">
-            Remove Image Background
+            Edit Images with AI
           </h1>
           <p className="text-muted max-w-md mx-auto text-sm">
-            AI-powered background removal. Get a transparent PNG in seconds.
+            Describe what you want to change and AI will edit your image. Change backgrounds,
+            add effects, transform styles.
           </p>
           <span className="inline-flex items-center gap-1 text-[10px] font-bold text-violet-600 bg-violet-50 px-2 py-0.5 rounded-full">
             <Sparkles size={10} /> Powered by AI
@@ -125,7 +138,7 @@ export default function RemoveBackgroundPage() {
           </div>
         )}
 
-        {/* File selected, not yet processed */}
+        {/* File selected, prompt input */}
         {file && !resultUrl && !processing && (
           <div className="space-y-4">
             <div className="bg-card border border-border rounded-2xl p-4 flex items-center gap-4">
@@ -138,16 +151,49 @@ export default function RemoveBackgroundPage() {
                 <p className="text-xs text-muted mt-0.5">{fmtBytes(file.size)}</p>
               </div>
               <button onClick={clearFile} className="p-1.5 text-muted hover:text-red-500 transition-colors flex-shrink-0">
-                <Eraser size={14} />
+                <Wand2 size={14} />
               </button>
             </div>
 
+            {/* Prompt input */}
+            <div className="bg-card border border-border rounded-2xl p-6 space-y-4">
+              <div>
+                <label className="text-sm font-semibold text-foreground mb-2 block">
+                  Describe your edit
+                </label>
+                <textarea
+                  value={prompt}
+                  onChange={(e) => setPrompt(e.target.value)}
+                  placeholder="e.g. Make the background blue, add snow falling, turn into oil painting..."
+                  rows={3}
+                  className="w-full px-3.5 py-2.5 text-sm border border-border rounded-xl focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 bg-background resize-none"
+                />
+              </div>
+
+              {/* Example prompts */}
+              <div>
+                <span className="text-[10px] font-bold text-muted uppercase tracking-wider mb-2 block">Try these</span>
+                <div className="flex flex-wrap gap-1.5">
+                  {EXAMPLE_PROMPTS.map((p) => (
+                    <button
+                      key={p}
+                      onClick={() => setPrompt(p)}
+                      className="text-[11px] px-2.5 py-1 rounded-full border border-border text-muted hover:border-primary/40 hover:text-primary transition-colors"
+                    >
+                      {p}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
             <button
-              onClick={removeBackground}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-primary text-white text-sm font-bold rounded-xl hover:bg-primary-hover transition-colors"
+              onClick={editImage}
+              disabled={!prompt.trim()}
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-primary text-white text-sm font-bold rounded-xl hover:bg-primary-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <Eraser size={16} />
-              Remove Background
+              <Wand2 size={16} />
+              Edit with AI
             </button>
           </div>
         )}
@@ -156,8 +202,8 @@ export default function RemoveBackgroundPage() {
         {processing && (
           <div className="bg-card border border-border rounded-2xl p-8 text-center space-y-3">
             <Loader2 size={32} className="animate-spin text-primary mx-auto" />
-            <p className="text-sm font-semibold text-foreground">AI is removing the background...</p>
-            <p className="text-xs text-muted">This usually takes 5 to 15 seconds</p>
+            <p className="text-sm font-semibold text-foreground">AI is editing your image...</p>
+            <p className="text-xs text-muted">This can take 10 to 30 seconds depending on the edit</p>
           </div>
         )}
 
@@ -174,35 +220,39 @@ export default function RemoveBackgroundPage() {
                 </div>
               </div>
               <div className="space-y-2">
-                <span className="text-xs font-semibold text-muted uppercase">Result</span>
-                <div
-                  className="rounded-xl overflow-hidden border border-border"
-                  style={{
-                    backgroundImage: "repeating-conic-gradient(#d4d4d4 0% 25%, #fff 0% 50%)",
-                    backgroundSize: "16px 16px",
-                  }}
-                >
+                <span className="text-xs font-semibold text-muted uppercase">AI Edited</span>
+                <div className="rounded-xl overflow-hidden border border-border bg-gray-100">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={resultUrl} alt="Background removed" className="w-full h-auto" />
+                  <img src={resultUrl} alt="AI edited result" className="w-full h-auto" />
                 </div>
               </div>
             </div>
 
+            <p className="text-xs text-muted bg-gray-50 border border-border rounded-lg px-3 py-2">
+              <strong>Prompt:</strong> {prompt}
+            </p>
+
             <div className="flex gap-3">
               <a
                 href={resultUrl}
-                download={(file?.name.replace(/\.[^/.]+$/, "") || "image") + "-no-bg.png"}
+                download={(file?.name.replace(/\.[^/.]+$/, "") || "image") + "-ai-edit.png"}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-primary text-white text-sm font-bold rounded-xl hover:bg-primary-hover transition-colors"
               >
-                <Download size={16} /> Download PNG
+                <Download size={16} /> Download
               </a>
+              <button
+                onClick={() => { setResultUrl(null); setPrompt(""); }}
+                className="px-4 py-3 text-sm font-bold text-primary border border-primary/30 rounded-xl hover:bg-primary-light transition-colors"
+              >
+                Edit Again
+              </button>
               <button
                 onClick={clearFile}
                 className="px-4 py-3 text-sm font-bold text-muted border border-border rounded-xl hover:border-primary/40 transition-colors"
               >
-                Try Another
+                New Image
               </button>
             </div>
           </div>
@@ -220,12 +270,12 @@ export default function RemoveBackgroundPage() {
         <div className="bg-card border border-border rounded-2xl p-5 space-y-3">
           <div className="flex items-center gap-2">
             <Zap size={16} className="text-primary" />
-            <h3 className="text-sm font-bold text-foreground">How it works</h3>
+            <h3 className="text-sm font-bold text-foreground">How AI editing works</h3>
           </div>
           <p className="text-sm text-muted leading-relaxed">
-            Our AI model detects the subject in your image and removes the background
-            automatically. It works with people, products, animals, and objects. The result
-            is a PNG with a transparent background that you can use anywhere.
+            Upload an image and describe the change you want in plain English. The AI understands
+            instructions like changing backgrounds, adding weather effects, applying artistic styles,
+            adjusting lighting, and much more. Your images are processed via AI and not stored.
           </p>
         </div>
 
@@ -234,8 +284,8 @@ export default function RemoveBackgroundPage() {
           <h3 className="text-sm font-bold text-muted uppercase tracking-wider mb-3">Related Tools</h3>
           <div className="grid grid-cols-3 gap-3">
             {[
-              { href: "/tools/compress", icon: Minimize2, label: "Compress Image" },
-              { href: "/tools/resize", icon: Maximize2, label: "Resize Image" },
+              { href: "/tools/remove-background", icon: Minimize2, label: "Remove Background" },
+              { href: "/tools/enhance", icon: Maximize2, label: "AI Enhance" },
               { href: "/tools/crop", icon: Crop, label: "Crop Image" },
             ].map(({ href, icon: Icon, label }) => (
               <Link key={href} href={href}

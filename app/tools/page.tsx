@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Minimize2, Maximize2, Crop, FileImage, Wand2, ImageIcon, Sparkles, Droplets, FileOutput, Eraser, ArrowUpCircle } from "lucide-react";
+import { Minimize2, Maximize2, Crop, FileImage, Wand2, ImageIcon, Sparkles, Droplets, FileOutput, Eraser, ArrowUpCircle, PenTool } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "All Free Image Tools: Converter Compressor Resizer",
@@ -105,6 +105,14 @@ const TOOLS = [
     desc: "Enlarge images 2x or 4x using Lanczos3 resampling. Keep sharpness at higher resolution.",
     badge: "New",
     color: "bg-emerald-50 text-emerald-600 border-emerald-100",
+  },
+  {
+    href: "/tools/ai-edit",
+    icon: PenTool,
+    label: "AI Image Editor",
+    desc: "Edit images with AI. Describe the change you want in plain English and AI does the rest.",
+    badge: "New",
+    color: "bg-purple-50 text-purple-600 border-purple-100",
   },
 ];
 

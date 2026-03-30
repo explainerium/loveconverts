@@ -9,9 +9,14 @@ export async function POST(req: Request) {
   try {
     const formData = await req.formData();
     const file = formData.get("file") as File | null;
+    const prompt = formData.get("prompt") as string | null;
 
     if (!file) {
       return Response.json({ error: "No image provided" }, { status: 400 });
+    }
+
+    if (!prompt?.trim()) {
+      return Response.json({ error: "Please describe your edit" }, { status: 400 });
     }
 
     if (file.size > 20 * 1024 * 1024) {
@@ -19,7 +24,7 @@ export async function POST(req: Request) {
     }
 
     if (!process.env.REPLICATE_API_TOKEN) {
-      return Response.json({ error: "Background removal service is not configured." }, { status: 503 });
+      return Response.json({ error: "AI editing service is not configured." }, { status: 503 });
     }
 
     const bytes = await file.arrayBuffer();
@@ -28,15 +33,21 @@ export async function POST(req: Request) {
     const dataUrl = `data:${mimeType};base64,${base64}`;
 
     const output = await replicate.run(
-      "lucataco/remove-bg:95fcc2a26d3899cd6c2691c900465aaeff466285d65c14d73e8cc1f07cc1faca",
-      { input: { image: dataUrl } }
+      "black-forest-labs/flux-kontext-pro",
+      {
+        input: {
+          prompt: prompt.trim(),
+          input_image: dataUrl,
+        },
+      }
     );
 
-    return Response.json({ url: output });
+    const resultUrl = Array.isArray(output) ? output[0] : output;
+    return Response.json({ url: resultUrl });
   } catch (err) {
-    console.error("Remove-background error:", err);
+    console.error("AI edit error:", err);
     return Response.json(
-      { error: err instanceof Error ? err.message : "Background removal failed" },
+      { error: err instanceof Error ? err.message : "AI editing failed" },
       { status: 500 }
     );
   }
