@@ -23,7 +23,7 @@ export default async function AdminUsersPage({
   searchParams: Promise<SearchParams>;
 }) {
   const session = await auth();
-  if (!session?.user) redirect("/auth/signin");
+  if (!session?.user) redirect("/");
 
   const sp     = await searchParams;
   const search = sp.search || "";

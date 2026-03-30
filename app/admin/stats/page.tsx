@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 
 export default async function AdminStatsPage() {
   const session = await auth();
-  if (!session?.user) redirect("/auth/signin");
+  if (!session?.user) redirect("/");
 
   if (!db) redirect("/dashboard");
   const d = db; // TS narrowing helper — db is guaranteed non-null after redirect()

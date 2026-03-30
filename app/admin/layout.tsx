@@ -5,18 +5,18 @@ import AdminSidebar from "./AdminSidebar";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
-  if (!session?.user) redirect("/auth/signin");
 
-  if (!db) redirect("/dashboard");
+  // Proxy already guards /admin — if session is somehow null, redirect to home (not signin to avoid loops)
+  if (!session?.user) redirect("/");
 
-  const uid = session.user.id || session.user.email;
-  if (!uid) redirect("/auth/signin");
+  if (!db) redirect("/");
 
-  const user = db.prepare("SELECT is_admin FROM users WHERE id = ? OR email = ?").get(uid, session.user.email) as
+  const email = session.user.email;
+  const user = db.prepare("SELECT is_admin FROM users WHERE email = ?").get(email) as
     | { is_admin: number }
     | undefined;
 
-  if (!user || user.is_admin !== 1) redirect("/?error=unauthorized");
+  if (!user || user.is_admin !== 1) redirect("/");
 
   return (
     <div className="flex h-[calc(100vh-4rem)] overflow-hidden bg-background">

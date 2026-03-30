@@ -76,10 +76,9 @@ const PRO_FEATURES = [
 
 export default async function DashboardPage() {
   const session = await auth();
-  if (!session?.user) redirect("/auth/signin");
-
-  const uid   = session.user.id || "";
-  const plan  = session.user.plan ?? "free";
+  // Proxy guards this route — don't redirect here to avoid loops
+  const uid   = session?.user?.id || "";
+  const plan  = session?.user?.plan ?? "free";
   const today = new Date().toISOString().slice(0, 10);
 
   let totalConversions = 0;
@@ -124,7 +123,7 @@ export default async function DashboardPage() {
       {/* Welcome */}
       <div>
         <h1 className="text-2xl font-extrabold text-foreground">
-          Welcome back{session.user.name ? `, ${session.user.name.split(" ")[0]}` : ""}! 👋
+          Welcome back{session?.user?.name ? `, ${session.user.name.split(" ")[0]}` : ""}! 👋
         </h1>
         <p className="text-muted mt-1">Here&apos;s a summary of your LoveConverts activity.</p>
       </div>
