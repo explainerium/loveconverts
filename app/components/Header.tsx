@@ -46,7 +46,9 @@ function DropdownMenu({
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
 
+  // Close on outside click
   useEffect(() => {
     function handler(e: MouseEvent) {
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
@@ -54,6 +56,11 @@ function DropdownMenu({
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
+
+  // Close on route change
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
 
   return (
     <div ref={ref} className="relative">
@@ -69,7 +76,7 @@ function DropdownMenu({
         <ChevronDown size={13} className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
       </button>
       {open && (
-        <div className="animate-fade-in-up">
+        <div className="animate-fade-in-up" onClick={() => setOpen(false)}>
           {children}
         </div>
       )}

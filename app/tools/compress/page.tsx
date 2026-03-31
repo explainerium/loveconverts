@@ -100,7 +100,12 @@ export default function CompressPage() {
     }
 
     setResults(newResults);
-    setStage("done");
+    if (newResults.length > 0) {
+      setStage("done");
+    } else {
+      setStage("upload");
+      if (!error) setError("Compression failed. Please try again.");
+    }
   };
 
   const downloadAll = async () => {
