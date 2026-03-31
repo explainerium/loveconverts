@@ -2,12 +2,11 @@
 
 import { useState, FormEvent, Suspense } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { ImageIcon, Eye, EyeOff, Loader2, AlertCircle } from "lucide-react";
 
 function SignInForm() {
-  const router       = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl  = searchParams.get("callbackUrl") || "/dashboard";
   const urlError     = searchParams.get("error");
@@ -33,8 +32,8 @@ function SignInForm() {
       if (result?.error) {
         setError("Invalid email or password. Please try again.");
       } else {
-        router.push(callbackUrl);
-        router.refresh();
+        // Full page reload to ensure cookie is set and proxy recognizes it
+        window.location.href = callbackUrl;
       }
     } catch {
       setError("Something went wrong. Please try again.");
