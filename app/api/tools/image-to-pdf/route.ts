@@ -24,7 +24,9 @@ const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20 MB per image
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let session: any = null;
+    try { session = await auth(); } catch { /* auth failed, continue as anonymous */ }
     const formData = await request.formData();
 
     const files = formData.getAll("files") as File[];

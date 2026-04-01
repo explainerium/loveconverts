@@ -24,7 +24,9 @@ const ALLOWED_MIME = new Set([
 
 export async function POST(request: NextRequest) {
   try {
-    const session  = await auth();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let session: any = null;
+    try { session = await auth(); } catch { /* auth failed, continue as anonymous */ }
     const formData = await request.formData();
 
     const file = formData.get("file") as File | null;
