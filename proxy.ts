@@ -1,36 +1,28 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { getToken } from "next-auth/jwt";
+import { auth } from "@/auth";
 
 export async function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
-  let token = null;
+  // Use NextAuth's auth() which handles all cookie variations (HTTP/HTTPS)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let session: any = null;
   try {
-    token = await getToken({
-      req: request,
-      secret: process.env.AUTH_SECRET,
-    });
+    session = await auth();
   } catch {
-    // Token decode failed (secret mismatch, corrupted cookie, etc.)
-    // Clear the bad cookie and redirect to signin
-    const response = NextResponse.redirect(
-      new URL("/auth/signin?callbackUrl=" + encodeURIComponent(path), request.url)
-    );
-    response.cookies.delete("next-auth.session-token");
-    response.cookies.delete("__Secure-next-auth.session-token");
-    return response;
+    // Auth failed — treat as unauthenticated
   }
 
   // Not logged in → redirect to signin
-  if (!token) {
+  if (!session?.user) {
     const signInUrl = new URL("/auth/signin", request.url);
     signInUrl.searchParams.set("callbackUrl", path);
     return NextResponse.redirect(signInUrl);
   }
 
   // Non-admin visiting admin routes → redirect to dashboard
-  if (path.startsWith("/admin") && !token.is_admin) {
+  if (path.startsWith("/admin") && !session.user.is_admin) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
