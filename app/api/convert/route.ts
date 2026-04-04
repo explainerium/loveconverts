@@ -181,7 +181,7 @@ export async function POST(request: NextRequest) {
         );
     }
 
-    const baseName = file.name.replace(/\.[^/.]+$/, "") || "converted";
+    const baseName = (file.name.replace(/\.[^/.]+$/, "") || "converted").replace(/[^\x20-\x7E]/g, "").replace(/\s+/g, "_") || "converted";
 
     // Record conversion in DB for logged-in users
     if (session?.user?.id) {

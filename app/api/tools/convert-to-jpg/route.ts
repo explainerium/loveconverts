@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
       .jpeg({ quality, mozjpeg: true })
       .toBuffer();
 
-    const base = file.name.replace(/\.[^/.]+$/, "") || "image";
+    const base = (file.name.replace(/\.[^/.]+$/, "") || "image").replace(/[^\x20-\x7E]/g, "").replace(/\s+/g, "_") || "image";
 
     if (session?.user?.id) {
       recordConversion({

@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
         contentType = "image/jpeg"; ext = "jpg";
     }
 
-    const base = file.name.replace(/\.[^/.]+$/, "") || "compressed";
+    const base = (file.name.replace(/\.[^/.]+$/, "") || "compressed").replace(/[^\x20-\x7E]/g, "").replace(/\s+/g, "_") || "compressed";
 
     if (session?.user?.id) {
       recordConversion({

@@ -188,7 +188,7 @@ export async function POST(request: NextRequest) {
     };
     const contentType = contentTypeMap[ext] || "image/jpeg";
 
-    const base = file.name.replace(/\.[^/.]+$/, "") || "watermarked";
+    const base = (file.name.replace(/\.[^/.]+$/, "") || "watermarked").replace(/[^\x20-\x7E]/g, "").replace(/\s+/g, "_") || "watermarked";
 
     if (session?.user?.id) {
       recordConversion({

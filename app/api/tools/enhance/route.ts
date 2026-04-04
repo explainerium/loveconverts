@@ -295,7 +295,7 @@ export async function POST(request: NextRequest) {
         contentType = "image/jpeg"; ext = "jpg"; break;
     }
 
-    const base = file.name.replace(/\.[^/.]+$/, "") || "enhanced";
+    const base = (file.name.replace(/\.[^/.]+$/, "") || "enhanced").replace(/[^\x20-\x7E]/g, "").replace(/\s+/g, "_") || "enhanced";
 
     const body = outputBuffer.buffer.slice(
       outputBuffer.byteOffset,

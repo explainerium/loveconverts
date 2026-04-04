@@ -97,7 +97,7 @@ export async function POST(request: NextRequest) {
         contentType = "image/jpeg"; ext = "jpg";
     }
 
-    const base = file.name.replace(/\.[^/.]+$/, "") || "upscaled";
+    const base = (file.name.replace(/\.[^/.]+$/, "") || "upscaled").replace(/[^\x20-\x7E]/g, "").replace(/\s+/g, "_") || "upscaled";
 
     if (session?.user?.id) {
       recordConversion({

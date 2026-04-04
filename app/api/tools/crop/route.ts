@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
         contentType = "image/jpeg"; ext = "jpg";
     }
 
-    const base = file.name.replace(/\.[^/.]+$/, "") || "cropped";
+    const base = (file.name.replace(/\.[^/.]+$/, "") || "cropped").replace(/[^\x20-\x7E]/g, "").replace(/\s+/g, "_") || "cropped";
 
     if (session?.user?.id) {
       recordConversion({

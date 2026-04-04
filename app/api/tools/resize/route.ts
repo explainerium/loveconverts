@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
         contentType = "image/jpeg"; ext = "jpg";
     }
 
-    const base = file.name.replace(/\.[^/.]+$/, "") || "resized";
+    const base = (file.name.replace(/\.[^/.]+$/, "") || "resized").replace(/[^\x20-\x7E]/g, "").replace(/\s+/g, "_") || "resized";
 
     if (session?.user?.id) {
       recordConversion({

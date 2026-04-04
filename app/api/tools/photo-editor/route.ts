@@ -113,7 +113,7 @@ export async function POST(request: NextRequest) {
         contentType = "image/jpeg"; ext = "jpg";
     }
 
-    const base = file.name.replace(/\.[^/.]+$/, "") || "edited";
+    const base = (file.name.replace(/\.[^/.]+$/, "") || "edited").replace(/[^\x20-\x7E]/g, "").replace(/\s+/g, "_") || "edited";
 
     if (!isPreview && session?.user?.id) {
       recordConversion({
