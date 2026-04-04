@@ -2,224 +2,398 @@
 
 import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
-import { FileImage, Upload, Download, X, Loader2, CheckCircle2, Package, Minimize2, Maximize2, Wand2 } from "lucide-react";
+import { FileImage, Upload, Download, X, CheckCircle2, Loader2, Package, Minimize2, Maximize2, Crop, Wand2, Plus, ImageIcon } from "lucide-react";
 import Link from "next/link";
 import JSZip from "jszip";
-import UpgradeModal from "@/app/components/UpgradeModal";
 
 interface Result {
   name: string;
-  url: string;
+  originalName: string;
+  originalFormat: string;
   originalSize: number;
   newSize: number;
+  url: string;
 }
 
 function fmtBytes(n: number) {
   if (n < 1024) return n + " B";
-  if (n < 1048576) return (n / 1024).toFixed(1) + " KB";
-  return (n / 1048576).toFixed(2) + " MB";
+  if (n < 1024 * 1024) return (n / 1024).toFixed(1) + " KB";
+  return (n / (1024 * 1024)).toFixed(2) + " MB";
 }
 
+function getFormat(filename: string): string {
+  const ext = filename.split(".").pop()?.toUpperCase() || "IMG";
+  return ext;
+}
+
+type Stage = "upload" | "converting" | "done";
+
 export default function ConvertToJpgPage() {
-  const [quality,     setQuality]     = useState(90);
-  const [bgColor,     setBgColor]     = useState("#ffffff");
-  const [results,     setResults]     = useState<Result[]>([]);
-  const [processing,  setProcessing]  = useState<string[]>([]);
-  const [errors,      setErrors]      = useState<Record<string, string>>({});
-  const [showUpgrade, setShowUpgrade] = useState(false);
+  const [stage, setStage] = useState<Stage>("upload");
+  const [files, setFiles] = useState<File[]>([]);
+  const [previews, setPreviews] = useState<string[]>([]);
+  const [quality, setQuality] = useState(90);
+  const [results, setResults] = useState<Result[]>([]);
+  const [progress, setProgress] = useState({ done: 0, total: 0 });
+  const [error, setError] = useState<string | null>(null);
 
-  const convertFile = useCallback(async (file: File) => {
-    const key = file.name + file.size;
-    setProcessing((p) => [...p, key]);
-    setErrors((e) => { const n = { ...e }; delete n[key]; return n; });
+  const onDrop = useCallback((accepted: File[]) => {
+    if (accepted.length === 0) return;
+    setError(null);
+    const newFiles = [...files, ...accepted].slice(0, 30);
+    setFiles(newFiles);
+    const newPreviews = newFiles.map((f) => URL.createObjectURL(f));
+    setPreviews(newPreviews);
+  }, [files]);
 
-    try {
-      const fd = new FormData();
-      fd.append("file", file);
-      fd.append("quality", String(quality));
-      fd.append("background", bgColor);
-
-      const res = await fetch("/api/tools/convert-to-jpg", { method: "POST", body: fd });
-      if (!res.ok) {
-        const data = await res.json();
-        if (data.code === "RATE_LIMIT") { setShowUpgrade(true); return; }
-        setErrors((e) => ({ ...e, [key]: data.error || "Conversion failed" }));
-        return;
-      }
-
-      const blob = await res.blob();
-      const origSize = parseInt(res.headers.get("X-Original-Size") || "0") || file.size;
-      const newSize  = parseInt(res.headers.get("X-Output-Size")   || "0") || blob.size;
-      const disp     = res.headers.get("Content-Disposition") || "";
-      const match    = disp.match(/filename="(.+?)"/);
-      const name     = match?.[1] || file.name.replace(/\.[^.]+$/, ".jpg");
-
-      setResults((r) => [
-        { name, url: URL.createObjectURL(blob), originalSize: origSize, newSize },
-        ...r.filter((x) => x.name !== name),
-      ]);
-    } catch {
-      setErrors((e) => ({ ...e, [key]: "Conversion failed" }));
-    } finally {
-      setProcessing((p) => p.filter((x) => x !== key));
-    }
-  }, [quality, bgColor]);
-
-  const onDrop = useCallback((files: File[]) => {
-    files.forEach(convertFile);
-  }, [convertFile]);
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
     onDrop,
     accept: { "image/*": [] },
+    maxSize: 20 * 1024 * 1024,
+    noClick: files.length > 0,
+    noKeyboard: files.length > 0,
   });
 
-  const removeResult = (name: string) => {
-    setResults((r) => {
-      const item = r.find((x) => x.name === name);
-      if (item) URL.revokeObjectURL(item.url);
-      return r.filter((x) => x.name !== name);
-    });
+  const removeFile = (index: number) => {
+    URL.revokeObjectURL(previews[index]);
+    setFiles((f) => f.filter((_, i) => i !== index));
+    setPreviews((p) => p.filter((_, i) => i !== index));
+  };
+
+  const convertAll = async () => {
+    if (files.length === 0) return;
+    setStage("converting");
+    setProgress({ done: 0, total: files.length });
+    setResults([]);
+    setError(null);
+
+    const newResults: Result[] = [];
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      try {
+        const fd = new FormData();
+        fd.append("file", file);
+        fd.append("quality", String(quality));
+
+        const res = await fetch("/api/tools/convert-to-jpg", {
+          method: "POST",
+          body: fd,
+        });
+
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({ error: "Conversion failed" }));
+          setError(data.error || `Failed to convert ${file.name}`);
+          continue;
+        }
+
+        const blob = await res.blob();
+        const origSize = parseInt(res.headers.get("X-Original-Size") || "0") || file.size;
+        const newSize = parseInt(res.headers.get("X-Output-Size") || "0") || blob.size;
+        const disp = res.headers.get("Content-Disposition") || "";
+        const match = disp.match(/filename="(.+?)"/);
+        const name = match?.[1] || file.name.replace(/\.[^.]+$/, ".jpg");
+
+        newResults.push({
+          name,
+          originalName: file.name,
+          originalFormat: getFormat(file.name),
+          originalSize: origSize,
+          newSize,
+          url: URL.createObjectURL(blob),
+        });
+      } catch {
+        setError(`Failed to convert ${file.name}`);
+      }
+
+      setProgress({ done: i + 1, total: files.length });
+    }
+
+    setResults(newResults);
+    if (newResults.length > 0) {
+      setStage("done");
+    } else {
+      setStage("upload");
+      if (!error) setError("Conversion failed. Please try again.");
+    }
+  };
+
+  const downloadAll = async () => {
+    if (results.length === 1) {
+      const a = document.createElement("a");
+      a.href = results[0].url;
+      a.download = results[0].name;
+      a.click();
+      return;
+    }
+
+    const zip = new JSZip();
+    for (const r of results) {
+      const resp = await fetch(r.url);
+      const blob = await resp.blob();
+      zip.file(r.name, blob);
+    }
+    const content = await zip.generateAsync({ type: "blob" });
+    const url = URL.createObjectURL(content);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "converted-to-jpg.zip";
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const reset = () => {
+    previews.forEach((p) => URL.revokeObjectURL(p));
+    results.forEach((r) => URL.revokeObjectURL(r.url));
+    setFiles([]);
+    setPreviews([]);
+    setResults([]);
+    setQuality(90);
+    setStage("upload");
+    setError(null);
   };
 
   return (
-    <div className="min-h-screen bg-background py-10">
-      <div className="max-w-3xl mx-auto px-4 space-y-8">
-        {/* Hero */}
-        <div className="text-center space-y-2">
-          <div className="inline-flex items-center gap-2 bg-primary-light text-primary text-xs font-bold px-3 py-1 rounded-full mb-2">
-            <FileImage size={12} /> CONVERT TO JPG
+    <div className="min-h-screen bg-background">
+      {/* ─── STAGE 1: Upload ─── */}
+      {stage === "upload" && (
+        <div className="max-w-4xl mx-auto px-4 py-16">
+          {/* Hero */}
+          <div className="text-center space-y-3 mb-10">
+            <h1 className="text-4xl font-extrabold text-foreground">Convert to JPG</h1>
+            <p className="text-muted max-w-lg mx-auto">
+              Convert PNG, WEBP, AVIF, GIF, BMP and TIFF images to JPG format.
+            </p>
           </div>
-          <h1 className="text-3xl font-extrabold text-foreground">Convert Images to JPG</h1>
-          <p className="text-muted max-w-md mx-auto text-sm">
-            Convert PNG, WEBP, AVIF, GIF, BMP, and more to JPG format in one click.
-          </p>
-        </div>
 
-        {/* Options */}
-        <div className="bg-card border border-border rounded-2xl p-6 space-y-5">
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-semibold text-foreground">JPEG Quality</span>
-              <span className="text-sm font-bold text-primary">{quality}%</span>
+          {/* Drop zone */}
+          {files.length === 0 ? (
+            <div
+              {...getRootProps()}
+              className={`border-2 border-dashed rounded-3xl p-16 text-center cursor-pointer transition-all max-w-xl mx-auto ${
+                isDragActive
+                  ? "border-primary bg-primary-light"
+                  : "border-border hover:border-primary/60 hover:bg-primary-light/30"
+              }`}
+            >
+              <input {...getInputProps()} />
+              <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                <Upload size={28} className="text-primary" />
+              </div>
+              <p className="font-bold text-foreground text-lg mb-1">
+                {isDragActive ? "Drop images here" : "Select images"}
+              </p>
+              <p className="text-sm text-muted">or drag and drop them here</p>
+              <p className="text-xs text-muted mt-3">PNG, WEBP, AVIF, GIF, BMP, TIFF. Up to 20 MB each. Max 30 files.</p>
             </div>
-            <input
-              type="range" min={1} max={100} value={quality}
-              onChange={(e) => setQuality(Number(e.target.value))}
-              className="custom-range w-full"
-            />
-            <div className="flex justify-between text-[10px] text-muted mt-1">
-              <span>Smallest file</span><span>Best quality</span>
-            </div>
-          </div>
+          ) : (
+            <div className="max-w-2xl mx-auto space-y-4">
+              {/* File thumbnails grid */}
+              <div {...getRootProps()} className="grid grid-cols-4 sm:grid-cols-6 gap-3">
+                <input {...getInputProps()} />
+                {files.map((f, i) => (
+                  <div key={f.name + i} className="relative group">
+                    <div className="aspect-square rounded-xl overflow-hidden bg-gray-100 border border-border">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={previews[i]} alt={f.name} className="w-full h-full object-cover" />
+                    </div>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); removeFile(i); }}
+                      className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <X size={10} />
+                    </button>
+                    <p className="text-[9px] text-muted text-center mt-1 truncate">{fmtBytes(f.size)}</p>
+                  </div>
+                ))}
 
-          <div className="flex items-center gap-3">
-            <label className="text-sm font-semibold text-muted">Background color</label>
-            <input type="color" value={bgColor} onChange={(e) => setBgColor(e.target.value)}
-              className="w-8 h-8 rounded-lg border border-border cursor-pointer" />
-            <span className="text-xs text-muted font-mono">{bgColor}</span>
-            <span className="text-xs text-muted">(replaces transparency)</span>
-          </div>
-        </div>
-
-        {/* Drop zone */}
-        <div {...getRootProps()} className={`border-2 border-dashed rounded-2xl p-10 text-center cursor-pointer transition-all ${
-          isDragActive ? "border-primary bg-primary-light" : "border-border hover:border-primary/60 hover:bg-primary-light/30"
-        }`}>
-          <input {...getInputProps()} />
-          <Upload size={32} className={`mx-auto mb-3 ${isDragActive ? "text-primary" : "text-muted"}`} />
-          <p className="font-semibold text-foreground">
-            {isDragActive ? "Drop images here" : "Drag & drop images or click to browse"}
-          </p>
-          <p className="text-xs text-muted mt-1">PNG, WEBP, AVIF, GIF, BMP, TIFF → JPG</p>
-        </div>
-
-        {/* Processing */}
-        {processing.length > 0 && (
-          <div className="flex items-center gap-2 text-sm text-muted">
-            <Loader2 size={16} className="animate-spin text-primary" />
-            Converting {processing.length} file{processing.length > 1 ? "s" : ""}…
-          </div>
-        )}
-
-        {/* Errors */}
-        {Object.entries(errors).map(([k, msg]) => (
-          <div key={k} className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-4 py-3">{msg}</div>
-        ))}
-
-        {/* Results */}
-        {results.length > 0 && (
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <h2 className="text-sm font-bold text-foreground">Converted Files ({results.length})</h2>
-              {results.length > 1 && (
+                {/* Add more button */}
                 <button
-                  onClick={async () => {
-                    const zip = new JSZip();
-                    for (const r of results) {
-                      const resp = await fetch(r.url);
-                      const blob = await resp.blob();
-                      zip.file(r.name, blob);
-                    }
-                    const content = await zip.generateAsync({ type: "blob" });
-                    const url = URL.createObjectURL(content);
-                    const a = document.createElement("a");
-                    a.href = url; a.download = "converted-to-jpg.zip"; a.click();
-                    URL.revokeObjectURL(url);
-                  }}
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-primary border border-primary/30 rounded-lg hover:bg-primary-light transition-colors"
+                  onClick={(e) => { e.stopPropagation(); open(); }}
+                  className="aspect-square rounded-xl border-2 border-dashed border-border hover:border-primary/60 flex flex-col items-center justify-center gap-1 transition-colors"
                 >
-                  <Package size={13} /> Download All ZIP
+                  <Plus size={20} className="text-muted" />
+                  <span className="text-[10px] text-muted">Add</span>
                 </button>
-              )}
+              </div>
+
+              <p className="text-xs text-muted text-center">
+                {files.length} image{files.length !== 1 ? "s" : ""} selected
+              </p>
+
+              {/* Quality slider */}
+              <div className="bg-card border border-border rounded-2xl p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-semibold text-foreground">JPEG Quality</span>
+                  <span className="text-sm font-bold text-primary">{quality}%</span>
+                </div>
+                <input
+                  type="range"
+                  min={1}
+                  max={100}
+                  value={quality}
+                  onChange={(e) => setQuality(Number(e.target.value))}
+                  className="custom-range w-full"
+                />
+                <div className="flex justify-between text-[10px] text-muted mt-1">
+                  <span>Smallest file</span>
+                  <span>Best quality</span>
+                </div>
+              </div>
+
+              {/* Convert button */}
+              <button
+                onClick={convertAll}
+                className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-primary text-white text-base font-bold rounded-2xl hover:bg-primary-hover transition-colors shadow-lg"
+              >
+                <FileImage size={18} />
+                Convert {files.length > 1 ? `${files.length} Images` : "Image"} to JPG
+              </button>
             </div>
+          )}
+
+          {/* Error */}
+          {error && (
+            <div className="max-w-xl mx-auto mt-4 flex items-center gap-2 text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
+              <ImageIcon size={16} />
+              {error}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ─── STAGE 2: Converting ─── */}
+      {stage === "converting" && (
+        <div className="max-w-md mx-auto px-4 py-32 text-center space-y-6">
+          <Loader2 size={48} className="animate-spin text-primary mx-auto" />
+          <div>
+            <h2 className="text-xl font-bold text-foreground mb-1">Converting images...</h2>
+            <p className="text-sm text-muted">
+              {progress.done} of {progress.total} done
+            </p>
+          </div>
+          <div className="w-full bg-gray-200 rounded-full h-2">
+            <div
+              className="bg-primary h-2 rounded-full transition-all"
+              style={{ width: `${progress.total > 0 ? (progress.done / progress.total) * 100 : 0}%` }}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* ─── STAGE 3: Results ─── */}
+      {stage === "done" && results.length > 0 && (
+        <div className="max-w-3xl mx-auto px-4 py-12 space-y-6">
+          {/* Summary card */}
+          <div className="bg-green-50 border border-green-200 rounded-2xl p-6 text-center space-y-2">
+            <CheckCircle2 size={40} className="text-green-500 mx-auto" />
+            <h2 className="text-xl font-bold text-foreground">
+              {results.length} image{results.length !== 1 ? "s" : ""} converted to JPG
+            </h2>
+            <p className="text-sm text-green-700">
+              All files successfully converted to JPEG format
+            </p>
+          </div>
+
+          {/* Download button */}
+          <button
+            onClick={downloadAll}
+            className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-primary text-white text-base font-bold rounded-2xl hover:bg-primary-hover transition-colors shadow-lg"
+          >
+            {results.length > 1 ? <Package size={18} /> : <Download size={18} />}
+            {results.length > 1 ? "Download All (ZIP)" : "Download JPG Image"}
+          </button>
+
+          {/* Individual results */}
+          <div className="space-y-2">
             {results.map((r) => (
-              <div key={r.name} className="bg-card border border-border rounded-2xl p-4 flex items-center gap-4">
-                <div className="w-14 h-14 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0">
+              <div key={r.name} className="bg-card border border-border rounded-xl p-3 flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={r.url} alt={r.name} className="w-full h-full object-cover" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-foreground truncate">{r.name}</p>
-                  <div className="flex items-center gap-2 mt-1">
-                    <CheckCircle2 size={12} className="text-green-500" />
-                    <span className="text-xs text-muted">{fmtBytes(r.originalSize)} → <span className="text-green-600 font-semibold">{fmtBytes(r.newSize)}</span></span>
-                    <span className="text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200 px-1.5 py-0.5 rounded-full">JPG</span>
+                  <p className="text-sm font-medium text-foreground truncate">{r.name}</p>
+                  <div className="flex items-center gap-2 text-xs text-muted">
+                    <span className="font-semibold text-foreground/70">{r.originalFormat}</span>
+                    <span>→</span>
+                    <span className="text-amber-600 font-semibold">JPG</span>
+                    <span className="text-muted/60">|</span>
+                    <span>{fmtBytes(r.originalSize)}</span>
+                    <span>→</span>
+                    <span className="text-green-600 font-semibold">{fmtBytes(r.newSize)}</span>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 flex-shrink-0">
-                  <a href={r.url} download={r.name}
-                    className="flex items-center gap-1.5 px-3 py-1.5 bg-primary text-white text-xs font-bold rounded-lg hover:bg-primary-hover transition-colors">
-                    <Download size={13} /> Download
-                  </a>
-                  <button onClick={() => removeResult(r.name)}
-                    className="p-1.5 text-muted hover:text-red-500 transition-colors">
-                    <X size={14} />
-                  </button>
-                </div>
+                <a
+                  href={r.url}
+                  download={r.name}
+                  className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-colors flex-shrink-0"
+                >
+                  <Download size={16} />
+                </a>
               </div>
             ))}
           </div>
-        )}
 
-        {/* Why JPG */}
-        <div className="bg-card border border-border rounded-2xl p-5">
-          <h3 className="text-sm font-bold text-foreground mb-2">Why convert to JPG?</h3>
-          <p className="text-sm text-muted leading-relaxed">
-            JPG (JPEG) is the most universally supported image format. It offers excellent compression with
-            very small file sizes, perfect for photos, email attachments, web pages, and anywhere you need
-            broad compatibility. Transparency is replaced with a solid background color during conversion.
-          </p>
+          {/* Start over */}
+          <button
+            onClick={reset}
+            className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-bold text-muted border border-border rounded-xl hover:border-primary/40 transition-colors"
+          >
+            Convert More Images
+          </button>
         </div>
+      )}
+
+      {/* ─── Bottom section ─── */}
+      <div className="max-w-3xl mx-auto px-4 pb-12 space-y-8">
+        {stage === "upload" && (
+          <>
+            {/* How it works */}
+            <div className="bg-card border border-border rounded-2xl p-6">
+              <h2 className="font-bold text-foreground mb-4">How it works</h2>
+              <div className="grid grid-cols-3 gap-4 text-center">
+                {[
+                  { step: "1", title: "Upload", desc: "Select one or more images from your device" },
+                  { step: "2", title: "Convert", desc: "We convert your images to high-quality JPG format" },
+                  { step: "3", title: "Download", desc: "Download converted files individually or as ZIP" },
+                ].map(({ step, title, desc }) => (
+                  <div key={step} className="space-y-2">
+                    <div className="w-8 h-8 rounded-full bg-primary text-white text-sm font-bold flex items-center justify-center mx-auto">
+                      {step}
+                    </div>
+                    <p className="text-sm font-semibold text-foreground">{title}</p>
+                    <p className="text-xs text-muted">{desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Features */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {[
+                { label: "PNG, WEBP, AVIF, GIF", sub: "All formats" },
+                { label: "Up to 30 files", sub: "Batch convert" },
+                { label: "No sign-up", sub: "Free forever" },
+                { label: "Files never stored", sub: "100% private" },
+              ].map(({ label, sub }) => (
+                <div key={label} className="bg-card border border-border rounded-xl p-3 text-center">
+                  <p className="text-xs font-bold text-foreground">{label}</p>
+                  <p className="text-[10px] text-muted">{sub}</p>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
 
         {/* Related Tools */}
         <div>
           <h3 className="text-sm font-bold text-muted uppercase tracking-wider mb-3">Related Tools</h3>
           <div className="grid grid-cols-3 gap-3">
             {[
-              { href: "/tools/compress",       icon: Minimize2, label: "Compress" },
-              { href: "/tools/resize",         icon: Maximize2, label: "Resize" },
-              { href: "/tools/photo-editor",   icon: Wand2,     label: "Photo Editor" },
+              { href: "/tools/compress", icon: Minimize2, label: "Compress" },
+              { href: "/tools/resize", icon: Maximize2, label: "Resize Image" },
+              { href: "/tools/photo-editor", icon: Wand2, label: "Photo Editor" },
             ].map(({ href, icon: Icon, label }) => (
               <Link key={href} href={href}
                 className="flex flex-col items-center gap-2 p-3 rounded-xl border border-border hover:border-primary/30 hover:shadow-sm transition-all text-center group">
@@ -232,8 +406,6 @@ export default function ConvertToJpgPage() {
           </div>
         </div>
       </div>
-
-      <UpgradeModal isOpen={showUpgrade} onClose={() => setShowUpgrade(false)} />
     </div>
   );
 }

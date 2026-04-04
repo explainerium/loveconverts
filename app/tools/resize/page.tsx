@@ -2,229 +2,468 @@
 
 import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
-import { Maximize2, Upload, Download, X, Loader2, Lock, Unlock, Minimize2, Crop, Wand2 } from "lucide-react";
+import { Maximize2, Upload, Download, X, CheckCircle2, Loader2, Package, Minimize2, Crop, Wand2, Plus, ImageIcon, Lock, Unlock } from "lucide-react";
 import Link from "next/link";
-import UpgradeModal from "@/app/components/UpgradeModal";
+import JSZip from "jszip";
 
 const PRESETS = [
-  { label: "HD 1280×720",        w: 1280, h: 720  },
-  { label: "Full HD 1920×1080",  w: 1920, h: 1080 },
-  { label: "Twitter Post",       w: 1200, h: 675  },
-  { label: "Instagram Square",   w: 1080, h: 1080 },
-  { label: "Instagram Story",    w: 1080, h: 1920 },
-  { label: "Facebook Cover",     w: 851,  h: 315  },
-  { label: "LinkedIn Banner",    w: 1584, h: 396  },
-  { label: "Favicon 32×32",      w: 32,   h: 32   },
-  { label: "App Icon 512×512",   w: 512,  h: 512  },
+  { label: "Instagram (1080\u00d71080)", w: 1080, h: 1080 },
+  { label: "Twitter (1200\u00d7675)",    w: 1200, h: 675  },
+  { label: "Facebook (1200\u00d7630)",   w: 1200, h: 630  },
+  { label: "HD (1920\u00d71080)",        w: 1920, h: 1080 },
+  { label: "4K (3840\u00d72160)",        w: 3840, h: 2160 },
 ];
 
-const FIT_MODES = [
-  { value: "inside",   label: "Fit inside" },
-  { value: "cover",    label: "Cover (crop)" },
-  { value: "contain",  label: "Contain (pad)" },
-  { value: "fill",     label: "Stretch" },
-];
-
-interface Result { name: string; url: string; originalSize: number; newSize: number }
+interface Result {
+  name: string;
+  originalName: string;
+  originalSize: number;
+  newSize: number;
+  url: string;
+  widthIn: string;
+  heightIn: string;
+  widthOut: number;
+  heightOut: number;
+}
 
 function fmtBytes(n: number) {
   if (n < 1024) return n + " B";
-  if (n < 1048576) return (n / 1024).toFixed(1) + " KB";
-  return (n / 1048576).toFixed(2) + " MB";
+  if (n < 1024 * 1024) return (n / 1024).toFixed(1) + " KB";
+  return (n / (1024 * 1024)).toFixed(2) + " MB";
 }
 
+type Stage = "upload" | "resizing" | "done";
+
 export default function ResizePage() {
-  const [width,       setWidth]       = useState("");
-  const [height,      setHeight]      = useState("");
-  const [fit,         setFit]         = useState("inside");
-  const [locked,      setLocked]      = useState(true);
-  const [bgColor,     setBgColor]     = useState("#ffffff");
-  const [outputFmt,   setOutputFmt]   = useState("same");
-  const [results,     setResults]     = useState<Result[]>([]);
-  const [processing,  setProcessing]  = useState(false);
-  const [error,       setError]       = useState("");
-  const [showUpgrade, setShowUpgrade] = useState(false);
+  const [stage, setStage] = useState<Stage>("upload");
+  const [files, setFiles] = useState<File[]>([]);
+  const [previews, setPreviews] = useState<string[]>([]);
+  const [results, setResults] = useState<Result[]>([]);
+  const [progress, setProgress] = useState({ done: 0, total: 0 });
+  const [error, setError] = useState<string | null>(null);
+
+  const [width, setWidth] = useState("");
+  const [height, setHeight] = useState("");
+  const [locked, setLocked] = useState(true);
+  const [fit, setFit] = useState("inside");
 
   const applyPreset = (w: number, h: number) => {
     setWidth(String(w));
     setHeight(String(h));
   };
 
-  const resizeFile = useCallback(async (file: File) => {
-    if (!width && !height) { setError("Enter width or height."); return; }
-    setProcessing(true);
-    setError("");
+  const onDrop = useCallback((accepted: File[]) => {
+    if (accepted.length === 0) return;
+    setError(null);
+    const newFiles = [...files, ...accepted].slice(0, 30);
+    setFiles(newFiles);
+    const newPreviews = newFiles.map((f) => URL.createObjectURL(f));
+    setPreviews(newPreviews);
+  }, [files]);
 
-    try {
-      const fd = new FormData();
-      fd.append("file", file);
-      if (width)  fd.append("width",  width);
-      if (height) fd.append("height", height);
-      fd.append("fit", fit);
-      fd.append("background", bgColor);
-      if (outputFmt !== "same") fd.append("outputFormat", outputFmt);
-
-      const res = await fetch("/api/tools/resize", { method: "POST", body: fd });
-      if (!res.ok) {
-        const data = await res.json();
-        if (data.code === "RATE_LIMIT") { setShowUpgrade(true); return; }
-        setError(data.error || "Resize failed");
-        return;
-      }
-
-      const blob = await res.blob();
-      const disp = res.headers.get("Content-Disposition") || "";
-      const match = disp.match(/filename="(.+?)"/);
-      const name  = match?.[1] || file.name.replace(/\.[^.]+$/, "-resized.jpg");
-
-      setResults((r) => [
-        { name, url: URL.createObjectURL(blob), originalSize: file.size, newSize: blob.size },
-        ...r.filter((x) => x.name !== name),
-      ]);
-    } catch {
-      setError("Resize failed. Please try again.");
-    } finally {
-      setProcessing(false);
-    }
-  }, [width, height, fit, bgColor, outputFmt]);
-
-  const onDrop = useCallback((files: File[]) => {
-    files.slice(0, 1).forEach(resizeFile);
-  }, [resizeFile]);
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
     onDrop,
     accept: { "image/*": [] },
-    maxFiles: 1,
+    maxSize: 20 * 1024 * 1024,
+    noClick: files.length > 0,
+    noKeyboard: files.length > 0,
   });
 
+  const removeFile = (index: number) => {
+    URL.revokeObjectURL(previews[index]);
+    setFiles((f) => f.filter((_, i) => i !== index));
+    setPreviews((p) => p.filter((_, i) => i !== index));
+  };
+
+  const resizeAll = async () => {
+    if (files.length === 0) return;
+    if (!width && !height) {
+      setError("Enter a width or height before resizing.");
+      return;
+    }
+    setStage("resizing");
+    setProgress({ done: 0, total: files.length });
+    setResults([]);
+    setError(null);
+
+    const newResults: Result[] = [];
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      try {
+        const fd = new FormData();
+        fd.append("file", file);
+        if (width) fd.append("width", width);
+        if (height) fd.append("height", height);
+        fd.append("fit", fit);
+        if (locked) fd.append("lockAspectRatio", "true");
+
+        const res = await fetch("/api/tools/resize", {
+          method: "POST",
+          body: fd,
+        });
+
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({ error: "Resize failed" }));
+          setError(data.error || `Failed to resize ${file.name}`);
+          continue;
+        }
+
+        const blob = await res.blob();
+        const disp = res.headers.get("Content-Disposition") || "";
+        const match = disp.match(/filename="(.+?)"/);
+        const name = match?.[1] || file.name.replace(/\.[^.]+$/, "-resized.jpg");
+
+        // Get actual output dimensions by loading the image
+        let widthOut = width ? parseInt(width) : 0;
+        let heightOut = height ? parseInt(height) : 0;
+        try {
+          const img = new Image();
+          const loadPromise = new Promise<void>((resolve) => {
+            img.onload = () => {
+              widthOut = img.naturalWidth;
+              heightOut = img.naturalHeight;
+              resolve();
+            };
+            img.onerror = () => resolve();
+          });
+          img.src = URL.createObjectURL(blob);
+          await loadPromise;
+          URL.revokeObjectURL(img.src);
+        } catch {
+          // fallback to input dimensions
+        }
+
+        newResults.push({
+          name,
+          originalName: file.name,
+          originalSize: file.size,
+          newSize: blob.size,
+          url: URL.createObjectURL(blob),
+          widthIn: width || "auto",
+          heightIn: height || "auto",
+          widthOut,
+          heightOut,
+        });
+      } catch {
+        setError(`Failed to resize ${file.name}`);
+      }
+
+      setProgress({ done: i + 1, total: files.length });
+    }
+
+    setResults(newResults);
+    if (newResults.length > 0) {
+      setStage("done");
+    } else {
+      setStage("upload");
+      if (!error) setError("Resize failed. Please try again.");
+    }
+  };
+
+  const downloadAll = async () => {
+    if (results.length === 1) {
+      const a = document.createElement("a");
+      a.href = results[0].url;
+      a.download = results[0].name;
+      a.click();
+      return;
+    }
+
+    const zip = new JSZip();
+    for (const r of results) {
+      const resp = await fetch(r.url);
+      const blob = await resp.blob();
+      zip.file(r.name, blob);
+    }
+    const content = await zip.generateAsync({ type: "blob" });
+    const url = URL.createObjectURL(content);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "resized-images.zip";
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const reset = () => {
+    previews.forEach((p) => URL.revokeObjectURL(p));
+    results.forEach((r) => URL.revokeObjectURL(r.url));
+    setFiles([]);
+    setPreviews([]);
+    setResults([]);
+    setStage("upload");
+    setError(null);
+    setWidth("");
+    setHeight("");
+  };
+
   return (
-    <div className="min-h-screen bg-background py-10">
-      <div className="max-w-3xl mx-auto px-4 space-y-8">
-        {/* Hero */}
-        <div className="text-center space-y-2">
-          <div className="inline-flex items-center gap-2 bg-primary-light text-primary text-xs font-bold px-3 py-1 rounded-full mb-2">
-            <Maximize2 size={12} /> RESIZE IMAGE
+    <div className="min-h-screen bg-background">
+      {/* ─── STAGE 1: Upload ─── */}
+      {stage === "upload" && (
+        <div className="max-w-4xl mx-auto px-4 py-16">
+          {/* Hero */}
+          <div className="text-center space-y-3 mb-10">
+            <h1 className="text-4xl font-extrabold text-foreground">Resize Images</h1>
+            <p className="text-muted max-w-lg mx-auto">
+              Change image dimensions to any size. Choose from social media presets or enter custom values.
+            </p>
           </div>
-          <h1 className="text-3xl font-extrabold text-foreground">Resize Images Online</h1>
-          <p className="text-muted max-w-md mx-auto text-sm">
-            Change image dimensions to any size. Choose from social media presets or enter custom values.
-          </p>
-        </div>
 
-        {/* Controls */}
-        <div className="bg-card border border-border rounded-2xl p-6 space-y-5">
-          {/* Presets */}
-          <div>
-            <p className="text-xs font-bold text-muted uppercase tracking-wider mb-2">Presets</p>
-            <div className="flex flex-wrap gap-2">
-              {PRESETS.map((p) => (
-                <button key={p.label} onClick={() => applyPreset(p.w, p.h)}
-                  className="px-2.5 py-1 border border-border rounded-lg text-xs font-medium text-foreground hover:border-primary hover:text-primary transition-colors">
-                  {p.label}
+          {/* Drop zone */}
+          {files.length === 0 ? (
+            <div
+              {...getRootProps()}
+              className={`border-2 border-dashed rounded-3xl p-16 text-center cursor-pointer transition-all max-w-xl mx-auto ${
+                isDragActive
+                  ? "border-primary bg-primary-light"
+                  : "border-border hover:border-primary/60 hover:bg-primary-light/30"
+              }`}
+            >
+              <input {...getInputProps()} />
+              <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                <Upload size={28} className="text-primary" />
+              </div>
+              <p className="font-bold text-foreground text-lg mb-1">
+                {isDragActive ? "Drop images here" : "Select images"}
+              </p>
+              <p className="text-sm text-muted">or drag and drop them here</p>
+              <p className="text-xs text-muted mt-3">JPG, PNG, WEBP, GIF. Up to 20 MB each. Max 30 files.</p>
+            </div>
+          ) : (
+            <div className="max-w-2xl mx-auto space-y-4">
+              {/* File thumbnails grid */}
+              <div {...getRootProps()} className="grid grid-cols-4 sm:grid-cols-6 gap-3">
+                <input {...getInputProps()} />
+                {files.map((f, i) => (
+                  <div key={f.name + i} className="relative group">
+                    <div className="aspect-square rounded-xl overflow-hidden bg-gray-100 border border-border">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={previews[i]} alt={f.name} className="w-full h-full object-cover" />
+                    </div>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); removeFile(i); }}
+                      className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <X size={10} />
+                    </button>
+                    <p className="text-[9px] text-muted text-center mt-1 truncate">{fmtBytes(f.size)}</p>
+                  </div>
+                ))}
+
+                {/* Add more button */}
+                <button
+                  onClick={(e) => { e.stopPropagation(); open(); }}
+                  className="aspect-square rounded-xl border-2 border-dashed border-border hover:border-primary/60 flex flex-col items-center justify-center gap-1 transition-colors"
+                >
+                  <Plus size={20} className="text-muted" />
+                  <span className="text-[10px] text-muted">Add</span>
                 </button>
-              ))}
-            </div>
-          </div>
+              </div>
 
-          {/* Dimensions */}
-          <div className="flex items-center gap-3">
-            <div className="flex-1">
-              <label className="text-xs font-semibold text-muted block mb-1">Width (px)</label>
-              <input type="number" value={width} onChange={(e) => setWidth(e.target.value)} placeholder="e.g. 1920"
-                className="w-full border border-border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
-            </div>
-            <button onClick={() => setLocked((l) => !l)}
-              className="mt-5 p-2 rounded-xl border border-border hover:border-primary text-muted hover:text-primary transition-colors">
-              {locked ? <Lock size={16} /> : <Unlock size={16} />}
-            </button>
-            <div className="flex-1">
-              <label className="text-xs font-semibold text-muted block mb-1">Height (px)</label>
-              <input type="number" value={height} onChange={(e) => setHeight(e.target.value)} placeholder="e.g. 1080"
-                className="w-full border border-border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
-            </div>
-          </div>
+              <p className="text-xs text-muted text-center">
+                {files.length} image{files.length !== 1 ? "s" : ""} selected
+              </p>
 
-          {/* Fit + format */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="text-xs font-semibold text-muted block mb-1">Fit mode</label>
-              <select value={fit} onChange={(e) => setFit(e.target.value)}
-                className="w-full border border-border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 bg-card">
-                {FIT_MODES.map((m) => <option key={m.value} value={m.value}>{m.label}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className="text-xs font-semibold text-muted block mb-1">Output format</label>
-              <select value={outputFmt} onChange={(e) => setOutputFmt(e.target.value)}
-                className="w-full border border-border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 bg-card">
-                <option value="same">Same as input</option>
-                <option value="jpg">JPG</option>
-                <option value="png">PNG</option>
-                <option value="webp">WEBP</option>
-              </select>
-            </div>
-          </div>
+              {/* Controls card */}
+              <div className="bg-card border border-border rounded-2xl p-6 space-y-5">
+                {/* Presets */}
+                <div>
+                  <p className="text-xs font-bold text-muted uppercase tracking-wider mb-2">Quick Presets</p>
+                  <div className="flex flex-wrap gap-2">
+                    {PRESETS.map((p) => (
+                      <button
+                        key={p.label}
+                        onClick={() => applyPreset(p.w, p.h)}
+                        className={`px-3 py-1.5 border rounded-full text-xs font-medium transition-colors ${
+                          width === String(p.w) && height === String(p.h)
+                            ? "border-primary bg-primary/10 text-primary"
+                            : "border-border text-foreground hover:border-primary hover:text-primary"
+                        }`}
+                      >
+                        {p.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
 
-          {(fit === "contain" || fit === "fill") && (
-            <div className="flex items-center gap-3">
-              <label className="text-xs font-semibold text-muted">Background color</label>
-              <input type="color" value={bgColor} onChange={(e) => setBgColor(e.target.value)}
-                className="w-8 h-8 rounded-lg border border-border cursor-pointer" />
-              <span className="text-xs text-muted font-mono">{bgColor}</span>
+                {/* Dimensions */}
+                <div className="flex items-center gap-3">
+                  <div className="flex-1">
+                    <label className="text-xs font-semibold text-muted block mb-1">Width (px)</label>
+                    <input
+                      type="number"
+                      value={width}
+                      onChange={(e) => setWidth(e.target.value)}
+                      placeholder="e.g. 1920"
+                      className="w-full border border-border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 bg-background"
+                    />
+                  </div>
+                  <button
+                    onClick={() => setLocked((l) => !l)}
+                    className="mt-5 p-2 rounded-xl border border-border hover:border-primary text-muted hover:text-primary transition-colors"
+                    title={locked ? "Aspect ratio locked" : "Aspect ratio unlocked"}
+                  >
+                    {locked ? <Lock size={16} /> : <Unlock size={16} />}
+                  </button>
+                  <div className="flex-1">
+                    <label className="text-xs font-semibold text-muted block mb-1">Height (px)</label>
+                    <input
+                      type="number"
+                      value={height}
+                      onChange={(e) => setHeight(e.target.value)}
+                      placeholder="e.g. 1080"
+                      className="w-full border border-border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 bg-background"
+                    />
+                  </div>
+                </div>
+
+                <p className="text-xs text-muted flex items-center gap-1.5">
+                  {locked ? <Lock size={10} /> : <Unlock size={10} />}
+                  {locked ? "Aspect ratio will be preserved" : "Image may be stretched to fit exact dimensions"}
+                </p>
+              </div>
+
+              {/* Resize button */}
+              <button
+                onClick={resizeAll}
+                className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-primary text-white text-base font-bold rounded-2xl hover:bg-primary-hover transition-colors shadow-lg"
+              >
+                <Maximize2 size={18} />
+                Resize {files.length > 1 ? `${files.length} Images` : "Image"}
+              </button>
+            </div>
+          )}
+
+          {/* Error */}
+          {error && (
+            <div className="max-w-xl mx-auto mt-4 flex items-center gap-2 text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
+              <ImageIcon size={16} />
+              {error}
             </div>
           )}
         </div>
+      )}
 
-        {/* Drop zone */}
-        <div {...getRootProps()} className={`border-2 border-dashed rounded-2xl p-10 text-center cursor-pointer transition-all ${
-          isDragActive ? "border-primary bg-primary-light" : "border-border hover:border-primary/60 hover:bg-primary-light/30"
-        }`}>
-          <input {...getInputProps()} />
-          <Upload size={32} className={`mx-auto mb-3 ${isDragActive ? "text-primary" : "text-muted"}`} />
-          <p className="font-semibold text-foreground">
-            {isDragActive ? "Drop image here" : "Drag & drop image or click to browse"}
-          </p>
-          <p className="text-xs text-muted mt-1">One image at a time · JPG, PNG, WEBP, GIF</p>
-        </div>
-
-        {processing && (
-          <div className="flex items-center gap-2 text-sm text-muted">
-            <Loader2 size={16} className="animate-spin text-primary" /> Resizing…
+      {/* ─── STAGE 2: Resizing ─── */}
+      {stage === "resizing" && (
+        <div className="max-w-md mx-auto px-4 py-32 text-center space-y-6">
+          <Loader2 size={48} className="animate-spin text-primary mx-auto" />
+          <div>
+            <h2 className="text-xl font-bold text-foreground mb-1">Resizing images...</h2>
+            <p className="text-sm text-muted">
+              {progress.done} of {progress.total} done
+            </p>
           </div>
-        )}
+          <div className="w-full bg-gray-200 rounded-full h-2">
+            <div
+              className="bg-primary h-2 rounded-full transition-all"
+              style={{ width: `${progress.total > 0 ? (progress.done / progress.total) * 100 : 0}%` }}
+            />
+          </div>
+        </div>
+      )}
 
-        {error && (
-          <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-4 py-3">{error}</div>
-        )}
+      {/* ─── STAGE 3: Results ─── */}
+      {stage === "done" && results.length > 0 && (
+        <div className="max-w-3xl mx-auto px-4 py-12 space-y-6">
+          {/* Summary card */}
+          <div className="bg-green-50 border border-green-200 rounded-2xl p-6 text-center space-y-2">
+            <CheckCircle2 size={40} className="text-green-500 mx-auto" />
+            <h2 className="text-xl font-bold text-foreground">
+              {results.length} image{results.length !== 1 ? "s" : ""} resized
+            </h2>
+            <p className="text-sm text-green-700">
+              Resized to {width || "auto"} &times; {height || "auto"} px
+            </p>
+          </div>
 
-        {/* Results */}
-        {results.length > 0 && (
-          <div className="space-y-3">
-            <h2 className="text-sm font-bold text-foreground">Results</h2>
+          {/* Download button */}
+          <button
+            onClick={downloadAll}
+            className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-primary text-white text-base font-bold rounded-2xl hover:bg-primary-hover transition-colors shadow-lg"
+          >
+            {results.length > 1 ? <Package size={18} /> : <Download size={18} />}
+            {results.length > 1 ? "Download All (ZIP)" : "Download Resized Image"}
+          </button>
+
+          {/* Individual results */}
+          <div className="space-y-2">
             {results.map((r) => (
-              <div key={r.name} className="bg-card border border-border rounded-2xl p-4 flex items-center gap-4">
-                <div className="w-14 h-14 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0">
+              <div key={r.name} className="bg-card border border-border rounded-xl p-3 flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={r.url} alt={r.name} className="w-full h-full object-cover" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-foreground truncate">{r.name}</p>
-                  <p className="text-xs text-muted mt-0.5">{fmtBytes(r.originalSize)} → {fmtBytes(r.newSize)}</p>
+                  <p className="text-sm font-medium text-foreground truncate">{r.originalName}</p>
+                  <div className="flex items-center gap-2 text-xs text-muted">
+                    <span>{fmtBytes(r.originalSize)}</span>
+                    <span>&rarr;</span>
+                    <span className="font-semibold text-foreground">{r.widthOut}&times;{r.heightOut} px</span>
+                    <span className="text-muted">({fmtBytes(r.newSize)})</span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 flex-shrink-0">
-                  <a href={r.url} download={r.name}
-                    className="flex items-center gap-1.5 px-3 py-1.5 bg-primary text-white text-xs font-bold rounded-lg hover:bg-primary-hover transition-colors">
-                    <Download size={13} /> Download
-                  </a>
-                  <button onClick={() => setResults((x) => x.filter((i) => i.name !== r.name))}
-                    className="p-1.5 text-muted hover:text-red-500 transition-colors">
-                    <X size={14} />
-                  </button>
-                </div>
+                <a
+                  href={r.url}
+                  download={r.name}
+                  className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-colors flex-shrink-0"
+                >
+                  <Download size={16} />
+                </a>
               </div>
             ))}
           </div>
+
+          {/* Start over */}
+          <button
+            onClick={reset}
+            className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-bold text-muted border border-border rounded-xl hover:border-primary/40 transition-colors"
+          >
+            Resize More Images
+          </button>
+        </div>
+      )}
+
+      {/* ─── Bottom section ─── */}
+      <div className="max-w-3xl mx-auto px-4 pb-12 space-y-8">
+        {stage === "upload" && (
+          <>
+            {/* How it works */}
+            <div className="bg-card border border-border rounded-2xl p-6">
+              <h2 className="font-bold text-foreground mb-4">How it works</h2>
+              <div className="grid grid-cols-3 gap-4 text-center">
+                {[
+                  { step: "1", title: "Upload", desc: "Select one or more images from your device" },
+                  { step: "2", title: "Set Size", desc: "Enter custom dimensions or pick a preset" },
+                  { step: "3", title: "Download", desc: "Download resized files individually or as ZIP" },
+                ].map(({ step, title, desc }) => (
+                  <div key={step} className="space-y-2">
+                    <div className="w-8 h-8 rounded-full bg-primary text-white text-sm font-bold flex items-center justify-center mx-auto">
+                      {step}
+                    </div>
+                    <p className="text-sm font-semibold text-foreground">{title}</p>
+                    <p className="text-xs text-muted">{desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Features */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {[
+                { label: "JPG, PNG, WEBP, GIF", sub: "All formats" },
+                { label: "Up to 30 files", sub: "Batch resize" },
+                { label: "No sign-up", sub: "Free forever" },
+                { label: "Files never stored", sub: "100% private" },
+              ].map(({ label, sub }) => (
+                <div key={label} className="bg-card border border-border rounded-xl p-3 text-center">
+                  <p className="text-xs font-bold text-foreground">{label}</p>
+                  <p className="text-[10px] text-muted">{sub}</p>
+                </div>
+              ))}
+            </div>
+          </>
         )}
 
         {/* Related Tools */}
@@ -232,9 +471,9 @@ export default function ResizePage() {
           <h3 className="text-sm font-bold text-muted uppercase tracking-wider mb-3">Related Tools</h3>
           <div className="grid grid-cols-3 gap-3">
             {[
-              { href: "/tools/compress",       icon: Minimize2, label: "Compress" },
-              { href: "/tools/crop",           icon: Crop,      label: "Crop" },
-              { href: "/tools/photo-editor",   icon: Wand2,     label: "Photo Editor" },
+              { href: "/tools/compress", icon: Minimize2, label: "Compress" },
+              { href: "/tools/crop", icon: Crop, label: "Crop" },
+              { href: "/tools/photo-editor", icon: Wand2, label: "Photo Editor" },
             ].map(({ href, icon: Icon, label }) => (
               <Link key={href} href={href}
                 className="flex flex-col items-center gap-2 p-3 rounded-xl border border-border hover:border-primary/30 hover:shadow-sm transition-all text-center group">
@@ -247,8 +486,6 @@ export default function ResizePage() {
           </div>
         </div>
       </div>
-
-      <UpgradeModal isOpen={showUpgrade} onClose={() => setShowUpgrade(false)} />
     </div>
   );
 }

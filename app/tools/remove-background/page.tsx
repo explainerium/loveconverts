@@ -2,10 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
-import {
-  Eraser, Upload, Download, AlertCircle, Loader2, Zap,
-  Minimize2, Maximize2, Crop, Sparkles,
-} from "lucide-react";
+import { Eraser, Upload, Download, CheckCircle2, Loader2, Minimize2, Maximize2, Crop, Sparkles, ImageIcon, X } from "lucide-react";
 import Link from "next/link";
 
 function fmtBytes(n: number) {
@@ -14,25 +11,27 @@ function fmtBytes(n: number) {
   return (n / (1024 * 1024)).toFixed(2) + " MB";
 }
 
+type Stage = "upload" | "processing" | "done";
+
 export default function RemoveBackgroundPage() {
+  const [stage, setStage] = useState<Stage>("upload");
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [resultUrl, setResultUrl] = useState<string | null>(null);
-  const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const onDrop = useCallback((accepted: File[]) => {
-    setError(null);
-    setResultUrl(null);
     if (accepted.length === 0) return;
+    setError(null);
     const f = accepted[0];
     if (f.size > 20 * 1024 * 1024) {
       setError("File exceeds 20 MB limit.");
       return;
     }
+    if (preview) URL.revokeObjectURL(preview);
     setFile(f);
     setPreview(URL.createObjectURL(f));
-  }, []);
+  }, [preview]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -45,17 +44,16 @@ export default function RemoveBackgroundPage() {
     multiple: false,
   });
 
-  const clearFile = () => {
+  const removeFile = () => {
     if (preview) URL.revokeObjectURL(preview);
     setFile(null);
     setPreview(null);
-    setResultUrl(null);
     setError(null);
   };
 
   const removeBackground = async () => {
     if (!file) return;
-    setProcessing(true);
+    setStage("processing");
     setError(null);
     setResultUrl(null);
 
@@ -72,99 +70,137 @@ export default function RemoveBackgroundPage() {
 
       if (!res.ok) {
         setError(data.error || "Background removal failed");
+        setStage("upload");
         return;
       }
 
       if (data.url) {
         setResultUrl(typeof data.url === "string" ? data.url : String(data.url));
+        setStage("done");
       } else {
         setError("No result returned from AI.");
+        setStage("upload");
       }
     } catch {
       setError("Background removal failed. Please try again.");
-    } finally {
-      setProcessing(false);
+      setStage("upload");
     }
   };
 
+  const reset = () => {
+    if (preview) URL.revokeObjectURL(preview);
+    setFile(null);
+    setPreview(null);
+    setResultUrl(null);
+    setStage("upload");
+    setError(null);
+  };
+
   return (
-    <div className="min-h-screen bg-background py-10">
-      <div className="max-w-3xl mx-auto px-4 space-y-8">
-        {/* Hero */}
-        <div className="text-center space-y-2">
-          <div className="inline-flex items-center gap-2 bg-primary-light text-primary text-xs font-bold px-3 py-1 rounded-full mb-2">
-            <Eraser size={12} /> REMOVE BACKGROUND
-          </div>
-          <h1 className="text-3xl font-extrabold text-foreground">
-            Remove Image Background
-          </h1>
-          <p className="text-muted max-w-md mx-auto text-sm">
-            AI-powered background removal. Get a transparent PNG in seconds.
-          </p>
-          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-violet-600 bg-violet-50 px-2 py-0.5 rounded-full">
-            <Sparkles size={10} /> Powered by AI
-          </span>
-        </div>
-
-        {/* Drop zone */}
-        {!file && (
-          <div
-            {...getRootProps()}
-            className={`border-2 border-dashed rounded-2xl p-10 text-center cursor-pointer transition-all ${
-              isDragActive
-                ? "border-primary bg-primary-light"
-                : "border-border hover:border-primary/60 hover:bg-primary-light/30"
-            }`}
-          >
-            <input {...getInputProps()} />
-            <Upload size={32} className={`mx-auto mb-3 ${isDragActive ? "text-primary" : "text-muted"}`} />
-            <p className="font-semibold text-foreground">
-              {isDragActive ? "Drop image here" : "Drag and drop an image or click to browse"}
+    <div className="min-h-screen bg-background">
+      {/* ─── STAGE 1: Upload ─── */}
+      {stage === "upload" && (
+        <div className="max-w-4xl mx-auto px-4 py-16">
+          {/* Hero */}
+          <div className="text-center space-y-3 mb-10">
+            <h1 className="text-4xl font-extrabold text-foreground">Remove Background</h1>
+            <p className="text-muted max-w-lg mx-auto">
+              AI-powered background removal. Get a transparent PNG in seconds — no manual work needed.
             </p>
-            <p className="text-xs text-muted mt-1">JPG, PNG, WEBP. Max 20 MB</p>
+            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-violet-600 bg-violet-50 px-2 py-0.5 rounded-full">
+              <Sparkles size={10} /> Powered by AI
+            </span>
           </div>
-        )}
 
-        {/* File selected, not yet processed */}
-        {file && !resultUrl && !processing && (
-          <div className="space-y-4">
-            <div className="bg-card border border-border rounded-2xl p-4 flex items-center gap-4">
-              <div className="w-20 h-20 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={preview || ""} alt={file.name} className="w-full h-full object-cover" />
+          {/* Drop zone */}
+          {!file ? (
+            <div
+              {...getRootProps()}
+              className={`border-2 border-dashed rounded-3xl p-16 text-center cursor-pointer transition-all max-w-xl mx-auto ${
+                isDragActive
+                  ? "border-primary bg-primary-light"
+                  : "border-border hover:border-primary/60 hover:bg-primary-light/30"
+              }`}
+            >
+              <input {...getInputProps()} />
+              <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                <Upload size={28} className="text-primary" />
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-foreground truncate">{file.name}</p>
-                <p className="text-xs text-muted mt-0.5">{fmtBytes(file.size)}</p>
+              <p className="font-bold text-foreground text-lg mb-1">
+                {isDragActive ? "Drop image here" : "Select an image"}
+              </p>
+              <p className="text-sm text-muted">or drag and drop it here</p>
+              <p className="text-xs text-muted mt-3">JPG, PNG, WEBP. Up to 20 MB.</p>
+            </div>
+          ) : (
+            <div className="max-w-2xl mx-auto space-y-4">
+              {/* File preview */}
+              <div className="bg-card border border-border rounded-2xl p-4 flex items-center gap-4">
+                <div className="w-20 h-20 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={preview || ""} alt={file.name} className="w-full h-full object-cover" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-foreground truncate">{file.name}</p>
+                  <p className="text-xs text-muted mt-0.5">{fmtBytes(file.size)}</p>
+                </div>
+                <button
+                  onClick={removeFile}
+                  className="w-7 h-7 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors flex-shrink-0"
+                >
+                  <X size={12} />
+                </button>
               </div>
-              <button onClick={clearFile} className="p-1.5 text-muted hover:text-red-500 transition-colors flex-shrink-0">
-                <Eraser size={14} />
+
+              {/* Remove Background button */}
+              <button
+                onClick={removeBackground}
+                className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-primary text-white text-base font-bold rounded-2xl hover:bg-primary-hover transition-colors shadow-lg"
+              >
+                <Eraser size={18} />
+                Remove Background
               </button>
             </div>
+          )}
 
-            <button
-              onClick={removeBackground}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-primary text-white text-sm font-bold rounded-xl hover:bg-primary-hover transition-colors"
-            >
-              <Eraser size={16} />
-              Remove Background
-            </button>
+          {/* Error */}
+          {error && (
+            <div className="max-w-xl mx-auto mt-4 flex items-center gap-2 text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
+              <ImageIcon size={16} />
+              {error}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ─── STAGE 2: Processing ─── */}
+      {stage === "processing" && (
+        <div className="max-w-md mx-auto px-4 py-32 text-center space-y-6">
+          <Loader2 size={48} className="animate-spin text-primary mx-auto" />
+          <div>
+            <h2 className="text-xl font-bold text-foreground mb-1">AI is removing the background...</h2>
+            <p className="text-sm text-muted">
+              This usually takes 5 to 15 seconds
+            </p>
           </div>
-        )}
+        </div>
+      )}
 
-        {/* Processing */}
-        {processing && (
-          <div className="bg-card border border-border rounded-2xl p-8 text-center space-y-3">
-            <Loader2 size={32} className="animate-spin text-primary mx-auto" />
-            <p className="text-sm font-semibold text-foreground">AI is removing the background...</p>
-            <p className="text-xs text-muted">This usually takes 5 to 15 seconds</p>
+      {/* ─── STAGE 3: Done ─── */}
+      {stage === "done" && resultUrl && (
+        <div className="max-w-3xl mx-auto px-4 py-12 space-y-6">
+          {/* Success card */}
+          <div className="bg-green-50 border border-green-200 rounded-2xl p-6 text-center space-y-2">
+            <CheckCircle2 size={40} className="text-green-500 mx-auto" />
+            <h2 className="text-xl font-bold text-foreground">Background removed</h2>
+            <p className="text-sm text-green-700">
+              Your image is ready with a transparent background
+            </p>
           </div>
-        )}
 
-        {/* Result: before / after */}
-        {resultUrl && (
-          <div className="space-y-4">
-            <h2 className="text-sm font-bold text-foreground">Before and After</h2>
+          {/* Before / After */}
+          <div>
+            <h3 className="text-sm font-bold text-foreground mb-3">Before and After</h3>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <span className="text-xs font-semibold text-muted uppercase">Original</span>
@@ -187,47 +223,70 @@ export default function RemoveBackgroundPage() {
                 </div>
               </div>
             </div>
-
-            <div className="flex gap-3">
-              <a
-                href={resultUrl}
-                download={(file?.name.replace(/\.[^/.]+$/, "") || "image") + "-no-bg.png"}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-primary text-white text-sm font-bold rounded-xl hover:bg-primary-hover transition-colors"
-              >
-                <Download size={16} /> Download PNG
-              </a>
-              <button
-                onClick={clearFile}
-                className="px-4 py-3 text-sm font-bold text-muted border border-border rounded-xl hover:border-primary/40 transition-colors"
-              >
-                Try Another
-              </button>
-            </div>
           </div>
-        )}
 
-        {/* Error */}
-        {error && (
-          <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
-            <AlertCircle size={16} />
-            {error}
-          </div>
-        )}
+          {/* Download button */}
+          <a
+            href={resultUrl}
+            download={(file?.name.replace(/\.[^/.]+$/, "") || "image") + "-no-bg.png"}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-primary text-white text-base font-bold rounded-2xl hover:bg-primary-hover transition-colors shadow-lg"
+          >
+            <Download size={18} />
+            Download PNG
+          </a>
 
-        {/* Info */}
-        <div className="bg-card border border-border rounded-2xl p-5 space-y-3">
-          <div className="flex items-center gap-2">
-            <Zap size={16} className="text-primary" />
-            <h3 className="text-sm font-bold text-foreground">How it works</h3>
-          </div>
-          <p className="text-sm text-muted leading-relaxed">
-            Our AI model detects the subject in your image and removes the background
-            automatically. It works with people, products, animals, and objects. The result
-            is a PNG with a transparent background that you can use anywhere.
-          </p>
+          {/* Try Another */}
+          <button
+            onClick={reset}
+            className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-bold text-muted border border-border rounded-xl hover:border-primary/40 transition-colors"
+          >
+            Try Another Image
+          </button>
         </div>
+      )}
+
+      {/* ─── Bottom section (always visible) ─── */}
+      <div className="max-w-3xl mx-auto px-4 pb-12 space-y-8">
+        {stage === "upload" && (
+          <>
+            {/* How it works */}
+            <div className="bg-card border border-border rounded-2xl p-6">
+              <h2 className="font-bold text-foreground mb-4">How it works</h2>
+              <div className="grid grid-cols-3 gap-4 text-center">
+                {[
+                  { step: "1", title: "Upload", desc: "Select an image from your device" },
+                  { step: "2", title: "Remove", desc: "AI detects the subject and removes the background" },
+                  { step: "3", title: "Download", desc: "Get your transparent PNG instantly" },
+                ].map(({ step, title, desc }) => (
+                  <div key={step} className="space-y-2">
+                    <div className="w-8 h-8 rounded-full bg-primary text-white text-sm font-bold flex items-center justify-center mx-auto">
+                      {step}
+                    </div>
+                    <p className="text-sm font-semibold text-foreground">{title}</p>
+                    <p className="text-xs text-muted">{desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Features */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {[
+                { label: "People & objects", sub: "AI detection" },
+                { label: "Transparent PNG", sub: "Clean output" },
+                { label: "No sign-up", sub: "Free forever" },
+                { label: "Files never stored", sub: "100% private" },
+              ].map(({ label, sub }) => (
+                <div key={label} className="bg-card border border-border rounded-xl p-3 text-center">
+                  <p className="text-xs font-bold text-foreground">{label}</p>
+                  <p className="text-[10px] text-muted">{sub}</p>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
 
         {/* Related Tools */}
         <div>

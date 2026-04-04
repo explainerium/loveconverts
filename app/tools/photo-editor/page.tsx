@@ -1,198 +1,253 @@
 "use client";
 
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
-import { Wand2, Upload, Download, Loader2, RefreshCw, RotateCw, Minimize2, Maximize2, Crop } from "lucide-react";
+import { Wand2, Upload, Download, Loader2, Maximize2, Crop, Minimize2, RotateCcw, RotateCw, FlipHorizontal, FlipVertical, ImageIcon } from "lucide-react";
 import Link from "next/link";
 import UpgradeModal from "@/app/components/UpgradeModal";
+
+function fmtBytes(n: number) {
+  if (n < 1024) return n + " B";
+  if (n < 1024 * 1024) return (n / 1024).toFixed(1) + " KB";
+  return (n / (1024 * 1024)).toFixed(2) + " MB";
+}
+
+type Stage = "upload" | "editing" | "done";
+type Filter = "none" | "grayscale" | "sepia" | "vintage";
+type OutputFormat = "jpg" | "png" | "webp";
 
 interface Adjustments {
   brightness: number;
   contrast: number;
   saturation: number;
-  hue: number;
   sharpness: number;
-  blur: number;
-  grayscale: boolean;
-  sepia: boolean;
+  filter: Filter;
   rotate: 0 | 90 | 180 | 270;
   flip: boolean;
   flop: boolean;
-  quality: number;
-  outputFormat: string;
+  outputFormat: OutputFormat;
 }
 
 const DEFAULT: Adjustments = {
-  brightness: 0, contrast: 0, saturation: 0, hue: 0,
-  sharpness: 0, blur: 0, grayscale: false, sepia: false,
-  rotate: 0, flip: false, flop: false, quality: 90, outputFormat: "jpg",
+  brightness: 0,
+  contrast: 0,
+  saturation: 0,
+  sharpness: 0,
+  filter: "none",
+  rotate: 0,
+  flip: false,
+  flop: false,
+  outputFormat: "jpg",
 };
 
-type SliderKey = "brightness" | "contrast" | "saturation" | "hue" | "sharpness" | "blur";
-
-const SLIDERS: { key: SliderKey; label: string; min: number; max: number; step: number }[] = [
-  { key: "brightness", label: "Brightness", min: -100, max: 100, step: 1 },
-  { key: "contrast",   label: "Contrast",   min: -100, max: 100, step: 1 },
-  { key: "saturation", label: "Saturation", min: -100, max: 100, step: 1 },
-  { key: "hue",        label: "Hue",        min: -180, max: 180, step: 1 },
-  { key: "sharpness",  label: "Sharpen",    min: 0,    max: 100, step: 1 },
-  { key: "blur",       label: "Blur",       min: 0,    max: 20,  step: 0.5 },
+const SLIDERS: { key: "brightness" | "contrast" | "saturation" | "sharpness"; label: string; min: number; max: number }[] = [
+  { key: "brightness", label: "Brightness", min: -50, max: 50 },
+  { key: "contrast",   label: "Contrast",   min: -50, max: 50 },
+  { key: "saturation", label: "Saturation", min: -50, max: 50 },
+  { key: "sharpness",  label: "Sharpness",  min: 0,   max: 100 },
 ];
 
+const FILTERS: { value: Filter; label: string }[] = [
+  { value: "none",      label: "None" },
+  { value: "grayscale", label: "Grayscale" },
+  { value: "sepia",     label: "Sepia" },
+  { value: "vintage",   label: "Vintage" },
+];
+
+const FORMATS: OutputFormat[] = ["jpg", "png", "webp"];
+
 export default function PhotoEditorPage() {
-  const [file,        setFile]        = useState<File | null>(null);
-  const [imgSrc,      setImgSrc]      = useState("");
-  const [adj,         setAdj]         = useState<Adjustments>(DEFAULT);
-  const [previewUrl,  setPreviewUrl]  = useState("");
-  const [previewLoading, setPLoading] = useState(false);
-  const [processing,  setProcessing]  = useState(false);
-  const [resultUrl,   setResultUrl]   = useState("");
-  const [resultName,  setResultName]  = useState("");
-  const [error,       setError]       = useState("");
+  const [stage, setStage] = useState<Stage>("upload");
+  const [file, setFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState("");
+  const [adj, setAdj] = useState<Adjustments>(DEFAULT);
+  const [error, setError] = useState<string | null>(null);
   const [showUpgrade, setShowUpgrade] = useState(false);
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const prevUrlRef  = useRef("");
+
+  // Result state
+  const [resultUrl, setResultUrl] = useState("");
+  const [resultName, setResultName] = useState("");
+  const [resultSize, setResultSize] = useState(0);
 
   const set = <K extends keyof Adjustments>(key: K, val: Adjustments[K]) =>
     setAdj((a) => ({ ...a, [key]: val }));
 
-  const buildFormData = useCallback((f: File, preview: boolean, a: Adjustments) => {
-    const fd = new FormData();
-    fd.append("file", f);
-    fd.append("preview", preview ? "true" : "false");
-    Object.entries(a).forEach(([k, v]) => fd.append(k, String(v)));
-    return fd;
-  }, []);
-
-  // Debounced preview fetch
-  useEffect(() => {
-    if (!file) return;
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(async () => {
-      setPLoading(true);
-      try {
-        const res = await fetch("/api/tools/photo-editor", {
-          method: "POST",
-          body: buildFormData(file, true, adj),
-        });
-        if (!res.ok) return;
-        const blob = await res.blob();
-        const url  = URL.createObjectURL(blob);
-        if (prevUrlRef.current) URL.revokeObjectURL(prevUrlRef.current);
-        prevUrlRef.current = url;
-        setPreviewUrl(url);
-      } catch { /* silent */ } finally {
-        setPLoading(false);
-      }
-    }, 400);
-    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
-  }, [file, adj, buildFormData]);
-
-  const onDrop = useCallback((files: File[]) => {
-    const f = files[0];
+  const onDrop = useCallback((accepted: File[]) => {
+    const f = accepted[0];
     if (!f) return;
+    if (f.size > 20 * 1024 * 1024) {
+      setError("File exceeds 20 MB limit.");
+      return;
+    }
+    setError(null);
     setFile(f);
-    setResultUrl("");
+    setPreview(URL.createObjectURL(f));
     setAdj(DEFAULT);
-    const reader = new FileReader();
-    reader.onload = () => setImgSrc(reader.result as string);
-    reader.readAsDataURL(f);
   }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop, accept: { "image/*": [] }, maxFiles: 1,
+    onDrop,
+    accept: { "image/*": [] },
+    maxFiles: 1,
+    maxSize: 20 * 1024 * 1024,
   });
 
-  const handleSave = async () => {
-    if (!file) return;
-    setProcessing(true);
-    setError("");
-    try {
-      const res = await fetch("/api/tools/photo-editor", {
-        method: "POST",
-        body: buildFormData(file, false, adj),
-      });
-      if (!res.ok) {
-        const data = await res.json();
-        if (data.code === "RATE_LIMIT") { setShowUpgrade(true); return; }
-        setError(data.error || "Edit failed");
-        return;
-      }
-      const blob = await res.blob();
-      const base = file.name.replace(/\.[^.]+$/, "");
-      const name = `${base}-edited.${adj.outputFormat}`;
-      setResultUrl(URL.createObjectURL(blob));
-      setResultName(name);
-    } catch {
-      setError("Edit failed. Please try again.");
-    } finally {
-      setProcessing(false);
-    }
+  const rotateLeft = () => {
+    const steps: (0 | 90 | 180 | 270)[] = [0, 90, 180, 270];
+    const idx = steps.indexOf(adj.rotate);
+    set("rotate", steps[(idx + 3) % 4]);
   };
 
-  const handleRotate = () => {
+  const rotateRight = () => {
     const steps: (0 | 90 | 180 | 270)[] = [0, 90, 180, 270];
     const idx = steps.indexOf(adj.rotate);
     set("rotate", steps[(idx + 1) % 4]);
   };
 
+  const applyEdits = async () => {
+    if (!file) return;
+    setStage("editing");
+    setError(null);
+
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      fd.append("preview", "false");
+      fd.append("brightness", String(adj.brightness));
+      fd.append("contrast", String(adj.contrast));
+      fd.append("saturation", String(adj.saturation));
+      fd.append("sharpness", String(adj.sharpness));
+      fd.append("hue", "0");
+      fd.append("blur", "0");
+      fd.append("rotate", String(adj.rotate));
+      fd.append("flip", String(adj.flip));
+      fd.append("flop", String(adj.flop));
+      fd.append("quality", "90");
+      fd.append("outputFormat", adj.outputFormat);
+
+      // Map filter to API params
+      if (adj.filter === "grayscale") {
+        fd.append("grayscale", "true");
+        fd.append("sepia", "false");
+      } else if (adj.filter === "sepia") {
+        fd.append("grayscale", "false");
+        fd.append("sepia", "true");
+      } else if (adj.filter === "vintage") {
+        // Vintage = sepia + lower saturation effect
+        fd.append("grayscale", "false");
+        fd.append("sepia", "true");
+        fd.set("saturation", String(Math.min(adj.saturation, -20)));
+        fd.set("contrast", String(Math.max(adj.contrast, 10)));
+      } else {
+        fd.append("grayscale", "false");
+        fd.append("sepia", "false");
+      }
+
+      const res = await fetch("/api/tools/photo-editor", {
+        method: "POST",
+        body: fd,
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({ error: "Edit failed" }));
+        if (data.code === "RATE_LIMIT") {
+          setShowUpgrade(true);
+          setStage("upload");
+          return;
+        }
+        setError(data.error || "Edit failed");
+        setStage("upload");
+        return;
+      }
+
+      const blob = await res.blob();
+      const base = file.name.replace(/\.[^.]+$/, "");
+      const name = `${base}-edited.${adj.outputFormat}`;
+
+      setResultUrl(URL.createObjectURL(blob));
+      setResultName(name);
+      setResultSize(blob.size);
+      setStage("done");
+    } catch {
+      setError("Edit failed. Please try again.");
+      setStage("upload");
+    }
+  };
+
+  const reset = () => {
+    if (preview) URL.revokeObjectURL(preview);
+    if (resultUrl) URL.revokeObjectURL(resultUrl);
+    setFile(null);
+    setPreview("");
+    setAdj(DEFAULT);
+    setResultUrl("");
+    setResultName("");
+    setResultSize(0);
+    setStage("upload");
+    setError(null);
+  };
+
   return (
-    <div className="min-h-screen bg-background py-10">
-      <div className="max-w-5xl mx-auto px-4 space-y-8">
-        {/* Hero */}
-        <div className="text-center space-y-2">
-          <div className="inline-flex items-center gap-2 bg-primary-light text-primary text-xs font-bold px-3 py-1 rounded-full mb-2">
-            <Wand2 size={12} /> PHOTO EDITOR
-          </div>
-          <h1 className="text-3xl font-extrabold text-foreground">Edit Photos Online</h1>
-          <p className="text-muted max-w-md mx-auto text-sm">
-            Adjust brightness, contrast, saturation, and more. Real-time preview included.
-          </p>
-        </div>
-
-        {!file ? (
-          <div {...getRootProps()} className={`border-2 border-dashed rounded-2xl p-14 text-center cursor-pointer transition-all ${
-            isDragActive ? "border-primary bg-primary-light" : "border-border hover:border-primary/60 hover:bg-primary-light/30"
-          }`}>
-            <input {...getInputProps()} />
-            <Upload size={36} className={`mx-auto mb-3 ${isDragActive ? "text-primary" : "text-muted"}`} />
-            <p className="font-semibold text-foreground">
-              {isDragActive ? "Drop image here" : "Drag & drop or click to open image"}
+    <div className="min-h-screen bg-background">
+      {/* ─── STAGE 1: Upload ─── */}
+      {stage === "upload" && (
+        <div className="max-w-4xl mx-auto px-4 py-16">
+          {/* Hero */}
+          <div className="text-center space-y-3 mb-10">
+            <h1 className="text-4xl font-extrabold text-foreground">Photo Editor</h1>
+            <p className="text-muted max-w-lg mx-auto">
+              Adjust brightness, contrast, saturation and apply filters.
             </p>
-            <p className="text-xs text-muted mt-1">JPG, PNG, WEBP, AVIF</p>
           </div>
-        ) : (
-          <div className="grid md:grid-cols-[1fr_320px] gap-6">
-            {/* Preview pane */}
-            <div className="bg-card border border-border rounded-2xl p-4 flex flex-col items-center justify-center min-h-[360px] relative">
-              {previewLoading && (
-                <div className="absolute top-3 right-3">
-                  <Loader2 size={16} className="animate-spin text-primary" />
-                </div>
-              )}
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={previewUrl || imgSrc}
-                alt="Preview"
-                className="max-w-full max-h-[500px] object-contain rounded-xl transition-opacity"
-                style={{ opacity: previewLoading ? 0.7 : 1 }}
-              />
-              <p className="text-[11px] text-muted mt-2">Live preview</p>
-            </div>
 
-            {/* Controls */}
-            <div className="space-y-4">
-              {/* Sliders */}
-              <div className="bg-card border border-border rounded-2xl p-4 space-y-4">
-                {SLIDERS.map(({ key, label, min, max, step }) => (
+          {/* Drop zone (no file selected yet) */}
+          {!file ? (
+            <div
+              {...getRootProps()}
+              className={`border-2 border-dashed rounded-3xl p-16 text-center cursor-pointer transition-all max-w-xl mx-auto ${
+                isDragActive
+                  ? "border-primary bg-primary-light"
+                  : "border-border hover:border-primary/60 hover:bg-primary-light/30"
+              }`}
+            >
+              <input {...getInputProps()} />
+              <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                <Upload size={28} className="text-primary" />
+              </div>
+              <p className="font-bold text-foreground text-lg mb-1">
+                {isDragActive ? "Drop image here" : "Select an image"}
+              </p>
+              <p className="text-sm text-muted">or drag and drop it here</p>
+              <p className="text-xs text-muted mt-3">JPG, PNG, WEBP, AVIF. Up to 20 MB.</p>
+            </div>
+          ) : (
+            /* File selected — show preview + controls */
+            <div className="max-w-2xl mx-auto space-y-6">
+              {/* Image preview */}
+              <div className="bg-card border border-border rounded-2xl p-4 flex items-center justify-center">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={preview}
+                  alt="Preview"
+                  className="max-w-full max-h-[360px] object-contain rounded-xl"
+                />
+              </div>
+
+              {/* Adjustment sliders */}
+              <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
+                <p className="text-xs font-bold text-muted uppercase tracking-wider">Adjustments</p>
+                {SLIDERS.map(({ key, label, min, max }) => (
                   <div key={key}>
                     <div className="flex justify-between mb-1">
                       <span className="text-xs font-semibold text-foreground">{label}</span>
                       <span className="text-xs font-bold text-primary">{adj[key]}</span>
                     </div>
                     <input
-                      type="range" min={min} max={max} step={step}
-                      value={adj[key] as number}
+                      type="range"
+                      min={min}
+                      max={max}
+                      step={1}
+                      value={adj[key]}
                       onChange={(e) => set(key, Number(e.target.value))}
                       className="custom-range w-full"
                     />
@@ -200,109 +255,239 @@ export default function PhotoEditorPage() {
                 ))}
               </div>
 
-              {/* Filters + transforms */}
-              <div className="bg-card border border-border rounded-2xl p-4 space-y-3">
-                <p className="text-xs font-bold text-muted uppercase tracking-wider">Filters</p>
-                <div className="flex gap-2">
-                  <button onClick={() => set("grayscale", !adj.grayscale)}
-                    className={`flex-1 py-2 rounded-xl border text-xs font-bold transition-all ${
-                      adj.grayscale ? "border-primary bg-primary-light text-primary" : "border-border text-muted hover:border-primary/40"
-                    }`}>
-                    B&amp;W
-                  </button>
-                  <button onClick={() => set("sepia", !adj.sepia)}
-                    className={`flex-1 py-2 rounded-xl border text-xs font-bold transition-all ${
-                      adj.sepia ? "border-amber-400 bg-amber-50 text-amber-700" : "border-border text-muted hover:border-amber-300"
-                    }`}>
-                    Sepia
-                  </button>
-                </div>
-
-                <p className="text-xs font-bold text-muted uppercase tracking-wider pt-1">Transform</p>
-                <div className="flex gap-2">
-                  <button onClick={handleRotate}
-                    className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl border border-border text-xs font-bold text-muted hover:border-primary/40 hover:text-foreground transition-all">
-                    <RotateCw size={12} /> Rotate {adj.rotate}°
-                  </button>
-                  <button onClick={() => set("flip", !adj.flip)}
-                    className={`flex-1 py-2 rounded-xl border text-xs font-bold transition-all ${
-                      adj.flip ? "border-primary bg-primary-light text-primary" : "border-border text-muted hover:border-primary/40"
-                    }`}>
-                    Flip ↕
-                  </button>
-                  <button onClick={() => set("flop", !adj.flop)}
-                    className={`flex-1 py-2 rounded-xl border text-xs font-bold transition-all ${
-                      adj.flop ? "border-primary bg-primary-light text-primary" : "border-border text-muted hover:border-primary/40"
-                    }`}>
-                    Flop ↔
-                  </button>
+              {/* Filters */}
+              <div className="bg-card border border-border rounded-2xl p-5 space-y-3">
+                <p className="text-xs font-bold text-muted uppercase tracking-wider">Filter</p>
+                <div className="flex gap-2 flex-wrap">
+                  {FILTERS.map(({ value, label }) => (
+                    <button
+                      key={value}
+                      onClick={() => set("filter", value)}
+                      className={`px-4 py-2 rounded-xl border text-xs font-bold transition-all ${
+                        adj.filter === value
+                          ? "border-primary bg-primary-light text-primary"
+                          : "border-border text-muted hover:border-primary/40"
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ))}
                 </div>
               </div>
 
-              {/* Output */}
-              <div className="bg-card border border-border rounded-2xl p-4 space-y-3">
-                <p className="text-xs font-bold text-muted uppercase tracking-wider">Output</p>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="text-xs font-semibold text-muted block mb-1">Format</label>
-                    <select value={adj.outputFormat} onChange={(e) => set("outputFormat", e.target.value)}
-                      className="w-full border border-border rounded-xl px-3 py-2 text-sm bg-card focus:outline-none focus:ring-2 focus:ring-primary/30">
-                      <option value="jpg">JPG</option>
-                      <option value="png">PNG</option>
-                      <option value="webp">WEBP</option>
-                      <option value="avif">AVIF</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="text-xs font-semibold text-muted block mb-1">Quality</label>
-                    <input type="number" min={1} max={100} value={adj.quality}
-                      onChange={(e) => set("quality", Number(e.target.value))}
-                      className="w-full border border-border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
-                  </div>
+              {/* Transform */}
+              <div className="bg-card border border-border rounded-2xl p-5 space-y-3">
+                <p className="text-xs font-bold text-muted uppercase tracking-wider">Transform</p>
+                <div className="flex gap-2 flex-wrap">
+                  <button
+                    onClick={rotateLeft}
+                    className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-border text-xs font-bold text-muted hover:border-primary/40 hover:text-foreground transition-all"
+                  >
+                    <RotateCcw size={13} /> 90° Left
+                  </button>
+                  <button
+                    onClick={rotateRight}
+                    className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-border text-xs font-bold text-muted hover:border-primary/40 hover:text-foreground transition-all"
+                  >
+                    <RotateCw size={13} /> 90° Right
+                  </button>
+                  <button
+                    onClick={() => set("flip", !adj.flip)}
+                    className={`flex items-center gap-1.5 px-4 py-2 rounded-xl border text-xs font-bold transition-all ${
+                      adj.flip
+                        ? "border-primary bg-primary-light text-primary"
+                        : "border-border text-muted hover:border-primary/40"
+                    }`}
+                  >
+                    <FlipVertical size={13} /> Flip V
+                  </button>
+                  <button
+                    onClick={() => set("flop", !adj.flop)}
+                    className={`flex items-center gap-1.5 px-4 py-2 rounded-xl border text-xs font-bold transition-all ${
+                      adj.flop
+                        ? "border-primary bg-primary-light text-primary"
+                        : "border-border text-muted hover:border-primary/40"
+                    }`}
+                  >
+                    <FlipHorizontal size={13} /> Flip H
+                  </button>
+                </div>
+                {adj.rotate !== 0 && (
+                  <p className="text-[11px] text-muted">Current rotation: {adj.rotate}°</p>
+                )}
+              </div>
+
+              {/* Output format */}
+              <div className="bg-card border border-border rounded-2xl p-5 space-y-3">
+                <p className="text-xs font-bold text-muted uppercase tracking-wider">Output Format</p>
+                <div className="flex gap-2">
+                  {FORMATS.map((fmt) => (
+                    <button
+                      key={fmt}
+                      onClick={() => set("outputFormat", fmt)}
+                      className={`px-5 py-2 rounded-xl border text-xs font-bold uppercase transition-all ${
+                        adj.outputFormat === fmt
+                          ? "border-primary bg-primary-light text-primary"
+                          : "border-border text-muted hover:border-primary/40"
+                      }`}
+                    >
+                      {fmt}
+                    </button>
+                  ))}
                 </div>
               </div>
 
+              {/* Error */}
               {error && (
-                <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-3 py-2">{error}</div>
+                <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
+                  <ImageIcon size={16} />
+                  {error}
+                </div>
               )}
 
-              {/* Actions */}
-              <div className="flex gap-2">
-                <button onClick={handleSave} disabled={processing}
-                  className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-primary text-white text-sm font-bold rounded-xl hover:bg-primary-hover transition-colors disabled:opacity-50">
-                  {processing ? <Loader2 size={15} className="animate-spin" /> : <Download size={15} />}
-                  {processing ? "Saving…" : "Save Image"}
-                </button>
-                <button onClick={() => setAdj(DEFAULT)}
-                  className="p-2.5 border border-border rounded-xl text-muted hover:text-foreground hover:border-foreground/30 transition-colors"
-                  title="Reset all">
-                  <RefreshCw size={16} />
-                </button>
-                <button
-                  onClick={() => { setFile(null); setImgSrc(""); setPreviewUrl(""); setResultUrl(""); }}
-                  className="px-3 py-2.5 border border-border rounded-xl text-xs font-semibold text-muted hover:text-foreground hover:border-foreground/30 transition-colors">
-                  New
-                </button>
+              {/* Apply button */}
+              <button
+                onClick={applyEdits}
+                className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-primary text-white text-base font-bold rounded-2xl hover:bg-primary-hover transition-colors shadow-lg"
+              >
+                <Wand2 size={18} />
+                Apply Edits
+              </button>
+            </div>
+          )}
+
+          {/* Error (when no file) */}
+          {!file && error && (
+            <div className="max-w-xl mx-auto mt-4 flex items-center gap-2 text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
+              <ImageIcon size={16} />
+              {error}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ─── STAGE 2: Editing ─── */}
+      {stage === "editing" && (
+        <div className="max-w-md mx-auto px-4 py-32 text-center space-y-6">
+          <Loader2 size={48} className="animate-spin text-primary mx-auto" />
+          <div>
+            <h2 className="text-xl font-bold text-foreground mb-1">Applying edits...</h2>
+            <p className="text-sm text-muted">This will only take a moment</p>
+          </div>
+        </div>
+      )}
+
+      {/* ─── STAGE 3: Done ─── */}
+      {stage === "done" && (
+        <div className="max-w-3xl mx-auto px-4 py-12 space-y-6">
+          {/* Success summary */}
+          <div className="bg-green-50 border border-green-200 rounded-2xl p-6 text-center space-y-2">
+            <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mx-auto">
+              <Wand2 size={24} className="text-green-600" />
+            </div>
+            <h2 className="text-xl font-bold text-foreground">Edits applied successfully</h2>
+            <p className="text-xs text-muted">
+              {file ? fmtBytes(file.size) : ""} → {fmtBytes(resultSize)}
+            </p>
+          </div>
+
+          {/* Before / After preview */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-card border border-border rounded-2xl p-3 text-center space-y-2">
+              <p className="text-xs font-bold text-muted uppercase tracking-wider">Before</p>
+              <div className="flex items-center justify-center min-h-[180px]">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={preview}
+                  alt="Original"
+                  className="max-w-full max-h-[240px] object-contain rounded-xl"
+                />
               </div>
-
-              {resultUrl && (
-                <a href={resultUrl} download={resultName}
-                  className="flex items-center justify-center gap-2 w-full py-2.5 border-2 border-green-400 bg-green-50 text-green-700 text-sm font-bold rounded-xl hover:bg-green-100 transition-colors">
-                  <Download size={15} /> Download {resultName}
-                </a>
-              )}
+              {file && <p className="text-[11px] text-muted">{fmtBytes(file.size)}</p>}
+            </div>
+            <div className="bg-card border border-border rounded-2xl p-3 text-center space-y-2">
+              <p className="text-xs font-bold text-muted uppercase tracking-wider">After</p>
+              <div className="flex items-center justify-center min-h-[180px]">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={resultUrl}
+                  alt="Edited"
+                  className="max-w-full max-h-[240px] object-contain rounded-xl"
+                />
+              </div>
+              <p className="text-[11px] text-muted">{fmtBytes(resultSize)}</p>
             </div>
           </div>
+
+          {/* Download button */}
+          <a
+            href={resultUrl}
+            download={resultName}
+            className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-primary text-white text-base font-bold rounded-2xl hover:bg-primary-hover transition-colors shadow-lg"
+          >
+            <Download size={18} />
+            Download Edited Image
+          </a>
+
+          {/* Edit another */}
+          <button
+            onClick={reset}
+            className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-bold text-muted border border-border rounded-xl hover:border-primary/40 transition-colors"
+          >
+            Edit Another Image
+          </button>
+        </div>
+      )}
+
+      {/* ─── Bottom section ─── */}
+      <div className="max-w-3xl mx-auto px-4 pb-12 space-y-8">
+        {stage === "upload" && (
+          <>
+            {/* How it works */}
+            <div className="bg-card border border-border rounded-2xl p-6">
+              <h2 className="font-bold text-foreground mb-4">How it works</h2>
+              <div className="grid grid-cols-3 gap-4 text-center">
+                {[
+                  { step: "1", title: "Upload", desc: "Select a photo from your device" },
+                  { step: "2", title: "Adjust", desc: "Tweak sliders, pick a filter, rotate or flip" },
+                  { step: "3", title: "Download", desc: "Apply edits and download the result" },
+                ].map(({ step, title, desc }) => (
+                  <div key={step} className="space-y-2">
+                    <div className="w-8 h-8 rounded-full bg-primary text-white text-sm font-bold flex items-center justify-center mx-auto">
+                      {step}
+                    </div>
+                    <p className="text-sm font-semibold text-foreground">{title}</p>
+                    <p className="text-xs text-muted">{desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Features */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {[
+                { label: "Brightness & Contrast", sub: "Fine-tune lighting" },
+                { label: "Filters & Effects", sub: "One-click styles" },
+                { label: "Rotate & Flip", sub: "Fix orientation" },
+                { label: "JPG, PNG, WEBP", sub: "Multiple formats" },
+              ].map(({ label, sub }) => (
+                <div key={label} className="bg-card border border-border rounded-xl p-3 text-center">
+                  <p className="text-xs font-bold text-foreground">{label}</p>
+                  <p className="text-[10px] text-muted">{sub}</p>
+                </div>
+              ))}
+            </div>
+          </>
         )}
 
         {/* Related Tools */}
-        <div className="max-w-3xl mx-auto mt-8">
+        <div>
           <h3 className="text-sm font-bold text-muted uppercase tracking-wider mb-3">Related Tools</h3>
           <div className="grid grid-cols-3 gap-3">
             {[
-              { href: "/tools/compress",       icon: Minimize2, label: "Compress" },
-              { href: "/tools/resize",         icon: Maximize2, label: "Resize" },
-              { href: "/tools/crop",           icon: Crop,      label: "Crop" },
+              { href: "/tools/compress", icon: Minimize2, label: "Compress" },
+              { href: "/tools/resize",   icon: Maximize2, label: "Resize Image" },
+              { href: "/tools/crop",     icon: Crop,      label: "Crop Image" },
             ].map(({ href, icon: Icon, label }) => (
               <Link key={href} href={href}
                 className="flex flex-col items-center gap-2 p-3 rounded-xl border border-border hover:border-primary/30 hover:shadow-sm transition-all text-center group">
@@ -320,4 +505,3 @@ export default function PhotoEditorPage() {
     </div>
   );
 }
-

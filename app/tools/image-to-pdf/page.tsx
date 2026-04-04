@@ -2,26 +2,12 @@
 
 import { useState, useCallback, useRef, DragEvent } from "react";
 import { useDropzone } from "react-dropzone";
-import {
-  FileImage,
-  Upload,
-  Download,
-  X,
-  Loader2,
-  GripVertical,
-  AlertCircle,
-  Zap,
-  Minimize2,
-  Maximize2,
-  Crop,
-  Wand2,
-} from "lucide-react";
+import { FileImage, Upload, Download, X, CheckCircle2, Loader2, Plus, ImageIcon, Minimize2, Maximize2, Crop, Wand2 } from "lucide-react";
 import Link from "next/link";
-import UpgradeModal from "@/app/components/UpgradeModal";
 
 type PageSize = "a4" | "letter" | "fit";
 type Orientation = "portrait" | "landscape";
-type Margin = "none" | "small" | "medium" | "large";
+type Stage = "upload" | "converting" | "done";
 
 interface ImageFile {
   id: string;
@@ -29,25 +15,13 @@ interface ImageFile {
   preview: string;
 }
 
-const PAGE_SIZES: { key: PageSize; label: string; desc: string }[] = [
-  { key: "a4", label: "A4", desc: "210 x 297 mm" },
-  { key: "letter", label: "Letter", desc: "8.5 x 11 in" },
-  { key: "fit", label: "Fit to Image", desc: "Match image" },
-];
+function fmtBytes(n: number) {
+  if (n < 1024) return n + " B";
+  if (n < 1024 * 1024) return (n / 1024).toFixed(1) + " KB";
+  return (n / (1024 * 1024)).toFixed(2) + " MB";
+}
 
-const ORIENTATIONS: { key: Orientation; label: string }[] = [
-  { key: "portrait", label: "Portrait" },
-  { key: "landscape", label: "Landscape" },
-];
-
-const MARGINS: { key: Margin; label: string }[] = [
-  { key: "none", label: "None" },
-  { key: "small", label: "Small" },
-  { key: "medium", label: "Medium" },
-  { key: "large", label: "Large" },
-];
-
-const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20 MB
+const MAX_FILE_SIZE = 20 * 1024 * 1024;
 const MAX_IMAGES = 20;
 const ACCEPTED_TYPES: Record<string, string[]> = {
   "image/jpeg": [".jpg", ".jpeg"],
@@ -57,13 +31,13 @@ const ACCEPTED_TYPES: Record<string, string[]> = {
 };
 
 export default function ImageToPdfPage() {
+  const [stage, setStage] = useState<Stage>("upload");
   const [images, setImages] = useState<ImageFile[]>([]);
   const [pageSize, setPageSize] = useState<PageSize>("a4");
   const [orientation, setOrientation] = useState<Orientation>("portrait");
-  const [margin, setMargin] = useState<Margin>("medium");
-  const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [showUpgrade, setShowUpgrade] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [resultUrl, setResultUrl] = useState<string | null>(null);
 
   const dragItemRef = useRef<number | null>(null);
   const dragOverItemRef = useRef<number | null>(null);
@@ -102,16 +76,19 @@ export default function ImageToPdfPage() {
   );
 
   const onDrop = useCallback(
-    (acceptedFiles: File[]) => {
-      addImages(acceptedFiles);
+    (accepted: File[]) => {
+      if (accepted.length === 0) return;
+      addImages(accepted);
     },
     [addImages],
   );
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
     onDrop,
     accept: ACCEPTED_TYPES,
     maxSize: MAX_FILE_SIZE,
+    noClick: images.length > 0,
+    noKeyboard: images.length > 0,
   });
 
   const removeImage = (id: string) => {
@@ -122,16 +99,20 @@ export default function ImageToPdfPage() {
     });
   };
 
-  // --- Drag & drop reorder handlers ---
-  const handleDragStart = (index: number) => {
+  /* ── Drag-to-reorder (HTML5 native) ── */
+  const handleDragStart = (e: DragEvent<HTMLDivElement>, index: number) => {
     dragItemRef.current = index;
+    e.dataTransfer.effectAllowed = "move";
   };
 
-  const handleDragEnter = (index: number) => {
+  const handleDragOver = (e: DragEvent<HTMLDivElement>, index: number) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
     dragOverItemRef.current = index;
   };
 
-  const handleDragEnd = () => {
+  const handleDrop = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
     if (dragItemRef.current === null || dragOverItemRef.current === null) return;
     if (dragItemRef.current === dragOverItemRef.current) {
       dragItemRef.current = null;
@@ -141,8 +122,8 @@ export default function ImageToPdfPage() {
 
     setImages((prev) => {
       const updated = [...prev];
-      const [draggedItem] = updated.splice(dragItemRef.current!, 1);
-      updated.splice(dragOverItemRef.current!, 0, draggedItem);
+      const [dragged] = updated.splice(dragItemRef.current!, 1);
+      updated.splice(dragOverItemRef.current!, 0, dragged);
       return updated;
     });
 
@@ -150,311 +131,339 @@ export default function ImageToPdfPage() {
     dragOverItemRef.current = null;
   };
 
-  const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-  };
-
-  // --- Convert to PDF ---
-  const convertToPdf = async () => {
+  /* ── Create PDF ── */
+  const createPdf = async () => {
     if (images.length === 0) return;
-    setProcessing(true);
+    setStage("converting");
+    setProgress(0);
     setError(null);
 
     try {
+      // Simulate initial progress
+      setProgress(10);
+
       const fd = new FormData();
       for (const img of images) {
         fd.append("files", img.file);
       }
       fd.append("pageSize", pageSize);
       fd.append("orientation", orientation);
-      fd.append("margin", margin);
+      fd.append("margin", "medium");
+
+      setProgress(30);
 
       const res = await fetch("/api/tools/image-to-pdf", {
         method: "POST",
         body: fd,
       });
 
+      setProgress(70);
+
       if (!res.ok) {
-        const data = await res.json();
-        if (data.code === "RATE_LIMIT") {
-          setShowUpgrade(true);
-          return;
-        }
-        setError(data.error || "Conversion failed");
+        const data = await res.json().catch(() => ({ error: "Conversion failed" }));
+        setError(data.error || "Failed to create PDF");
+        setStage("upload");
         return;
       }
 
+      setProgress(90);
+
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "images.pdf";
-      a.click();
-      URL.revokeObjectURL(url);
+      setResultUrl(url);
+      setProgress(100);
+      setStage("done");
     } catch {
       setError("Conversion failed. Please try again.");
-    } finally {
-      setProcessing(false);
+      setStage("upload");
     }
   };
 
+  const downloadPdf = () => {
+    if (!resultUrl) return;
+    const a = document.createElement("a");
+    a.href = resultUrl;
+    a.download = "images.pdf";
+    a.click();
+  };
+
+  const reset = () => {
+    images.forEach((img) => URL.revokeObjectURL(img.preview));
+    if (resultUrl) URL.revokeObjectURL(resultUrl);
+    setImages([]);
+    setResultUrl(null);
+    setStage("upload");
+    setError(null);
+    setProgress(0);
+  };
+
   return (
-    <div className="min-h-screen bg-background py-10">
-      <div className="max-w-3xl mx-auto px-4 space-y-8">
-        {/* Hero */}
-        <div className="text-center space-y-2">
-          <div className="inline-flex items-center gap-2 bg-primary-light text-primary text-xs font-bold px-3 py-1 rounded-full mb-2">
-            <FileImage size={12} /> IMAGE TO PDF
+    <div className="min-h-screen bg-background">
+      {/* ─── STAGE 1: Upload ─── */}
+      {stage === "upload" && (
+        <div className="max-w-4xl mx-auto px-4 py-16">
+          {/* Hero */}
+          <div className="text-center space-y-3 mb-10">
+            <h1 className="text-4xl font-extrabold text-foreground">Image to PDF</h1>
+            <p className="text-muted max-w-lg mx-auto">
+              Combine multiple images into a single PDF document.
+            </p>
           </div>
-          <h1 className="text-3xl font-extrabold text-foreground">
-            Convert Images to PDF
-          </h1>
-          <p className="text-muted max-w-md mx-auto text-sm">
-            Combine multiple images into a single PDF document. Supports JPG, PNG, WEBP, and GIF.
-          </p>
-        </div>
 
-        {/* Controls */}
-        <div className="bg-card border border-border rounded-2xl p-6 space-y-5">
-          {/* Page Size */}
-          <div>
-            <span className="text-sm font-semibold text-foreground mb-2 block">
-              Page Size
-            </span>
-            <div className="grid grid-cols-3 gap-2">
-              {PAGE_SIZES.map((ps) => (
-                <button
-                  key={ps.key}
-                  onClick={() => setPageSize(ps.key)}
-                  className={`p-2 rounded-xl border text-center transition-all ${
-                    pageSize === ps.key
-                      ? "border-primary bg-primary-light"
-                      : "border-border hover:border-primary/40"
-                  }`}
-                >
+          {/* Drop zone */}
+          {images.length === 0 ? (
+            <div
+              {...getRootProps()}
+              className={`border-2 border-dashed rounded-3xl p-16 text-center cursor-pointer transition-all max-w-xl mx-auto ${
+                isDragActive
+                  ? "border-primary bg-primary-light"
+                  : "border-border hover:border-primary/60 hover:bg-primary-light/30"
+              }`}
+            >
+              <input {...getInputProps()} />
+              <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                <Upload size={28} className="text-primary" />
+              </div>
+              <p className="font-bold text-foreground text-lg mb-1">
+                {isDragActive ? "Drop images here" : "Select images"}
+              </p>
+              <p className="text-sm text-muted">or drag and drop them here</p>
+              <p className="text-xs text-muted mt-3">JPG, PNG, WEBP, GIF. Up to 20 MB each. Max {MAX_IMAGES} files.</p>
+            </div>
+          ) : (
+            <div className="max-w-2xl mx-auto space-y-6">
+              {/* Draggable thumbnail grid */}
+              <div {...getRootProps()} className="grid grid-cols-4 sm:grid-cols-6 gap-3">
+                <input {...getInputProps()} />
+                {images.map((img, i) => (
                   <div
-                    className={`text-xs font-bold ${
-                      pageSize === ps.key ? "text-primary" : "text-foreground"
-                    }`}
+                    key={img.id}
+                    draggable
+                    onDragStart={(e) => handleDragStart(e, i)}
+                    onDragOver={(e) => handleDragOver(e, i)}
+                    onDrop={handleDrop}
+                    className="relative group cursor-grab active:cursor-grabbing"
                   >
-                    {ps.label}
+                    <div className="aspect-square rounded-xl overflow-hidden bg-gray-100 border border-border">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={img.preview} alt={img.file.name} className="w-full h-full object-cover" />
+                    </div>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); removeImage(img.id); }}
+                      className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <X size={10} />
+                    </button>
+                    <p className="text-[9px] text-muted text-center mt-1 truncate">
+                      Page {i + 1} &middot; {fmtBytes(img.file.size)}
+                    </p>
                   </div>
-                  <div className="text-[10px] text-muted">{ps.desc}</div>
-                </button>
-              ))}
-            </div>
-          </div>
+                ))}
 
-          {/* Orientation */}
-          <div>
-            <span className="text-sm font-semibold text-foreground mb-2 block">
-              Orientation
-            </span>
-            <div className="grid grid-cols-2 gap-2">
-              {ORIENTATIONS.map((o) => (
-                <button
-                  key={o.key}
-                  onClick={() => setOrientation(o.key)}
-                  className={`p-2 rounded-xl border text-center transition-all ${
-                    orientation === o.key
-                      ? "border-primary bg-primary-light"
-                      : "border-border hover:border-primary/40"
-                  }`}
-                >
-                  <div
-                    className={`text-xs font-bold ${
-                      orientation === o.key ? "text-primary" : "text-foreground"
-                    }`}
-                  >
-                    {o.label}
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Margin */}
-          <div>
-            <span className="text-sm font-semibold text-foreground mb-2 block">
-              Margin
-            </span>
-            <div className="grid grid-cols-4 gap-2">
-              {MARGINS.map((m) => (
-                <button
-                  key={m.key}
-                  onClick={() => setMargin(m.key)}
-                  className={`p-2 rounded-xl border text-center transition-all ${
-                    margin === m.key
-                      ? "border-primary bg-primary-light"
-                      : "border-border hover:border-primary/40"
-                  }`}
-                >
-                  <div
-                    className={`text-xs font-bold ${
-                      margin === m.key ? "text-primary" : "text-foreground"
-                    }`}
-                  >
-                    {m.label}
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Drop zone */}
-        <div
-          {...getRootProps()}
-          className={`border-2 border-dashed rounded-2xl p-10 text-center cursor-pointer transition-all ${
-            isDragActive
-              ? "border-primary bg-primary-light"
-              : "border-border hover:border-primary/60 hover:bg-primary-light/30"
-          }`}
-        >
-          <input {...getInputProps()} />
-          <Upload
-            size={32}
-            className={`mx-auto mb-3 ${isDragActive ? "text-primary" : "text-muted"}`}
-          />
-          <p className="font-semibold text-foreground">
-            {isDragActive ? "Drop images here" : "Drag & drop images or click to browse"}
-          </p>
-          <p className="text-xs text-muted mt-1">
-            JPG, PNG, WEBP, GIF · Up to 20 MB each · Max {MAX_IMAGES} images
-          </p>
-        </div>
-
-        {/* Image list (sortable) */}
-        {images.length > 0 && (
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <h2 className="text-sm font-bold text-foreground">
-                Images ({images.length})
-              </h2>
-              {images.length > 1 && (
-                <p className="text-[11px] text-muted">
-                  Drag to reorder
-                </p>
-              )}
-            </div>
-
-            {images.map((img, index) => (
-              <div
-                key={img.id}
-                draggable
-                onDragStart={() => handleDragStart(index)}
-                onDragEnter={() => handleDragEnter(index)}
-                onDragEnd={handleDragEnd}
-                onDragOver={handleDragOver}
-                className="bg-card border border-border rounded-2xl p-4 flex items-center gap-4 cursor-grab active:cursor-grabbing"
-              >
-                <GripVertical size={16} className="text-muted flex-shrink-0" />
-
-                <div className="w-14 h-14 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={img.preview}
-                    alt={img.file.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-foreground truncate">
-                    {img.file.name}
-                  </p>
-                  <p className="text-xs text-muted mt-0.5">
-                    {(img.file.size / 1024).toFixed(1)} KB
-                  </p>
-                </div>
-
-                <div className="flex items-center gap-2 flex-shrink-0">
-                  <span className="text-xs text-muted font-medium">
-                    Page {index + 1}
-                  </span>
+                {/* Add more button */}
+                {images.length < MAX_IMAGES && (
                   <button
-                    onClick={() => removeImage(img.id)}
-                    className="p-1.5 text-muted hover:text-red-500 transition-colors"
+                    onClick={(e) => { e.stopPropagation(); open(); }}
+                    className="aspect-square rounded-xl border-2 border-dashed border-border hover:border-primary/60 flex flex-col items-center justify-center gap-1 transition-colors"
                   >
-                    <X size={14} />
+                    <Plus size={20} className="text-muted" />
+                    <span className="text-[10px] text-muted">Add</span>
                   </button>
+                )}
+              </div>
+
+              <p className="text-xs text-muted text-center">
+                {images.length} image{images.length !== 1 ? "s" : ""} selected &middot; Drag to reorder
+              </p>
+
+              {/* Controls */}
+              <div className="space-y-4">
+                {/* Page Size pills */}
+                <div>
+                  <span className="text-xs font-semibold text-foreground mb-2 block">Page Size</span>
+                  <div className="flex gap-2">
+                    {(
+                      [
+                        { key: "a4", label: "A4" },
+                        { key: "letter", label: "Letter" },
+                        { key: "fit", label: "Fit to Image" },
+                      ] as { key: PageSize; label: string }[]
+                    ).map((ps) => (
+                      <button
+                        key={ps.key}
+                        onClick={() => setPageSize(ps.key)}
+                        className={`px-4 py-2 rounded-full text-xs font-bold transition-all ${
+                          pageSize === ps.key
+                            ? "bg-primary text-white"
+                            : "bg-card border border-border text-foreground hover:border-primary/40"
+                        }`}
+                      >
+                        {ps.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Orientation pills */}
+                <div>
+                  <span className="text-xs font-semibold text-foreground mb-2 block">Orientation</span>
+                  <div className="flex gap-2">
+                    {(
+                      [
+                        { key: "portrait", label: "Portrait" },
+                        { key: "landscape", label: "Landscape" },
+                      ] as { key: Orientation; label: string }[]
+                    ).map((o) => (
+                      <button
+                        key={o.key}
+                        onClick={() => setOrientation(o.key)}
+                        className={`px-4 py-2 rounded-full text-xs font-bold transition-all ${
+                          orientation === o.key
+                            ? "bg-primary text-white"
+                            : "bg-card border border-border text-foreground hover:border-primary/40"
+                        }`}
+                      >
+                        {o.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
-            ))}
 
-            {/* Convert button */}
-            <button
-              onClick={convertToPdf}
-              disabled={processing || images.length === 0}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-primary text-white text-sm font-bold rounded-xl hover:bg-primary-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {processing ? (
-                <>
-                  <Loader2 size={16} className="animate-spin" />
-                  Creating PDF...
-                </>
-              ) : (
-                <>
-                  <Download size={16} />
-                  Convert to PDF & Download
-                </>
-              )}
-            </button>
-          </div>
-        )}
+              {/* Create PDF button */}
+              <button
+                onClick={createPdf}
+                className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-primary text-white text-base font-bold rounded-2xl hover:bg-primary-hover transition-colors shadow-lg"
+              >
+                <FileImage size={18} />
+                Create PDF
+              </button>
+            </div>
+          )}
 
-        {/* Error */}
-        {error && (
-          <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
-            <AlertCircle size={16} />
-            {error}
-          </div>
-        )}
-
-        {/* Info */}
-        <div className="bg-card border border-border rounded-2xl p-5 space-y-3">
-          <div className="flex items-center gap-2">
-            <Zap size={16} className="text-primary" />
-            <h3 className="text-sm font-bold text-foreground">
-              How it works
-            </h3>
-          </div>
-          <p className="text-sm text-muted leading-relaxed">
-            Upload your images and arrange them in the order you want. Choose your preferred page
-            size, orientation, and margin. Each image is placed on its own page in the resulting PDF.
-            Files are processed on our server and never stored.
-          </p>
+          {/* Error */}
+          {error && (
+            <div className="max-w-xl mx-auto mt-4 flex items-center gap-2 text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
+              <ImageIcon size={16} />
+              {error}
+            </div>
+          )}
         </div>
+      )}
+
+      {/* ─── STAGE 2: Converting ─── */}
+      {stage === "converting" && (
+        <div className="max-w-md mx-auto px-4 py-32 text-center space-y-6">
+          <Loader2 size={48} className="animate-spin text-primary mx-auto" />
+          <div>
+            <h2 className="text-xl font-bold text-foreground mb-1">Creating PDF...</h2>
+            <p className="text-sm text-muted">
+              Combining {images.length} image{images.length !== 1 ? "s" : ""} into one PDF
+            </p>
+          </div>
+          <div className="w-full bg-gray-200 rounded-full h-2">
+            <div
+              className="bg-primary h-2 rounded-full transition-all"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* ─── STAGE 3: Done ─── */}
+      {stage === "done" && resultUrl && (
+        <div className="max-w-3xl mx-auto px-4 py-12 space-y-6">
+          {/* Success card */}
+          <div className="bg-green-50 border border-green-200 rounded-2xl p-6 text-center space-y-2">
+            <CheckCircle2 size={40} className="text-green-500 mx-auto" />
+            <h2 className="text-xl font-bold text-foreground">
+              PDF created successfully
+            </h2>
+            <p className="text-sm text-green-700">
+              {images.length} image{images.length !== 1 ? "s" : ""} combined into one PDF
+            </p>
+          </div>
+
+          {/* Download button */}
+          <button
+            onClick={downloadPdf}
+            className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-primary text-white text-base font-bold rounded-2xl hover:bg-primary-hover transition-colors shadow-lg"
+          >
+            <Download size={18} />
+            Download PDF
+          </button>
+
+          {/* Start over */}
+          <button
+            onClick={reset}
+            className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-bold text-muted border border-border rounded-xl hover:border-primary/40 transition-colors"
+          >
+            Create Another PDF
+          </button>
+        </div>
+      )}
+
+      {/* ─── Bottom section (always visible) ─── */}
+      <div className="max-w-3xl mx-auto px-4 pb-12 space-y-8">
+        {stage === "upload" && (
+          <>
+            {/* How it works */}
+            <div className="bg-card border border-border rounded-2xl p-6">
+              <h2 className="font-bold text-foreground mb-4">How it works</h2>
+              <div className="grid grid-cols-3 gap-4 text-center">
+                {[
+                  { step: "1", title: "Upload", desc: "Select one or more images from your device" },
+                  { step: "2", title: "Arrange", desc: "Drag to reorder, pick page size & orientation" },
+                  { step: "3", title: "Download", desc: "Get your combined PDF in seconds" },
+                ].map(({ step, title, desc }) => (
+                  <div key={step} className="space-y-2">
+                    <div className="w-8 h-8 rounded-full bg-primary text-white text-sm font-bold flex items-center justify-center mx-auto">
+                      {step}
+                    </div>
+                    <p className="text-sm font-semibold text-foreground">{title}</p>
+                    <p className="text-xs text-muted">{desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Features */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {[
+                { label: "JPG, PNG, WEBP, GIF", sub: "All formats" },
+                { label: "Up to 20 images", sub: "Batch convert" },
+                { label: "No sign-up", sub: "Free forever" },
+                { label: "Files never stored", sub: "100% private" },
+              ].map(({ label, sub }) => (
+                <div key={label} className="bg-card border border-border rounded-xl p-3 text-center">
+                  <p className="text-xs font-bold text-foreground">{label}</p>
+                  <p className="text-[10px] text-muted">{sub}</p>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
 
         {/* Related Tools */}
         <div>
-          <h3 className="text-sm font-bold text-muted uppercase tracking-wider mb-3">
-            Related Tools
-          </h3>
+          <h3 className="text-sm font-bold text-muted uppercase tracking-wider mb-3">Related Tools</h3>
           <div className="grid grid-cols-3 gap-3">
             {[
               { href: "/tools/compress", icon: Minimize2, label: "Compress Image" },
               { href: "/tools/resize", icon: Maximize2, label: "Resize Image" },
               { href: "/tools/crop", icon: Crop, label: "Crop Image" },
             ].map(({ href, icon: Icon, label }) => (
-              <Link
-                key={href}
-                href={href}
-                className="flex flex-col items-center gap-2 p-3 rounded-xl border border-border hover:border-primary/30 hover:shadow-sm transition-all text-center group"
-              >
+              <Link key={href} href={href}
+                className="flex flex-col items-center gap-2 p-3 rounded-xl border border-border hover:border-primary/30 hover:shadow-sm transition-all text-center group">
                 <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
                   <Icon size={16} className="text-primary" />
                 </div>
-                <span className="text-xs font-semibold text-foreground group-hover:text-primary transition-colors">
-                  {label}
-                </span>
+                <span className="text-xs font-semibold text-foreground group-hover:text-primary transition-colors">{label}</span>
               </Link>
             ))}
           </div>
         </div>
       </div>
-
-      <UpgradeModal isOpen={showUpgrade} onClose={() => setShowUpgrade(false)} />
     </div>
   );
 }

@@ -2,16 +2,15 @@
 
 import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
-import { Maximize2, Upload, Download, X, Loader2, AlertCircle, ArrowRight, Minimize2, Crop, Wand2 } from "lucide-react";
+import { Maximize2, Upload, Download, CheckCircle2, Loader2, ArrowRight, Minimize2, Crop, Wand2, ImageIcon } from "lucide-react";
 import Link from "next/link";
-import UpgradeModal from "@/app/components/UpgradeModal";
 
 type Scale = 2 | 4;
 
 function fmtBytes(n: number) {
   if (n < 1024) return n + " B";
-  if (n < 1048576) return (n / 1024).toFixed(1) + " KB";
-  return (n / 1048576).toFixed(2) + " MB";
+  if (n < 1024 * 1024) return (n / 1024).toFixed(1) + " KB";
+  return (n / (1024 * 1024)).toFixed(2) + " MB";
 }
 
 interface UploadedFile {
@@ -21,25 +20,21 @@ interface UploadedFile {
   height: number;
 }
 
-interface Result {
-  name: string;
-  url: string;
-  originalWidth: number;
-  originalHeight: number;
-  newWidth: number;
-  newHeight: number;
-  originalSize: number;
-  newSize: number;
-}
+type Stage = "upload" | "upscaling" | "done";
 
 export default function UpscalePage() {
-  const [scale, setScale]             = useState<Scale>(2);
+  const [stage, setStage] = useState<Stage>("upload");
+  const [uploaded, setUploaded] = useState<UploadedFile | null>(null);
+  const [scale, setScale] = useState<Scale>(2);
   const [outputFormat, setOutputFormat] = useState("same");
-  const [uploaded, setUploaded]       = useState<UploadedFile | null>(null);
-  const [results, setResults]         = useState<Result[]>([]);
-  const [processing, setProcessing]   = useState(false);
-  const [error, setError]             = useState("");
-  const [showUpgrade, setShowUpgrade] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Result state
+  const [resultUrl, setResultUrl] = useState<string | null>(null);
+  const [resultName, setResultName] = useState("");
+  const [resultSize, setResultSize] = useState(0);
+  const [origDims, setOrigDims] = useState({ w: 0, h: 0 });
+  const [newDims, setNewDims] = useState({ w: 0, h: 0 });
 
   const loadImageDimensions = useCallback((file: File): Promise<UploadedFile> => {
     return new Promise((resolve, reject) => {
@@ -56,252 +51,312 @@ export default function UpscalePage() {
     });
   }, []);
 
-  const upscaleFile = useCallback(async (upload: UploadedFile) => {
-    setProcessing(true);
-    setError("");
+  const onDrop = useCallback(async (accepted: File[]) => {
+    const f = accepted[0];
+    if (!f) return;
+    setError(null);
+
+    if (f.size > 20 * 1024 * 1024) {
+      setError("File exceeds 20 MB limit.");
+      return;
+    }
+
+    try {
+      if (uploaded) URL.revokeObjectURL(uploaded.previewUrl);
+      const upload = await loadImageDimensions(f);
+      setUploaded(upload);
+    } catch {
+      setError("Could not read image. Please try a different file.");
+    }
+  }, [loadImageDimensions, uploaded]);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: { "image/*": [] },
+    maxSize: 20 * 1024 * 1024,
+    multiple: false,
+    noClick: !!uploaded,
+    noKeyboard: !!uploaded,
+  });
+
+  const removeFile = () => {
+    if (uploaded) URL.revokeObjectURL(uploaded.previewUrl);
+    setUploaded(null);
+    setError(null);
+  };
+
+  const upscaleImage = async () => {
+    if (!uploaded) return;
+    setStage("upscaling");
+    setError(null);
 
     try {
       const fd = new FormData();
-      fd.append("file", upload.file);
+      fd.append("file", uploaded.file);
       fd.append("scale", String(scale));
       if (outputFormat !== "same") fd.append("outputFormat", outputFormat);
 
       const res = await fetch("/api/tools/upscale", { method: "POST", body: fd });
 
       if (!res.ok) {
-        const data = await res.json();
-        if (data.code === "RATE_LIMIT") { setShowUpgrade(true); return; }
+        const data = await res.json().catch(() => ({ error: "Upscale failed" }));
         setError(data.error || "Upscale failed");
+        setStage("upload");
         return;
       }
 
       const blob = await res.blob();
       const disp = res.headers.get("Content-Disposition") || "";
       const match = disp.match(/filename="(.+?)"/);
-      const name = match?.[1] || upload.file.name.replace(/\.[^.]+$/, `-upscaled-${scale}x.jpg`);
+      const name = match?.[1] || uploaded.file.name.replace(/\.[^.]+$/, `-upscaled-${scale}x.jpg`);
 
-      const origW = parseInt(res.headers.get("X-Original-Width") || "0") || upload.width;
-      const origH = parseInt(res.headers.get("X-Original-Height") || "0") || upload.height;
-      const newW  = parseInt(res.headers.get("X-New-Width") || "0") || upload.width * scale;
-      const newH  = parseInt(res.headers.get("X-New-Height") || "0") || upload.height * scale;
+      const ow = parseInt(res.headers.get("X-Original-Width") || "0") || uploaded.width;
+      const oh = parseInt(res.headers.get("X-Original-Height") || "0") || uploaded.height;
+      const nw = parseInt(res.headers.get("X-New-Width") || "0") || uploaded.width * scale;
+      const nh = parseInt(res.headers.get("X-New-Height") || "0") || uploaded.height * scale;
 
-      setResults((r) => [
-        { name, url: URL.createObjectURL(blob), originalWidth: origW, originalHeight: origH, newWidth: newW, newHeight: newH, originalSize: upload.file.size, newSize: blob.size },
-        ...r.filter((x) => x.name !== name),
-      ]);
+      if (resultUrl) URL.revokeObjectURL(resultUrl);
+      setResultUrl(URL.createObjectURL(blob));
+      setResultName(name);
+      setResultSize(blob.size);
+      setOrigDims({ w: ow, h: oh });
+      setNewDims({ w: nw, h: nh });
+      setStage("done");
     } catch {
       setError("Upscale failed. Please try again.");
-    } finally {
-      setProcessing(false);
+      setStage("upload");
     }
-  }, [scale, outputFormat]);
+  };
 
-  const onDrop = useCallback(async (files: File[]) => {
-    const file = files[0];
-    if (!file) return;
+  const downloadResult = () => {
+    if (!resultUrl) return;
+    const a = document.createElement("a");
+    a.href = resultUrl;
+    a.download = resultName;
+    a.click();
+  };
 
-    if (file.size > 20 * 1024 * 1024) {
-      setError("File exceeds 20 MB limit.");
-      return;
-    }
-
-    setError("");
-    try {
-      const upload = await loadImageDimensions(file);
-      setUploaded(upload);
-    } catch {
-      setError("Could not read image. Please try a different file.");
-    }
-  }, [loadImageDimensions]);
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: { "image/jpeg": [], "image/png": [], "image/webp": [] },
-    maxFiles: 1,
-    maxSize: 20 * 1024 * 1024,
-  });
-
-  const clearUploaded = () => {
+  const reset = () => {
     if (uploaded) URL.revokeObjectURL(uploaded.previewUrl);
+    if (resultUrl) URL.revokeObjectURL(resultUrl);
     setUploaded(null);
+    setResultUrl(null);
+    setResultName("");
+    setResultSize(0);
+    setOrigDims({ w: 0, h: 0 });
+    setNewDims({ w: 0, h: 0 });
+    setStage("upload");
+    setError(null);
+    setScale(2);
+    setOutputFormat("same");
   };
 
-  const removeResult = (name: string) => {
-    setResults((r) => {
-      const item = r.find((x) => x.name === name);
-      if (item) URL.revokeObjectURL(item.url);
-      return r.filter((x) => x.name !== name);
-    });
-  };
-
-  const estimatedWidth  = uploaded ? Math.min(uploaded.width * scale, 8192) : 0;
+  const estimatedWidth = uploaded ? Math.min(uploaded.width * scale, 8192) : 0;
   const estimatedHeight = uploaded ? Math.min(uploaded.height * scale, 8192) : 0;
 
   return (
-    <div className="min-h-screen bg-background py-10">
-      <div className="max-w-3xl mx-auto px-4 space-y-8">
-        {/* Hero */}
-        <div className="text-center space-y-2">
-          <div className="inline-flex items-center gap-2 bg-primary-light text-primary text-xs font-bold px-3 py-1 rounded-full mb-2">
-            <Maximize2 size={12} /> UPSCALE IMAGE
+    <div className="min-h-screen bg-background">
+      {/* --- STAGE 1: Upload --- */}
+      {stage === "upload" && (
+        <div className="max-w-4xl mx-auto px-4 py-16">
+          {/* Hero */}
+          <div className="text-center space-y-3 mb-10">
+            <h1 className="text-4xl font-extrabold text-foreground">Upscale Image</h1>
+            <p className="text-muted max-w-lg mx-auto">
+              Enlarge images 2x or 4x while keeping sharpness.
+            </p>
           </div>
-          <h1 className="text-3xl font-extrabold text-foreground">Upscale Images Online</h1>
-          <p className="text-muted max-w-md mx-auto text-sm">
-            Enlarge images 2x or 4x using Lanczos3 resampling. Maintain sharpness while increasing resolution.
-          </p>
-        </div>
 
-        {/* Controls */}
-        <div className="bg-card border border-border rounded-2xl p-6 space-y-5">
-          {/* Scale options */}
-          <div>
-            <p className="text-xs font-bold text-muted uppercase tracking-wider mb-2">Scale Factor</p>
-            <div className="grid grid-cols-2 gap-2">
-              {([2, 4] as const).map((s) => (
-                <button key={s} onClick={() => setScale(s)}
-                  className={`p-2 rounded-xl border text-center transition-all ${
-                    scale === s
-                      ? "border-primary bg-primary-light"
-                      : "border-border hover:border-primary/40"
-                  }`}>
-                  <div className={`text-xs font-bold ${scale === s ? "text-primary" : "text-foreground"}`}>
-                    {s}x Upscale
-                  </div>
-                  <div className="text-[10px] text-muted">
-                    {s === 2 ? "Double resolution" : "Quadruple resolution"}
-                  </div>
-                </button>
-              ))}
+          {/* Drop zone */}
+          {!uploaded ? (
+            <div
+              {...getRootProps()}
+              className={`border-2 border-dashed rounded-3xl p-16 text-center cursor-pointer transition-all max-w-xl mx-auto ${
+                isDragActive
+                  ? "border-primary bg-primary-light"
+                  : "border-border hover:border-primary/60 hover:bg-primary-light/30"
+              }`}
+            >
+              <input {...getInputProps()} />
+              <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                <Upload size={28} className="text-primary" />
+              </div>
+              <p className="font-bold text-foreground text-lg mb-1">
+                {isDragActive ? "Drop image here" : "Select an image"}
+              </p>
+              <p className="text-sm text-muted">or drag and drop it here</p>
+              <p className="text-xs text-muted mt-3">JPG, PNG, WEBP, GIF, AVIF. Up to 20 MB.</p>
             </div>
-          </div>
-
-          {/* Output format */}
-          <div>
-            <label className="text-xs font-semibold text-muted block mb-1">Output format</label>
-            <select value={outputFormat} onChange={(e) => setOutputFormat(e.target.value)}
-              className="w-full border border-border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 bg-card">
-              <option value="same">Same as input</option>
-              <option value="jpg">JPG</option>
-              <option value="png">PNG</option>
-              <option value="webp">WEBP</option>
-            </select>
-          </div>
-        </div>
-
-        {/* Uploaded file preview */}
-        {uploaded && (
-          <div className="bg-card border border-border rounded-2xl p-4 space-y-3">
-            <div className="flex items-center gap-4">
-              <div className="w-20 h-20 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={uploaded.previewUrl} alt={uploaded.file.name} className="w-full h-full object-cover" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-foreground truncate">{uploaded.file.name}</p>
-                <p className="text-xs text-muted mt-0.5">{fmtBytes(uploaded.file.size)}</p>
-                <div className="flex items-center gap-2 mt-1 text-xs text-muted">
-                  <span>{uploaded.width} x {uploaded.height}</span>
-                  <ArrowRight size={12} className="text-primary" />
-                  <span className="text-primary font-semibold">{estimatedWidth} x {estimatedHeight}</span>
-                </div>
-              </div>
-              <div className="flex items-center gap-2 flex-shrink-0">
-                <button onClick={() => upscaleFile(uploaded)} disabled={processing}
-                  className="flex items-center gap-1.5 px-3 py-1.5 bg-primary text-white text-xs font-bold rounded-lg hover:bg-primary-hover transition-colors disabled:opacity-50">
-                  {processing ? <Loader2 size={13} className="animate-spin" /> : <Maximize2 size={13} />}
-                  {processing ? "Upscaling..." : "Upscale"}
-                </button>
-                <button onClick={clearUploaded}
-                  className="p-1.5 text-muted hover:text-red-500 transition-colors">
-                  <X size={14} />
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Drop zone */}
-        <div {...getRootProps()} className={`border-2 border-dashed rounded-2xl p-10 text-center cursor-pointer transition-all ${
-          isDragActive ? "border-primary bg-primary-light" : "border-border hover:border-primary/60 hover:bg-primary-light/30"
-        }`}>
-          <input {...getInputProps()} />
-          <Upload size={32} className={`mx-auto mb-3 ${isDragActive ? "text-primary" : "text-muted"}`} />
-          <p className="font-semibold text-foreground">
-            {isDragActive ? "Drop image here" : "Drag & drop image or click to browse"}
-          </p>
-          <p className="text-xs text-muted mt-1">JPG, PNG, WEBP · Max 20 MB</p>
-        </div>
-
-        {/* Processing */}
-        {processing && (
-          <div className="flex items-center gap-2 text-sm text-muted">
-            <Loader2 size={16} className="animate-spin text-primary" /> Upscaling image...
-          </div>
-        )}
-
-        {/* Error */}
-        {error && (
-          <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
-            <AlertCircle size={16} />
-            {error}
-          </div>
-        )}
-
-        {/* Results */}
-        {results.length > 0 && (
-          <div className="space-y-3">
-            <h2 className="text-sm font-bold text-foreground">Results</h2>
-            {results.map((r) => (
-              <div key={r.name} className="bg-card border border-border rounded-2xl p-4 flex items-center gap-4">
-                <div className="w-14 h-14 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={r.url} alt={r.name} className="w-full h-full object-cover" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-foreground truncate">{r.name}</p>
-                  <div className="flex items-center gap-2 mt-1 text-xs text-muted">
-                    <span>{r.originalWidth}x{r.originalHeight}</span>
-                    <ArrowRight size={10} className="text-primary" />
-                    <span className="text-primary font-semibold">{r.newWidth}x{r.newHeight}</span>
+          ) : (
+            <div className="max-w-2xl mx-auto space-y-4">
+              {/* Preview with dimensions */}
+              <div className="bg-card border border-border rounded-2xl p-4 space-y-3">
+                <div className="flex items-center gap-4">
+                  <div className="w-20 h-20 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={uploaded.previewUrl} alt={uploaded.file.name} className="w-full h-full object-cover" />
                   </div>
-                  <p className="text-xs text-muted mt-0.5">{fmtBytes(r.originalSize)} → {fmtBytes(r.newSize)}</p>
-                </div>
-                <div className="flex items-center gap-2 flex-shrink-0">
-                  <a href={r.url} download={r.name}
-                    className="flex items-center gap-1.5 px-3 py-1.5 bg-primary text-white text-xs font-bold rounded-lg hover:bg-primary-hover transition-colors">
-                    <Download size={13} /> Download
-                  </a>
-                  <button onClick={() => removeResult(r.name)}
-                    className="p-1.5 text-muted hover:text-red-500 transition-colors">
-                    <X size={14} />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-foreground truncate">{uploaded.file.name}</p>
+                    <p className="text-xs text-muted mt-0.5">{fmtBytes(uploaded.file.size)}</p>
+                    <p className="text-xs text-muted mt-1">
+                      {uploaded.width} x {uploaded.height} px
+                    </p>
+                  </div>
+                  <button
+                    onClick={removeFile}
+                    className="p-1.5 text-muted hover:text-red-500 transition-colors flex-shrink-0"
+                  >
+                    <span className="sr-only">Remove</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                   </button>
                 </div>
               </div>
-            ))}
-          </div>
-        )}
 
-        {/* Info */}
-        <div className="bg-card border border-border rounded-2xl p-5 space-y-3">
-          <div className="flex items-center gap-2">
-            <Maximize2 size={16} className="text-primary" />
-            <h3 className="text-sm font-bold text-foreground">How upscaling works</h3>
-          </div>
-          <p className="text-sm text-muted leading-relaxed">
-            Your image is enlarged server-side using Lanczos3 resampling via Sharp (libvips). A mild sharpening pass
-            is applied to preserve detail at the new resolution. Maximum output is 8192 x 8192 pixels. Files are
-            never stored on our servers.
-          </p>
+              {/* Scale pills */}
+              <div className="bg-card border border-border rounded-2xl p-6 space-y-4">
+                <span className="text-sm font-semibold text-foreground block">Scale Factor</span>
+                <div className="flex gap-3">
+                  {([2, 4] as const).map((s) => (
+                    <button
+                      key={s}
+                      onClick={() => setScale(s)}
+                      className={`flex-1 px-4 py-3 text-sm font-bold rounded-full border transition-all text-center ${
+                        scale === s
+                          ? "border-primary bg-primary-light text-primary"
+                          : "border-border text-foreground hover:border-primary/40"
+                      }`}
+                    >
+                      {s}x
+                    </button>
+                  ))}
+                </div>
+
+                {/* Estimated output */}
+                <div className="flex items-center justify-center gap-3 text-sm text-muted">
+                  <span>{uploaded.width} x {uploaded.height}</span>
+                  <ArrowRight size={14} className="text-primary" />
+                  <span className="text-primary font-bold">{estimatedWidth} x {estimatedHeight}</span>
+                </div>
+              </div>
+
+              {/* Upscale button */}
+              <button
+                onClick={upscaleImage}
+                className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-primary text-white text-base font-bold rounded-2xl hover:bg-primary-hover transition-colors shadow-lg"
+              >
+                <Maximize2 size={18} />
+                Upscale Image
+              </button>
+            </div>
+          )}
+
+          {/* Error */}
+          {error && (
+            <div className="max-w-xl mx-auto mt-4 flex items-center gap-2 text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
+              <ImageIcon size={16} />
+              {error}
+            </div>
+          )}
         </div>
+      )}
+
+      {/* --- STAGE 2: Upscaling --- */}
+      {stage === "upscaling" && (
+        <div className="max-w-md mx-auto px-4 py-32 text-center space-y-6">
+          <Loader2 size={48} className="animate-spin text-primary mx-auto" />
+          <div>
+            <h2 className="text-xl font-bold text-foreground mb-1">Upscaling your image...</h2>
+            <p className="text-sm text-muted">This may take a moment for large images</p>
+          </div>
+        </div>
+      )}
+
+      {/* --- STAGE 3: Done --- */}
+      {stage === "done" && resultUrl && (
+        <div className="max-w-3xl mx-auto px-4 py-12 space-y-6">
+          {/* Success card */}
+          <div className="bg-green-50 border border-green-200 rounded-2xl p-6 text-center space-y-2">
+            <CheckCircle2 size={40} className="text-green-500 mx-auto" />
+            <h2 className="text-xl font-bold text-foreground">Image upscaled!</h2>
+            <div className="flex items-center justify-center gap-3 text-sm text-green-700">
+              <span>{origDims.w} x {origDims.h}</span>
+              <ArrowRight size={14} />
+              <span className="font-bold">{newDims.w} x {newDims.h}</span>
+            </div>
+            <p className="text-xs text-muted">
+              {uploaded ? fmtBytes(uploaded.file.size) : ""} &rarr; {fmtBytes(resultSize)}
+            </p>
+          </div>
+
+          {/* Download button */}
+          <button
+            onClick={downloadResult}
+            className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-primary text-white text-base font-bold rounded-2xl hover:bg-primary-hover transition-colors shadow-lg"
+          >
+            <Download size={18} />
+            Download Upscaled Image
+          </button>
+
+          {/* Start over */}
+          <button
+            onClick={reset}
+            className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-bold text-muted border border-border rounded-xl hover:border-primary/40 transition-colors"
+          >
+            Upscale Another Image
+          </button>
+        </div>
+      )}
+
+      {/* --- Bottom section (always visible) --- */}
+      <div className="max-w-3xl mx-auto px-4 pb-12 space-y-8">
+        {stage === "upload" && (
+          <>
+            {/* How it works */}
+            <div className="bg-card border border-border rounded-2xl p-6">
+              <h2 className="font-bold text-foreground mb-4">How it works</h2>
+              <div className="grid grid-cols-3 gap-4 text-center">
+                {[
+                  { step: "1", title: "Upload", desc: "Select an image from your device" },
+                  { step: "2", title: "Choose scale", desc: "Pick 2x or 4x enlargement factor" },
+                  { step: "3", title: "Download", desc: "Get your upscaled image instantly" },
+                ].map(({ step, title, desc }) => (
+                  <div key={step} className="space-y-2">
+                    <div className="w-8 h-8 rounded-full bg-primary text-white text-sm font-bold flex items-center justify-center mx-auto">
+                      {step}
+                    </div>
+                    <p className="text-sm font-semibold text-foreground">{title}</p>
+                    <p className="text-xs text-muted">{desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Features */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {[
+                { label: "2x & 4x upscale", sub: "Up to 8192px" },
+                { label: "Lanczos3 resampling", sub: "Sharp results" },
+                { label: "No sign-up", sub: "Free forever" },
+                { label: "Files never stored", sub: "100% private" },
+              ].map(({ label, sub }) => (
+                <div key={label} className="bg-card border border-border rounded-xl p-3 text-center">
+                  <p className="text-xs font-bold text-foreground">{label}</p>
+                  <p className="text-[10px] text-muted">{sub}</p>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
 
         {/* Related Tools */}
         <div>
           <h3 className="text-sm font-bold text-muted uppercase tracking-wider mb-3">Related Tools</h3>
           <div className="grid grid-cols-3 gap-3">
             {[
-              { href: "/tools/compress",       icon: Minimize2, label: "Compress" },
-              { href: "/tools/crop",           icon: Crop,      label: "Crop" },
-              { href: "/tools/photo-editor",   icon: Wand2,     label: "Photo Editor" },
+              { href: "/tools/compress", icon: Minimize2, label: "Compress Image" },
+              { href: "/tools/crop", icon: Crop, label: "Crop Image" },
+              { href: "/tools/photo-editor", icon: Wand2, label: "Photo Editor" },
             ].map(({ href, icon: Icon, label }) => (
               <Link key={href} href={href}
                 className="flex flex-col items-center gap-2 p-3 rounded-xl border border-border hover:border-primary/30 hover:shadow-sm transition-all text-center group">
@@ -314,8 +369,6 @@ export default function UpscalePage() {
           </div>
         </div>
       </div>
-
-      <UpgradeModal isOpen={showUpgrade} onClose={() => setShowUpgrade(false)} />
     </div>
   );
 }
