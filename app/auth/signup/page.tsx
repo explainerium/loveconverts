@@ -65,10 +65,9 @@ export default function SignUpPage() {
       const result = await signIn("credentials", { email, password, redirect: false });
       if (result?.error) {
         setError("Account created! Please sign in.");
-        router.push("/auth/signin");
+        window.location.href = "/auth/signin";
       } else {
-        router.push("/dashboard");
-        router.refresh();
+        window.location.href = "/dashboard";
       }
     } catch {
       setError("Something went wrong. Please try again.");
@@ -168,8 +167,8 @@ export default function SignUpPage() {
           {/* Social Login Buttons — use direct links as fallback */}
           <div className="flex flex-col gap-2">
             <a
-              href="/api/auth/signin/google?callbackUrl=/"
-              onClick={(e) => { e.preventDefault(); signIn("google", { callbackUrl: "/" }); }}
+              href="/api/auth/signin/google?callbackUrl=/dashboard"
+              onClick={(e) => { e.preventDefault(); signIn("google", { callbackUrl: "/dashboard" }); }}
               className="w-full py-2.5 rounded-xl text-sm font-medium border border-border hover:border-[#FF4747]/40 hover:shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
               <svg width="18" height="18" viewBox="0 0 48 48">
@@ -182,8 +181,8 @@ export default function SignUpPage() {
             </a>
 
             <a
-              href="/api/auth/signin/github?callbackUrl=/"
-              onClick={(e) => { e.preventDefault(); signIn("github", { callbackUrl: "/" }); }}
+              href="/api/auth/signin/github?callbackUrl=/dashboard"
+              onClick={(e) => { e.preventDefault(); signIn("github", { callbackUrl: "/dashboard" }); }}
               className="w-full py-2.5 rounded-xl text-sm font-medium border border-border hover:border-[#FF4747]/40 hover:shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
