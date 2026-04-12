@@ -1,0 +1,143 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="scBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF5500"/>
+      <stop offset="100%" style="stop-color:#FF8800"/>
+    </linearGradient>
+    <linearGradient id="scDark" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" style="stop-color:#CC4400"/>
+      <stop offset="100%" style="stop-color:#FF5500"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Orange gradient background -->
+  <rect width="1200" height="630" fill="url(#scBg)"/>
+
+  <!-- Decorative large circles -->
+  <circle cx="1050" cy="550" r="250" fill="#E64D00" opacity="0.2"/>
+  <circle cx="150" cy="100" r="150" fill="#FF7700" opacity="0.15"/>
+  <circle cx="600" cy="630" r="300" fill="#CC4400" opacity="0.08"/>
+
+  <!-- Title -->
+  <text x="600" y="80" font-family="Arial, sans-serif" font-size="52" font-weight="bold" fill="#fff" text-anchor="middle">Download SoundCloud Music</text>
+  <text x="600" y="120" font-family="Arial, sans-serif" font-size="22" fill="#FFE0CC" text-anchor="middle">Free, fast, and no account needed</text>
+
+  <!-- WAVEFORM VISUALIZATION -->
+  <g transform="translate(100, 350)">
+    <!-- Waveform bars - varying heights creating a music waveform pattern -->
+    <g fill="#fff" opacity="0.85">
+      <rect x="0" y="-20" width="8" height="40" rx="4"/>
+      <rect x="14" y="-35" width="8" height="70" rx="4"/>
+      <rect x="28" y="-50" width="8" height="100" rx="4"/>
+      <rect x="42" y="-30" width="8" height="60" rx="4"/>
+      <rect x="56" y="-65" width="8" height="130" rx="4"/>
+      <rect x="70" y="-45" width="8" height="90" rx="4"/>
+      <rect x="84" y="-75" width="8" height="150" rx="4"/>
+      <rect x="98" y="-55" width="8" height="110" rx="4"/>
+      <rect x="112" y="-85" width="8" height="170" rx="4"/>
+      <rect x="126" y="-60" width="8" height="120" rx="4"/>
+      <rect x="140" y="-90" width="8" height="180" rx="4"/>
+      <rect x="154" y="-70" width="8" height="140" rx="4"/>
+      <rect x="168" y="-95" width="8" height="190" rx="4"/>
+      <rect x="182" y="-80" width="8" height="160" rx="4"/>
+      <rect x="196" y="-100" width="8" height="200" rx="4"/>
+      <rect x="210" y="-85" width="8" height="170" rx="4"/>
+      <rect x="224" y="-95" width="8" height="190" rx="4"/>
+      <rect x="238" y="-75" width="8" height="150" rx="4"/>
+      <rect x="252" y="-90" width="8" height="180" rx="4"/>
+      <rect x="266" y="-70" width="8" height="140" rx="4"/>
+      <rect x="280" y="-80" width="8" height="160" rx="4"/>
+      <rect x="294" y="-60" width="8" height="120" rx="4"/>
+    </g>
+    <!-- Unplayed portion (dimmer) -->
+    <g fill="#fff" opacity="0.3">
+      <rect x="308" y="-85" width="8" height="170" rx="4"/>
+      <rect x="322" y="-65" width="8" height="130" rx="4"/>
+      <rect x="336" y="-90" width="8" height="180" rx="4"/>
+      <rect x="350" y="-50" width="8" height="100" rx="4"/>
+      <rect x="364" y="-75" width="8" height="150" rx="4"/>
+      <rect x="378" y="-55" width="8" height="110" rx="4"/>
+      <rect x="392" y="-80" width="8" height="160" rx="4"/>
+      <rect x="406" y="-40" width="8" height="80" rx="4"/>
+      <rect x="420" y="-70" width="8" height="140" rx="4"/>
+      <rect x="434" y="-60" width="8" height="120" rx="4"/>
+      <rect x="448" y="-85" width="8" height="170" rx="4"/>
+      <rect x="462" y="-45" width="8" height="90" rx="4"/>
+      <rect x="476" y="-75" width="8" height="150" rx="4"/>
+      <rect x="490" y="-55" width="8" height="110" rx="4"/>
+      <rect x="504" y="-65" width="8" height="130" rx="4"/>
+      <rect x="518" y="-40" width="8" height="80" rx="4"/>
+      <rect x="532" y="-70" width="8" height="140" rx="4"/>
+      <rect x="546" y="-50" width="8" height="100" rx="4"/>
+      <rect x="560" y="-60" width="8" height="120" rx="4"/>
+      <rect x="574" y="-35" width="8" height="70" rx="4"/>
+      <rect x="588" y="-55" width="8" height="110" rx="4"/>
+      <rect x="602" y="-45" width="8" height="90" rx="4"/>
+      <rect x="616" y="-70" width="8" height="140" rx="4"/>
+      <rect x="630" y="-30" width="8" height="60" rx="4"/>
+      <rect x="644" y="-50" width="8" height="100" rx="4"/>
+      <rect x="658" y="-40" width="8" height="80" rx="4"/>
+      <rect x="672" y="-55" width="8" height="110" rx="4"/>
+      <rect x="686" y="-25" width="8" height="50" rx="4"/>
+      <rect x="700" y="-45" width="8" height="90" rx="4"/>
+      <rect x="714" y="-35" width="8" height="70" rx="4"/>
+      <rect x="728" y="-50" width="8" height="100" rx="4"/>
+      <rect x="742" y="-20" width="8" height="40" rx="4"/>
+      <rect x="756" y="-40" width="8" height="80" rx="4"/>
+      <rect x="770" y="-30" width="8" height="60" rx="4"/>
+      <rect x="784" y="-45" width="8" height="90" rx="4"/>
+      <rect x="798" y="-20" width="8" height="40" rx="4"/>
+      <rect x="812" y="-35" width="8" height="70" rx="4"/>
+      <rect x="826" y="-25" width="8" height="50" rx="4"/>
+      <rect x="840" y="-40" width="8" height="80" rx="4"/>
+      <rect x="854" y="-15" width="8" height="30" rx="4"/>
+      <rect x="868" y="-30" width="8" height="60" rx="4"/>
+      <rect x="882" y="-20" width="8" height="40" rx="4"/>
+      <rect x="896" y="-35" width="8" height="70" rx="4"/>
+      <rect x="910" y="-15" width="8" height="30" rx="4"/>
+      <rect x="924" y="-25" width="8" height="50" rx="4"/>
+      <rect x="938" y="-20" width="8" height="40" rx="4"/>
+      <rect x="952" y="-30" width="8" height="60" rx="4"/>
+      <rect x="966" y="-10" width="8" height="20" rx="4"/>
+      <rect x="980" y="-20" width="8" height="40" rx="4"/>
+      <rect x="994" y="-10" width="8" height="20" rx="4"/>
+    </g>
+
+    <!-- Playhead line -->
+    <line x1="304" y1="-110" x2="304" y2="110" stroke="#fff" stroke-width="3" opacity="0.9"/>
+    <circle cx="304" cy="-110" r="6" fill="#fff"/>
+  </g>
+
+  <!-- Progress time -->
+  <text x="150" y="510" font-family="Arial, sans-serif" font-size="16" fill="#FFE0CC" opacity="0.8">1:47</text>
+  <text x="1050" y="510" font-family="Arial, sans-serif" font-size="16" fill="#FFE0CC" text-anchor="end" opacity="0.5">4:23</text>
+
+  <!-- DOWNLOAD BUTTON -->
+  <g transform="translate(520, 530)">
+    <rect x="0" y="0" width="200" height="56" rx="28" fill="#fff"/>
+    <!-- Download arrow -->
+    <line x1="82" y1="14" x2="82" y2="36" stroke="#FF5500" stroke-width="3.5" stroke-linecap="round"/>
+    <polyline points="72,28 82,38 92,28" fill="none" stroke="#FF5500" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Tray -->
+    <line x1="70" y1="40" x2="94" y2="40" stroke="#FF5500" stroke-width="3" stroke-linecap="round"/>
+    <text x="130" y="34" font-family="Arial, sans-serif" font-size="18" fill="#FF5500" font-weight="bold">MP3</text>
+  </g>
+
+  <!-- SoundCloud-style cloud icon (top right) -->
+  <g transform="translate(980, 160)" opacity="0.2">
+    <circle cx="0" cy="0" r="35" fill="#fff"/>
+    <circle cx="30" cy="-10" r="40" fill="#fff"/>
+    <circle cx="65" cy="0" r="30" fill="#fff"/>
+    <rect x="-25" y="0" width="115" height="30" rx="0" fill="#fff"/>
+  </g>
+
+  <!-- Music notes floating -->
+  <g fill="#fff" opacity="0.15">
+    <text x="850" y="180" font-family="Arial, sans-serif" font-size="40">&#9835;</text>
+    <text x="920" y="130" font-family="Arial, sans-serif" font-size="30">&#9834;</text>
+    <text x="780" y="140" font-family="Arial, sans-serif" font-size="35">&#9833;</text>
+  </g>
+
+  <!-- Branding -->
+  <text x="1150" y="600" font-family="Arial, sans-serif" font-size="18" fill="#FFE0CC" text-anchor="end" opacity="0.8">LoveConverts</text>
+</svg>

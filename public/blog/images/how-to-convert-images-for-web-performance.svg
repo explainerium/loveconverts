@@ -1,0 +1,144 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="greenBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#22c55e"/>
+      <stop offset="100%" style="stop-color:#16a34a"/>
+    </linearGradient>
+    <linearGradient id="gaugeArc" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#EF4444"/>
+      <stop offset="40%" style="stop-color:#FBBF24"/>
+      <stop offset="100%" style="stop-color:#4ADE80"/>
+    </linearGradient>
+    <linearGradient id="speedNeedle" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#fff"/>
+      <stop offset="100%" style="stop-color:#DCFCE7"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Green gradient background -->
+  <rect width="1200" height="630" fill="url(#greenBg)"/>
+
+  <!-- Decorative speed lines -->
+  <g opacity="0.08" stroke="#fff" stroke-width="2">
+    <line x1="0" y1="100" x2="400" y2="100"/>
+    <line x1="0" y1="150" x2="350" y2="150"/>
+    <line x1="0" y1="200" x2="280" y2="200"/>
+    <line x1="0" y1="400" x2="320" y2="400"/>
+    <line x1="0" y1="450" x2="250" y2="450"/>
+    <line x1="0" y1="500" x2="380" y2="500"/>
+  </g>
+
+  <!-- Large decorative circles -->
+  <circle cx="950" cy="500" r="200" fill="#15803D" opacity="0.3"/>
+  <circle cx="200" cy="150" r="100" fill="#4ADE80" opacity="0.15"/>
+
+  <!-- SPEED GAUGE -->
+  <g transform="translate(350, 370)">
+    <!-- Gauge background arc -->
+    <path d="M-140,0 A140,140 0 0,1 140,0" fill="none" stroke="#fff" stroke-width="16" opacity="0.15"/>
+
+    <!-- Red zone -->
+    <path d="M-140,0 A140,140 0 0,1 -108,-88" fill="none" stroke="#EF4444" stroke-width="16" opacity="0.5" stroke-linecap="round"/>
+    <!-- Yellow zone -->
+    <path d="M-108,-88 A140,140 0 0,1 0,-140" fill="none" stroke="#FBBF24" stroke-width="16" opacity="0.5" stroke-linecap="round"/>
+    <!-- Green zone (active) -->
+    <path d="M0,-140 A140,140 0 0,1 140,0" fill="none" stroke="#fff" stroke-width="16" opacity="0.9" stroke-linecap="round"/>
+
+    <!-- Tick marks -->
+    <g stroke="#fff" stroke-width="2" opacity="0.4">
+      <line x1="-130" y1="0" x2="-115" y2="0"/>
+      <line x1="-120" y1="-50" x2="-107" y2="-44"/>
+      <line x1="-92" y1="-92" x2="-82" y2="-82"/>
+      <line x1="-50" y1="-120" x2="-44" y2="-107"/>
+      <line x1="0" y1="-130" x2="0" y2="-115"/>
+      <line x1="50" y1="-120" x2="44" y2="-107"/>
+      <line x1="92" y1="-92" x2="82" y2="-82"/>
+      <line x1="120" y1="-50" x2="107" y2="-44"/>
+      <line x1="130" y1="0" x2="115" y2="0"/>
+    </g>
+
+    <!-- Speed labels -->
+    <text x="-130" y="25" font-family="Arial, sans-serif" font-size="14" fill="#fff" text-anchor="middle" opacity="0.6">Slow</text>
+    <text x="0" y="-145" font-family="Arial, sans-serif" font-size="14" fill="#fff" text-anchor="middle" opacity="0.6">Med</text>
+    <text x="130" y="25" font-family="Arial, sans-serif" font-size="14" fill="#fff" text-anchor="middle" opacity="0.8">Fast</text>
+
+    <!-- Needle pointing to fast/green zone -->
+    <line x1="0" y1="0" x2="100" y2="-70" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="0" cy="0" r="10" fill="#fff"/>
+    <circle cx="0" cy="0" r="5" fill="#22c55e"/>
+
+    <!-- Score text -->
+    <text x="0" y="50" font-family="Arial, sans-serif" font-size="42" font-weight="bold" fill="#fff" text-anchor="middle">98</text>
+    <text x="0" y="75" font-family="Arial, sans-serif" font-size="16" fill="#DCFCE7" text-anchor="middle">Performance Score</text>
+  </g>
+
+  <!-- Flying image icons -->
+  <!-- Image 1 - fastest, at front -->
+  <g transform="translate(750, 200)">
+    <rect x="0" y="0" width="60" height="48" rx="6" fill="#fff" opacity="0.9"/>
+    <rect x="4" y="4" width="52" height="30" rx="3" fill="#DCFCE7"/>
+    <circle cx="18" cy="15" r="5" fill="#4ADE80"/>
+    <polygon points="10,30 25,18 40,30 52,22 52,34 4,34" fill="#22c55e" opacity="0.6"/>
+    <text x="30" y="44" font-family="Arial, sans-serif" font-size="8" fill="#16a34a" text-anchor="middle" font-weight="bold">WebP</text>
+    <!-- Speed trail -->
+    <line x1="-10" y1="24" x2="-50" y2="24" stroke="#fff" stroke-width="2" opacity="0.3" stroke-linecap="round"/>
+    <line x1="-10" y1="16" x2="-35" y2="16" stroke="#fff" stroke-width="1.5" opacity="0.2" stroke-linecap="round"/>
+    <line x1="-10" y1="32" x2="-40" y2="32" stroke="#fff" stroke-width="1.5" opacity="0.2" stroke-linecap="round"/>
+  </g>
+
+  <!-- Image 2 -->
+  <g transform="translate(830, 130)">
+    <rect x="0" y="0" width="50" height="40" rx="5" fill="#fff" opacity="0.7"/>
+    <rect x="3" y="3" width="44" height="25" rx="2" fill="#DCFCE7"/>
+    <text x="25" y="37" font-family="Arial, sans-serif" font-size="7" fill="#16a34a" text-anchor="middle" font-weight="bold">AVIF</text>
+    <line x1="-8" y1="20" x2="-35" y2="20" stroke="#fff" stroke-width="1.5" opacity="0.2" stroke-linecap="round"/>
+  </g>
+
+  <!-- Image 3 -->
+  <g transform="translate(800, 300)">
+    <rect x="0" y="0" width="45" height="36" rx="5" fill="#fff" opacity="0.6"/>
+    <rect x="3" y="3" width="39" height="22" rx="2" fill="#DCFCE7"/>
+    <text x="22" y="33" font-family="Arial, sans-serif" font-size="7" fill="#16a34a" text-anchor="middle" font-weight="bold">PNG</text>
+    <line x1="-8" y1="18" x2="-30" y2="18" stroke="#fff" stroke-width="1.5" opacity="0.15" stroke-linecap="round"/>
+  </g>
+
+  <!-- Lightning bolt icon -->
+  <g transform="translate(1000, 250)">
+    <polygon points="0,-40 -15,5 5,0 0,40 20,-5 0,0" fill="#FBBF24" opacity="0.8"/>
+  </g>
+
+  <!-- Right side metrics -->
+  <g transform="translate(920, 380)">
+    <!-- File size comparison -->
+    <rect x="0" y="0" width="200" height="36" rx="8" fill="#fff" opacity="0.15"/>
+    <rect x="4" y="4" width="30" height="28" rx="5" fill="#fff" opacity="0.2"/>
+    <text x="19" y="24" font-family="Arial, sans-serif" font-size="10" fill="#fff" text-anchor="middle" font-weight="bold">5MB</text>
+    <text x="60" y="24" font-family="Arial, sans-serif" font-size="16" fill="#fff" text-anchor="middle">&#8594;</text>
+    <rect x="80" y="4" width="50" height="28" rx="5" fill="#fff" opacity="0.3"/>
+    <text x="105" y="24" font-family="Arial, sans-serif" font-size="11" fill="#fff" text-anchor="middle" font-weight="bold">200KB</text>
+    <text x="155" y="24" font-family="Arial, sans-serif" font-size="13" fill="#FBBF24" text-anchor="middle" font-weight="bold">-96%</text>
+  </g>
+
+  <!-- Title -->
+  <text x="600" y="65" font-family="Arial, sans-serif" font-size="54" font-weight="bold" fill="#fff" text-anchor="middle">Images for Web Speed</text>
+  <text x="600" y="100" font-family="Arial, sans-serif" font-size="22" fill="#DCFCE7" text-anchor="middle">Optimize images for lightning-fast page loads</text>
+
+  <!-- Bottom bar with format badges -->
+  <g transform="translate(280, 540)">
+    <rect x="0" y="0" width="70" height="30" rx="15" fill="#fff" opacity="0.2"/>
+    <text x="35" y="20" font-family="Arial, sans-serif" font-size="13" fill="#fff" text-anchor="middle" font-weight="bold">WebP</text>
+    <rect x="85" y="0" width="70" height="30" rx="15" fill="#fff" opacity="0.2"/>
+    <text x="120" y="20" font-family="Arial, sans-serif" font-size="13" fill="#fff" text-anchor="middle" font-weight="bold">AVIF</text>
+    <rect x="170" y="0" width="70" height="30" rx="15" fill="#fff" opacity="0.2"/>
+    <text x="205" y="20" font-family="Arial, sans-serif" font-size="13" fill="#fff" text-anchor="middle" font-weight="bold">JPG</text>
+    <rect x="255" y="0" width="70" height="30" rx="15" fill="#fff" opacity="0.2"/>
+    <text x="290" y="20" font-family="Arial, sans-serif" font-size="13" fill="#fff" text-anchor="middle" font-weight="bold">PNG</text>
+    <rect x="340" y="0" width="90" height="30" rx="15" fill="#fff" opacity="0.2"/>
+    <text x="385" y="20" font-family="Arial, sans-serif" font-size="13" fill="#fff" text-anchor="middle" font-weight="bold">Lazy Load</text>
+    <rect x="445" y="0" width="70" height="30" rx="15" fill="#fff" opacity="0.2"/>
+    <text x="480" y="20" font-family="Arial, sans-serif" font-size="13" fill="#fff" text-anchor="middle" font-weight="bold">CDN</text>
+  </g>
+
+  <!-- Branding -->
+  <text x="1150" y="600" font-family="Arial, sans-serif" font-size="18" fill="#DCFCE7" text-anchor="end" opacity="0.8">LoveConverts</text>
+</svg>

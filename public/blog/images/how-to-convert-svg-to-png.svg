@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <pattern id="pixelGrid" width="20" height="20" patternUnits="userSpaceOnUse">
+      <rect width="20" height="20" fill="none" stroke="#D1D5DB" stroke-width="0.5"/>
+    </pattern>
+    <linearGradient id="redGrad1" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#FF4747"/>
+      <stop offset="100%" style="stop-color:#FF6B6B"/>
+    </linearGradient>
+    <clipPath id="rightClip">
+      <rect x="600" y="0" width="600" height="630"/>
+    </clipPath>
+    <clipPath id="leftClip">
+      <rect x="0" y="0" width="600" height="630"/>
+    </clipPath>
+  </defs>
+
+  <!-- Light gray background -->
+  <rect width="1200" height="630" fill="#F3F4F6"/>
+
+  <!-- Subtle grid on right side (pixel/raster feel) -->
+  <rect x="600" y="0" width="600" height="630" fill="url(#pixelGrid)" opacity="0.6"/>
+
+  <!-- Diagonal divider line -->
+  <line x1="560" y1="0" x2="640" y2="630" stroke="#FF4747" stroke-width="3" opacity="0.4"/>
+
+  <!-- LEFT SIDE: Vector/SVG side -->
+  <!-- Clean vector shapes - bezier curves and smooth lines -->
+  <g opacity="0.15">
+    <circle cx="200" cy="350" r="120" fill="none" stroke="#FF4747" stroke-width="3"/>
+    <circle cx="200" cy="350" r="80" fill="none" stroke="#FF4747" stroke-width="2"/>
+    <circle cx="200" cy="350" r="40" fill="none" stroke="#FF4747" stroke-width="1.5"/>
+  </g>
+
+  <!-- Vector path lines (smooth beziers) -->
+  <path d="M80,420 Q200,300 320,380 Q440,460 560,350" fill="none" stroke="#FF4747" stroke-width="3" opacity="0.3"/>
+  <path d="M80,460 Q200,340 320,420 Q440,500 560,390" fill="none" stroke="#FF4747" stroke-width="2" opacity="0.2"/>
+
+  <!-- Anchor points on bezier -->
+  <circle cx="80" cy="420" r="5" fill="#FF4747" opacity="0.5"/>
+  <circle cx="200" cy="300" r="5" fill="none" stroke="#FF4747" stroke-width="2" opacity="0.5"/>
+  <circle cx="320" cy="380" r="5" fill="#FF4747" opacity="0.5"/>
+  <circle cx="440" cy="460" r="5" fill="none" stroke="#FF4747" stroke-width="2" opacity="0.5"/>
+  <circle cx="560" cy="350" r="5" fill="#FF4747" opacity="0.5"/>
+
+  <!-- Control point handles -->
+  <line x1="80" y1="420" x2="200" y2="300" stroke="#FF4747" stroke-width="1" opacity="0.25" stroke-dasharray="4,4"/>
+  <line x1="320" y1="380" x2="440" y2="460" stroke="#FF4747" stroke-width="1" opacity="0.25" stroke-dasharray="4,4"/>
+
+  <!-- Vector star shape -->
+  <polygon points="180,180 195,220 238,220 203,245 215,285 180,260 145,285 157,245 122,220 165,220" fill="none" stroke="#FF4747" stroke-width="2.5" opacity="0.35"/>
+
+  <!-- SVG label -->
+  <rect x="100" y="490" width="100" height="44" rx="8" fill="#FF4747" opacity="0.9"/>
+  <text x="150" y="519" font-family="Arial, sans-serif" font-size="22" font-weight="bold" fill="#fff" text-anchor="middle">SVG</text>
+
+  <!-- RIGHT SIDE: Pixel/PNG side -->
+  <!-- Pixelated star (same star but in pixel blocks) -->
+  <g opacity="0.3">
+    <rect x="760" y="180" width="20" height="20" fill="#FF4747"/>
+    <rect x="780" y="180" width="20" height="20" fill="#FF4747"/>
+    <rect x="740" y="200" width="20" height="20" fill="#FF6B6B"/>
+    <rect x="760" y="200" width="20" height="20" fill="#FF4747"/>
+    <rect x="780" y="200" width="20" height="20" fill="#FF4747"/>
+    <rect x="800" y="200" width="20" height="20" fill="#FF6B6B"/>
+    <rect x="700" y="220" width="20" height="20" fill="#FF4747"/>
+    <rect x="720" y="220" width="20" height="20" fill="#FF4747"/>
+    <rect x="740" y="220" width="20" height="20" fill="#FF4747"/>
+    <rect x="760" y="220" width="20" height="20" fill="#FF4747"/>
+    <rect x="780" y="220" width="20" height="20" fill="#FF4747"/>
+    <rect x="800" y="220" width="20" height="20" fill="#FF4747"/>
+    <rect x="820" y="220" width="20" height="20" fill="#FF4747"/>
+    <rect x="840" y="220" width="20" height="20" fill="#FF4747"/>
+    <rect x="720" y="240" width="20" height="20" fill="#FF6B6B"/>
+    <rect x="740" y="240" width="20" height="20" fill="#FF4747"/>
+    <rect x="760" y="240" width="20" height="20" fill="#FF4747"/>
+    <rect x="780" y="240" width="20" height="20" fill="#FF4747"/>
+    <rect x="800" y="240" width="20" height="20" fill="#FF4747"/>
+    <rect x="820" y="240" width="20" height="20" fill="#FF6B6B"/>
+    <rect x="740" y="260" width="20" height="20" fill="#FF4747"/>
+    <rect x="760" y="260" width="20" height="20" fill="#FF6B6B"/>
+    <rect x="780" y="260" width="20" height="20" fill="#FF6B6B"/>
+    <rect x="800" y="260" width="20" height="20" fill="#FF4747"/>
+    <rect x="720" y="280" width="20" height="20" fill="#FF4747"/>
+    <rect x="740" y="280" width="20" height="20" fill="#FF6B6B"/>
+    <rect x="800" y="280" width="20" height="20" fill="#FF6B6B"/>
+    <rect x="820" y="280" width="20" height="20" fill="#FF4747"/>
+  </g>
+
+  <!-- PNG label -->
+  <rect x="840" y="490" width="100" height="44" rx="8" fill="#4B5563"/>
+  <text x="890" y="519" font-family="Arial, sans-serif" font-size="22" font-weight="bold" fill="#fff" text-anchor="middle">PNG</text>
+
+  <!-- Large arrow in center -->
+  <line x1="520" y1="500" x2="680" y2="500" stroke="url(#redGrad1)" stroke-width="5" stroke-linecap="round"/>
+  <polygon points="680,485 720,500 680,515" fill="#FF6B6B"/>
+
+  <!-- Title text -->
+  <text x="600" y="80" font-family="Arial, sans-serif" font-size="64" font-weight="bold" fill="#1F2937" text-anchor="middle">SVG to PNG</text>
+  <text x="600" y="120" font-family="Arial, sans-serif" font-size="24" fill="#6B7280" text-anchor="middle">Convert Vector Graphics to Raster Images</text>
+
+  <!-- Branding -->
+  <text x="1150" y="600" font-family="Arial, sans-serif" font-size="18" fill="#9CA3AF" text-anchor="end" opacity="0.8">LoveConverts</text>
+</svg>

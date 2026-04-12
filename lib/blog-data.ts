@@ -2212,6 +2212,546 @@ export const BLOG_POSTS: BlogPost[] = [
 <p>After converting, use the <a href="/tools/compress">compressor</a> if you need the JPGs even smaller. The combination of TIFF to JPG conversion plus compression at quality 80 can reduce a 30MB TIFF to under 500KB.</p>
 `,
   },
+
+  // ── POST 31 ──
+  {
+    slug: "how-to-convert-svg-to-png",
+    metaTitle: "How to Convert SVG to PNG Free Online - Keep Quality Sharp",
+    metaDescription: "Convert SVG vector files to PNG raster images for free. Choose your output size and get pixel-perfect results. No software or signup needed.",
+    h1: "How to Convert SVG to PNG Free Online",
+    excerpt: "SVG files are great for logos and icons, but many platforms only accept PNG. Here is how to convert SVG to PNG at any resolution while keeping edges sharp.",
+    featuredImage: "/blog/images/how-to-convert-svg-to-png.svg",
+    publishDate: "April 12, 2026",
+    readTime: "5 min read",
+    category: "Guides",
+    tags: ["svg", "png", "conversion", "vector"],
+    relatedTools: [
+      { label: "Image Converter", href: "/" },
+      { label: "Resize Image", href: "/tools/resize" },
+      { label: "Remove Background", href: "/tools/remove-background" },
+    ],
+    faq: [
+      { question: "Will SVG to PNG conversion lose quality?", answer: "Not if you convert at a high enough resolution. SVG is vector-based and scales to any size. When converting to PNG, choose dimensions at least as large as your intended display size. The PNG output will be pixel-perfect at that resolution." },
+      { question: "What resolution should I use?", answer: "For web use, 2x the display size is standard (e.g., 200x200 display = 400x400 PNG for retina screens). For print, use 300 DPI at the physical size you need." },
+      { question: "Can I convert SVG with transparency?", answer: "Yes. PNG supports full alpha transparency, so transparent areas in your SVG will remain transparent in the PNG output." },
+      { question: "Is there a file size limit?", answer: "Each file can be up to 20MB. Most SVG files are tiny (under 100KB) so this is rarely an issue." },
+    ],
+    content: `
+<p>You have an SVG logo or icon and need a PNG version for a platform that does not accept vector files. Or you need a rasterized version at a specific pixel size. <strong>Converting SVG to PNG</strong> is straightforward, but there is one thing most people get wrong: the output resolution.</p>
+
+<p>This guide explains how to get it right so your converted PNGs look sharp at any size.</p>
+
+<h2>Why Convert SVG to PNG?</h2>
+
+<p>SVG (Scalable Vector Graphics) is the ideal format for logos, icons, and simple illustrations. It scales to any size without losing quality because it describes shapes mathematically rather than as pixels. However, many places do not accept SVG:</p>
+
+<ul>
+<li>Social media platforms (Instagram, Facebook, Twitter) reject SVG uploads</li>
+<li>Email signatures typically need PNG or JPG</li>
+<li>Some website builders and CMS platforms only accept raster images</li>
+<li>Print shops often want PNG or TIFF, not SVG</li>
+<li>Presentation software sometimes renders SVGs inconsistently</li>
+</ul>
+
+<p>PNG is the best raster format for SVG conversion because it supports transparency and uses lossless compression, preserving the crisp edges that make vector graphics look good.</p>
+
+<h2>How to Convert SVG to PNG Online</h2>
+
+<ol>
+<li><strong>Open the <a href="/">image converter</a></strong> on LoveConverts.</li>
+<li><strong>Upload your SVG file.</strong></li>
+<li><strong>Select PNG as the output format.</strong></li>
+<li><strong>Click Convert</strong> and download the result.</li>
+</ol>
+
+<p>The converter renders the SVG at its native dimensions by default. If you need a specific size, <a href="/tools/resize">resize the PNG</a> after conversion.</p>
+
+<h2>Getting the Right Resolution (This Is Where Most People Go Wrong)</h2>
+
+<p>SVGs have no fixed pixel dimensions. They scale infinitely. When you convert to PNG, the tool must pick a specific pixel size. If you convert a logo SVG to a 100x100 PNG but then display it at 400x400 on a website, it will look blurry because you are stretching 100 pixels across 400.</p>
+
+<p>The fix: convert at 2x your intended display size. This ensures the PNG looks sharp on regular screens and retina/high-DPI displays.</p>
+
+<ul>
+<li><strong>Favicon:</strong> Convert to 512x512 (the largest favicon size needed)</li>
+<li><strong>Social media profile picture:</strong> Convert to 800x800</li>
+<li><strong>Website logo:</strong> Convert to 2x your display size (e.g., logo displays at 200px wide, convert to 400px wide)</li>
+<li><strong>Print:</strong> Calculate from DPI. For a 2-inch logo at 300 DPI, you need 600x600 pixels</li>
+</ul>
+
+<h2>SVG to PNG vs SVG to JPG: Which to Choose</h2>
+
+<p>Always choose PNG unless you have a specific reason to use JPG. Here is why:</p>
+
+<ul>
+<li><strong>PNG keeps transparency.</strong> Most SVG logos and icons have transparent backgrounds. JPG does not support transparency and fills transparent areas with white.</li>
+<li><strong>PNG is lossless.</strong> The sharp edges in vector graphics look clean in PNG but can get fuzzy artifacts in JPG.</li>
+<li><strong>File size is similar for simple graphics.</strong> PNG and JPG produce comparable file sizes for logos and icons. PNG only gets much larger for photographic content.</li>
+</ul>
+
+<p>The one exception: if you need the smallest possible file and do not need transparency, JPG at quality 90 will give you a slightly smaller file. But for logos and icons, the difference is usually just a few KB.</p>
+
+<h2>Batch Converting Multiple SVGs</h2>
+
+<p>If you have a set of SVG icons that all need PNG versions, upload them all at once. The converter handles up to 30 files in a single batch. You get a ZIP download with all the PNG files.</p>
+
+<p>After converting, you might want to <a href="/tools/compress">compress the PNGs</a> to reduce file sizes for web use. PNG compression is lossless, so the images stay pixel-perfect but take up less space.</p>
+
+<h2>When to Keep SVG Instead of Converting</h2>
+
+<p>If your target platform supports SVG, do not convert. SVG files are almost always smaller than their PNG equivalents and scale perfectly to any screen size. Modern web browsers, most design tools, and many CMS platforms support SVG natively. Only convert when the destination specifically requires a raster format.</p>
+`,
+  },
+
+  // ── POST 32 ──
+  {
+    slug: "best-free-online-image-tools-2026",
+    metaTitle: "Best Free Online Image Tools in 2026 - No Software Needed",
+    metaDescription: "The best free browser-based tools for image conversion, compression, resizing, cropping, and editing. No downloads, no signups, no watermarks.",
+    h1: "Best Free Online Image Tools in 2026",
+    excerpt: "You do not need Photoshop for basic image tasks. Here are the best free browser-based tools for converting, compressing, resizing, and editing images.",
+    featuredImage: "/blog/images/best-free-online-image-tools-2026.svg",
+    publishDate: "April 12, 2026",
+    readTime: "6 min read",
+    category: "Explained",
+    tags: ["tools", "free", "comparison", "2026"],
+    relatedTools: [
+      { label: "Image Converter", href: "/" },
+      { label: "Compress Image", href: "/tools/compress" },
+      { label: "All Tools", href: "/tools" },
+    ],
+    faq: [
+      { question: "Are these tools really free?", answer: "Yes. LoveConverts is completely free with no signup, no watermarks, and no daily limits. Some other tools listed have free tiers with limitations." },
+      { question: "Do online tools compromise quality?", answer: "No. Tools that use Sharp (like LoveConverts) produce the same output quality as desktop software. The processing happens on the server, not in your browser." },
+      { question: "Is it safe to upload images to online tools?", answer: "LoveConverts processes files in memory and never stores them. For sensitive images, check each tool's privacy policy. Avoid tools that require login or do not clearly state their data handling." },
+      { question: "Can I use these tools on my phone?", answer: "Yes. All browser-based tools work on any device with a web browser, including iPhone and Android." },
+    ],
+    content: `
+<p>Most image editing tasks do not require expensive software. Converting formats, compressing file sizes, resizing for social media, cropping, and basic editing can all be done with <strong>free online image tools</strong> right in your browser. No installation, no accounts, no learning curve.</p>
+
+<p>Here are the best tools available in 2026, organized by task.</p>
+
+<h2>Best Free Image Converter</h2>
+
+<p>For converting between image formats (JPG, PNG, WebP, AVIF, GIF, TIFF, BMP, ICO), you need a tool that handles batch conversion and supports modern formats.</p>
+
+<p>The <a href="/">LoveConverts image converter</a> handles all major formats, processes up to 30 files at once, and runs conversions server-side using Sharp (the same library Netflix and Shopify use). No signup, no watermarks. You can also use the dedicated <a href="/convert/webp-to-jpg">format-specific converters</a> if you know exactly what conversion you need.</p>
+
+<p>What sets a good converter apart: batch support, modern format support (especially AVIF and WebP), and server-side processing. Browser-only converters that use canvas are limited to 8-bit color and often produce larger files.</p>
+
+<h2>Best Free Image Compressor</h2>
+
+<p>Image compression reduces file sizes while maintaining visual quality. The key differentiator between tools is how much they compress before quality becomes noticeable.</p>
+
+<p>The <a href="/tools/compress">LoveConverts compressor</a> uses mozjpeg for JPG (the same encoder used by Facebook) and supports all major formats. It handles batch compression and lets you control quality with a slider.</p>
+
+<p>For compression, the quality setting matters more than the tool. Quality 80-85 gives you 60-70% file size reduction with invisible quality loss on any decent compressor. Below 70, differences between tools become more noticeable.</p>
+
+<h2>Best Free Image Resizer</h2>
+
+<p>Resizing is simple in concept but important to get right. The best resizers offer social media presets so you do not have to memorize platform dimensions.</p>
+
+<p>The <a href="/tools/resize">LoveConverts resizer</a> includes presets for Instagram (square, portrait, story), Facebook (post, cover), Twitter/X, LinkedIn, YouTube, and WhatsApp. Select a platform, pick the preset, and the dimensions are set automatically. It also supports batch resizing for processing multiple images at once.</p>
+
+<h2>Best Free Image Cropper</h2>
+
+<p>Cropping removes unwanted areas from an image. The best croppers give you precise control with locked aspect ratios and visual guides.</p>
+
+<p>The <a href="/tools/crop">LoveConverts crop tool</a> provides visual crop handles, aspect ratio presets (1:1, 4:3, 16:9, 9:16, 3:2), and free-form cropping. It works on mobile with touch-friendly handles.</p>
+
+<h2>Best Free Background Remover</h2>
+
+<p>Removing backgrounds used to require Photoshop skills. Now automated tools handle it in seconds. The <a href="/tools/remove-background">LoveConverts background remover</a> detects the background color and removes it with smooth edge transitions. It works best with solid-colored backgrounds and outputs transparent PNG files.</p>
+
+<p>For more complex backgrounds (busy scenes, hair detail), dedicated AI services like remove.bg produce better results but have usage limits on free tiers.</p>
+
+<h2>How to Pick the Right Tool</h2>
+
+<p>When evaluating online image tools, check for these things:</p>
+
+<ul>
+<li><strong>No signup required.</strong> If a tool requires an account just to try it, there are better options.</li>
+<li><strong>No watermarks.</strong> Some "free" tools add watermarks to output. That is not really free.</li>
+<li><strong>Batch support.</strong> Processing files one at a time wastes your time.</li>
+<li><strong>Server-side processing.</strong> Tools that process on the server produce better results than browser-only tools.</li>
+<li><strong>Privacy policy.</strong> Know whether your files are stored, for how long, and who has access.</li>
+</ul>
+
+<p>LoveConverts meets all these criteria. Every tool is free, processes server-side, supports batch operations, and never stores your files. Check the full <a href="/tools">tool listing</a> to see everything available.</p>
+`,
+  },
+
+  // ── POST 33 ──
+  {
+    slug: "how-to-fix-blurry-images",
+    metaTitle: "How to Fix Blurry Images - Sharpen Photos Free Online",
+    metaDescription: "Fix blurry, soft, or out-of-focus photos with free online sharpening tools. Practical tips on what works, what does not, and when to give up.",
+    h1: "How to Fix Blurry Images Online",
+    excerpt: "Blurry photos are frustrating, but sometimes fixable. Here is what actually works for sharpening images, and when a photo is beyond saving.",
+    featuredImage: "/blog/images/how-to-fix-blurry-images.svg",
+    publishDate: "April 12, 2026",
+    readTime: "5 min read",
+    category: "Guides",
+    tags: ["sharpen", "blurry", "image quality", "fix"],
+    relatedTools: [
+      { label: "AI Enhance", href: "/tools/enhance" },
+      { label: "Upscale Image", href: "/tools/upscale" },
+      { label: "Photo Editor", href: "/tools/photo-editor" },
+    ],
+    faq: [
+      { question: "Can you completely fix a blurry photo?", answer: "Not completely. Sharpening can recover some detail from slightly soft images, but it cannot create detail that was never captured. Heavily blurred or out-of-focus photos cannot be fully restored." },
+      { question: "Does upscaling fix blur?", answer: "The LoveConverts upscaler includes built-in sharpening that can improve slightly soft images. But upscaling a severely blurry photo just gives you a larger blurry photo." },
+      { question: "What causes blurry photos?", answer: "Camera shake, subject motion, incorrect focus, low shutter speed, dirty lens, or heavy compression. Each cause has different fixability." },
+      { question: "Is there a free tool to sharpen images?", answer: "Yes. The AI Enhance tool on LoveConverts includes sharpening as one of its processing options. The Photo Editor also has a sharpness adjustment slider." },
+    ],
+    content: `
+<p>You took what should have been a great photo, but it came out blurry. Before you delete it, there are tools that can help. <strong>Fixing blurry images</strong> is possible in many cases, but the results depend entirely on what caused the blur and how severe it is.</p>
+
+<p>This guide covers what works, what does not, and how to tell the difference.</p>
+
+<h2>What Causes Blurry Photos (and Which Are Fixable)</h2>
+
+<p>Not all blur is created equal. Understanding the cause tells you whether the photo can be rescued:</p>
+
+<ul>
+<li><strong>Camera shake (fixable):</strong> The whole image is slightly soft in one direction. Sharpening tools handle this well because the detail is still there, just smeared slightly.</li>
+<li><strong>Slight softness / low sharpening (fixable):</strong> The image looks a bit flat. This is the easiest type to fix with sharpening.</li>
+<li><strong>Subject motion (partially fixable):</strong> The background is sharp but the subject is blurred from movement. Sharpening helps a little but cannot fully freeze motion after the fact.</li>
+<li><strong>Out of focus (not fixable):</strong> If the camera focused on the wrong area, the blurred region genuinely lacks detail. No amount of sharpening can create detail that the lens did not capture.</li>
+<li><strong>Heavy compression artifacts (partially fixable):</strong> Over-compressed JPGs look blurry and blocky. Sharpening can improve edges but makes the block artifacts more visible.</li>
+</ul>
+
+<h2>How to Sharpen Slightly Blurry Images</h2>
+
+<p>For images that are slightly soft (the most common and most fixable case):</p>
+
+<ol>
+<li><strong>Open the <a href="/tools/enhance">AI Enhance tool</a>.</strong></li>
+<li><strong>Upload your blurry photo.</strong></li>
+<li><strong>Select the "Sharpen" option.</strong></li>
+<li><strong>Download the result.</strong></li>
+</ol>
+
+<p>The enhance tool applies unsharp masking and adaptive sharpening that brings out edges and fine detail without creating harsh artifacts. For most slightly soft photos, this produces a noticeably improved result.</p>
+
+<h2>Using the Photo Editor for Manual Control</h2>
+
+<p>If you want more control over the sharpening amount, the <a href="/tools/photo-editor">photo editor</a> has a sharpness slider. This lets you gradually increase sharpening and stop before it starts looking unnatural.</p>
+
+<p>A few tips for manual sharpening:</p>
+
+<ul>
+<li><strong>Start low.</strong> Apply a small amount of sharpening first. You can always add more.</li>
+<li><strong>Watch for halos.</strong> Over-sharpened images develop bright outlines (halos) around edges. If you see halos, back off the sharpening.</li>
+<li><strong>View at 100%.</strong> Sharpening effects are only visible at full resolution. Zoomed-out previews can be misleading.</li>
+</ul>
+
+<h2>When Upscaling Helps with Blur</h2>
+
+<p>The <a href="/tools/upscale">image upscaler</a> uses Lanczos3 resampling with adaptive sharpening, which can improve slightly soft images as a side effect of the upscaling process. If your image is both small and slightly blurry, upscaling to 2x can actually make it look sharper at the original display size.</p>
+
+<p>However, upscaling a severely blurry photo just gives you a larger blurry photo. The upscaler creates new pixels by interpolating existing ones. If the existing pixels are blurry, the new ones will be too.</p>
+
+<h2>When to Accept the Blur</h2>
+
+<p>Some photos cannot be saved. If the entire image is severely out of focus, no tool will fix it. The detail simply was not recorded by the camera. Signs that a photo is beyond repair:</p>
+
+<ul>
+<li>You cannot read text that should be readable</li>
+<li>Faces have no discernible features</li>
+<li>Edges look like they have been smeared with a finger</li>
+<li>The photo was taken in very low light with a phone camera</li>
+</ul>
+
+<p>In these cases, your best option is to retake the photo with better conditions: more light, a steadier hand, or tap to focus on the correct area.</p>
+
+<h2>Preventing Blurry Photos in the First Place</h2>
+
+<ul>
+<li><strong>Hold your phone with both hands.</strong> Single-handed shooting causes more shake than you think.</li>
+<li><strong>Tap to focus.</strong> Do not rely on autofocus. Tap the area you want sharp.</li>
+<li><strong>Use burst mode.</strong> Take 5-10 shots and pick the sharpest one. At least one will usually be acceptably sharp.</li>
+<li><strong>Clean your lens.</strong> Phone lenses get fingerprints and smudges that cause a soft haze. Wipe with a microfiber cloth.</li>
+<li><strong>Avoid digital zoom.</strong> Digital zoom is just cropping, which degrades quality. Walk closer instead or crop afterward using the <a href="/tools/crop">crop tool</a>.</li>
+</ul>
+`,
+  },
+
+  // ── POST 34 ──
+  {
+    slug: "how-to-convert-images-for-web-performance",
+    metaTitle: "How to Optimize Images for Web Performance - Faster Sites",
+    metaDescription: "Slow website? Images are the biggest cause. This guide covers format selection, compression, sizing, and lazy loading to cut page load times by 50%+.",
+    h1: "How to Optimize Images for Faster Web Performance",
+    excerpt: "Images account for 50-80% of most web page sizes. Here is the complete playbook for optimizing them so your site loads fast on every device.",
+    featuredImage: "/blog/images/how-to-convert-images-for-web-performance.svg",
+    publishDate: "April 12, 2026",
+    readTime: "7 min read",
+    category: "Guides",
+    tags: ["web performance", "optimization", "page speed", "core web vitals"],
+    relatedTools: [
+      { label: "Compress Image", href: "/tools/compress" },
+      { label: "Resize Image", href: "/tools/resize" },
+      { label: "JPG to WebP", href: "/convert/jpg-to-webp" },
+    ],
+    faq: [
+      { question: "How much faster will my site be after optimizing images?", answer: "Typical results: 40-60% reduction in page weight and 1-3 seconds faster load time on mobile. The exact improvement depends on how unoptimized your current images are." },
+      { question: "Does image optimization affect SEO?", answer: "Yes. Google uses Core Web Vitals (including Largest Contentful Paint) as a ranking signal. Faster-loading images directly improve LCP, which can improve your search rankings." },
+      { question: "Should I use WebP or AVIF?", answer: "WebP for maximum compatibility (100% browser support). AVIF for maximum compression (20-30% smaller than WebP) but with ~95% browser support. Ideally serve both using the HTML picture element." },
+      { question: "What quality setting should I use for web images?", answer: "Quality 80-85 for JPG and WebP. This gives 60-70% file size reduction with invisible quality loss at normal viewing distances." },
+    ],
+    content: `
+<p>If your website takes more than 3 seconds to load, you are losing visitors. Studies consistently show that 40% of people leave a site that takes longer than 3 seconds. The biggest contributor to slow load times? Images. They typically account for 50-80% of total page weight. <strong>Optimizing images for web performance</strong> is the highest-impact improvement you can make.</p>
+
+<h2>Step 1: Choose the Right Image Format</h2>
+
+<p>The format you serve has a bigger impact than any other optimization. Here is the priority order for web images in 2026:</p>
+
+<ol>
+<li><strong>AVIF:</strong> Smallest files. 50%+ smaller than JPG. 20-30% smaller than WebP. Use with fallbacks.</li>
+<li><strong>WebP:</strong> 25-35% smaller than JPG. Universal browser support. The safe default.</li>
+<li><strong>JPG:</strong> Largest files of the three but zero compatibility issues. Use only as a last fallback.</li>
+<li><strong>SVG:</strong> For vector graphics (logos, icons). Infinitely scalable, tiny files.</li>
+</ol>
+
+<p>Convert your existing JPG images to <a href="/convert/jpg-to-webp">WebP</a> as the minimum optimization. For additional savings, also generate <a href="/convert/jpg-to-avif">AVIF versions</a> and serve them using the HTML picture element.</p>
+
+<h2>Step 2: Resize to Actual Display Dimensions</h2>
+
+<p>This is the single most impactful optimization and the one most people skip. If your page displays an image at 800px wide, there is zero reason to serve a 4000px wide original.</p>
+
+<p>Use the <a href="/tools/resize">image resizer</a> to scale images to their actual display size (or 2x for retina screens):</p>
+
+<ul>
+<li><strong>Blog content images:</strong> 1200px wide maximum</li>
+<li><strong>Hero/banner images:</strong> 1920px wide maximum</li>
+<li><strong>Thumbnails:</strong> 400-600px wide</li>
+<li><strong>Product images:</strong> 800-1000px wide</li>
+</ul>
+
+<p>A 4000x3000 photo resized to 1200x900 drops from 5MB to about 400KB before any compression. That is an 92% reduction just from resizing.</p>
+
+<h2>Step 3: Compress at the Right Quality Level</h2>
+
+<p>After choosing the right format and size, compress to reduce file size further. Use the <a href="/tools/compress">image compressor</a> with these settings:</p>
+
+<ul>
+<li><strong>JPG/WebP quality 80-85:</strong> The sweet spot. 60-70% smaller files with invisible quality loss.</li>
+<li><strong>PNG:</strong> Use the compressor's lossless mode. Typical 20-40% reduction.</li>
+<li><strong>Hero images:</strong> Quality 85-90 if they are large and prominent.</li>
+<li><strong>Thumbnails:</strong> Quality 70-75 is fine since they are viewed small.</li>
+</ul>
+
+<h2>Step 4: Implement Lazy Loading</h2>
+
+<p>Lazy loading defers off-screen images until the user scrolls to them. This drastically reduces initial page load time because only above-the-fold images load immediately.</p>
+
+<p>In HTML, add the loading attribute: <code>&lt;img loading="lazy"&gt;</code>. This is supported by all modern browsers and requires zero JavaScript.</p>
+
+<p>Do NOT lazy load the first visible image (hero/header image). That image needs to load immediately for good Largest Contentful Paint scores.</p>
+
+<h2>Step 5: Set Explicit Width and Height</h2>
+
+<p>Always include width and height attributes on your img tags. Without them, the browser cannot reserve space for the image before it loads, causing layout shifts (poor Cumulative Layout Shift scores).</p>
+
+<h2>The Complete Optimization Checklist</h2>
+
+<ol>
+<li>Resize to actual display size (or 2x for retina)</li>
+<li>Convert to WebP (with AVIF for bonus savings)</li>
+<li>Compress at quality 80-85</li>
+<li>Add lazy loading to below-fold images</li>
+<li>Set explicit width and height</li>
+<li>Use descriptive alt text (good for SEO and accessibility)</li>
+</ol>
+
+<p>Following this checklist typically reduces total image weight by 80-95%. A page that was serving 10MB of images drops to 500KB-1MB. On a mobile connection, that is the difference between a 10-second load and a 2-second load.</p>
+`,
+  },
+
+  // ── POST 35 ──
+  {
+    slug: "how-to-download-soundcloud-music-free",
+    metaTitle: "How to Download SoundCloud Music Free (2026 Guide)",
+    metaDescription: "Save SoundCloud tracks and playlists to your device for free. Works with any public track. No app or login required. MP3 download available.",
+    h1: "How to Download SoundCloud Music for Free",
+    excerpt: "SoundCloud does not always offer a download button. Here is how to save any public track from SoundCloud to your phone or computer.",
+    featuredImage: "/blog/images/how-to-download-soundcloud-music-free.svg",
+    publishDate: "April 12, 2026",
+    readTime: "4 min read",
+    category: "Downloaders",
+    tags: ["soundcloud", "music", "download", "mp3"],
+    relatedTools: [
+      { label: "SoundCloud Downloader", href: "/downloaders/soundcloud" },
+      { label: "TikTok Downloader", href: "/downloaders/tiktok" },
+      { label: "YouTube Downloader", href: "/downloaders/youtube" },
+    ],
+    faq: [
+      { question: "Is it legal to download from SoundCloud?", answer: "Many SoundCloud creators enable free downloads on their tracks. For tracks without an official download button, downloading for personal listening is generally acceptable. Do not redistribute or sell downloaded music without permission." },
+      { question: "What format are the downloads?", answer: "Tracks are saved as MP3 files, which play on every device and music app." },
+      { question: "Does it work with private tracks?", answer: "No. Only publicly available tracks can be downloaded. Private or unlisted tracks are not accessible to external tools." },
+      { question: "Can I download full playlists?", answer: "Currently, tracks are downloaded individually. Copy each track's URL and download one at a time." },
+    ],
+    content: `
+<p>SoundCloud is the go-to platform for independent music, DJ sets, and remixes. But not every track has a download button, and the ones that do sometimes require following the artist or leaving a comment first. If you want to <strong>download SoundCloud music</strong> without jumping through hoops, a third-party downloader is the simplest option.</p>
+
+<h2>How to Download a SoundCloud Track</h2>
+
+<ol>
+<li><strong>Find the track on SoundCloud</strong> and copy its URL from the address bar.</li>
+<li><strong>Open the <a href="/downloaders/soundcloud">SoundCloud downloader</a></strong> on LoveConverts.</li>
+<li><strong>Paste the URL</strong> and click Download.</li>
+<li><strong>Save the MP3 file</strong> to your device.</li>
+</ol>
+
+<p>The process is the same on phones and computers. On iPhone, the file saves to your Files app or can be added to your music library.</p>
+
+<h2>When SoundCloud Offers Official Downloads</h2>
+
+<p>Some artists enable the download button on their SoundCloud uploads. When available, you will see a "Free Download" or "Download" button below the waveform. This is the preferred method because:</p>
+
+<ul>
+<li>You get the original file quality the artist uploaded</li>
+<li>It directly supports the artist (download counts are visible)</li>
+<li>No third-party tool needed</li>
+</ul>
+
+<p>If the official download button is not there, the third-party downloader is your backup option.</p>
+
+<h2>Audio Quality Considerations</h2>
+
+<p>SoundCloud streams audio at 128kbps MP3 for free users and higher quality for SoundCloud Go subscribers. When you download via a third-party tool, you get the stream quality, which is typically 128kbps. This is acceptable for casual listening but lower than CD quality (which is roughly equivalent to 320kbps MP3).</p>
+
+<p>If you need higher quality, check if the artist offers downloads on Bandcamp or their own website, where lossless formats (FLAC, WAV) are often available.</p>
+
+<h2>Downloading for DJ Sets and Mixing</h2>
+
+<p>DJs frequently source tracks from SoundCloud. A few things to keep in mind:</p>
+
+<ul>
+<li><strong>128kbps is not great for club systems.</strong> On large speakers, the compression artifacts in low-bitrate MP3s become audible. Try to source tracks at 320kbps or higher from official channels.</li>
+<li><strong>Always credit the artist.</strong> If you play someone's track in a set, tag them when posting the mix.</li>
+<li><strong>Check the license.</strong> Some SoundCloud tracks are under Creative Commons licenses that explicitly allow free use with attribution.</li>
+</ul>
+
+<h2>Downloading from Other Music and Video Platforms</h2>
+
+<p>LoveConverts also supports downloads from <a href="/downloaders/youtube">YouTube</a> (including audio-only MP3 extraction), <a href="/downloaders/tiktok">TikTok</a>, <a href="/downloaders/instagram">Instagram</a>, and <a href="/downloaders/vimeo">Vimeo</a>. Each downloader works the same way: copy the URL, paste, download.</p>
+
+<h2>A Note on Supporting Artists</h2>
+
+<p>If you enjoy a track enough to download it, consider supporting the artist. Follow them on SoundCloud, share their music, or buy their releases on Bandcamp. Independent artists rely on listener support, and a follow or share costs you nothing.</p>
+`,
+  },
+
+  // ── POST 36 ──
+  {
+    slug: "complete-guide-to-image-formats",
+    metaTitle: "Complete Guide to Image Formats - JPG, PNG, WebP, AVIF, SVG",
+    metaDescription: "Every image format explained in plain language. When to use JPG, PNG, WebP, AVIF, GIF, TIFF, BMP, SVG, and ICO. Decision chart included.",
+    h1: "The Complete Guide to Image Formats",
+    excerpt: "JPG, PNG, WebP, AVIF, GIF, TIFF, BMP, SVG, ICO. Nine formats, each with a different purpose. Here is when to use which, explained without jargon.",
+    featuredImage: "/blog/images/complete-guide-to-image-formats.svg",
+    publishDate: "April 12, 2026",
+    readTime: "8 min read",
+    category: "Explained",
+    tags: ["image formats", "jpg", "png", "webp", "avif", "guide"],
+    relatedTools: [
+      { label: "Image Converter", href: "/" },
+      { label: "Compress Image", href: "/tools/compress" },
+      { label: "All Conversions", href: "/convert" },
+    ],
+    faq: [
+      { question: "What is the most versatile image format?", answer: "WebP is the most versatile in 2026. It supports both lossy and lossless compression, transparency, and produces smaller files than both JPG and PNG. All modern browsers support it." },
+      { question: "What format should I use for photos?", answer: "For web: WebP or AVIF. For sharing: JPG. For editing: TIFF or PNG (lossless). For print: TIFF at 300 DPI." },
+      { question: "Can I convert between any formats?", answer: "Yes. The LoveConverts converter handles all major formats including JPG, PNG, WebP, AVIF, GIF, BMP, TIFF, and ICO." },
+      { question: "What is the difference between lossy and lossless?", answer: "Lossy compression (JPG, WebP lossy) removes some data to make files smaller. Lossless compression (PNG, WebP lossless) reduces file size without removing any data. Lossy is much smaller; lossless is pixel-perfect." },
+    ],
+    content: `
+<p>There are nine <strong>image formats</strong> you will encounter regularly, and each one exists for a reason. Picking the wrong format wastes storage space, slows down websites, or degrades image quality. This guide explains every major format in plain language so you can make the right choice every time.</p>
+
+<h2>JPG (JPEG) - The Universal Photo Format</h2>
+
+<p><strong>Best for:</strong> Photographs, complex images with gradients and many colors.</p>
+
+<p>JPG has been the default photo format since the 1990s. It uses lossy compression, which means it removes data your eyes are unlikely to notice. At quality 80-85, the result looks identical to the original but is 60-70% smaller.</p>
+
+<p><strong>Limitations:</strong> No transparency support. Each time you edit and re-save a JPG, quality degrades slightly (generation loss). Poor at handling text, sharp edges, and solid colors (creates visible artifacts).</p>
+
+<p><strong>Convert to JPG:</strong> <a href="/tools/convert-to-jpg">Convert any image to JPG</a></p>
+
+<h2>PNG - Lossless Quality with Transparency</h2>
+
+<p><strong>Best for:</strong> Screenshots, logos, graphics with text, anything needing transparency.</p>
+
+<p>PNG uses lossless compression. Every pixel is preserved exactly. It supports full alpha transparency, meaning pixels can be partially transparent (not just on/off). This makes it essential for logos on colored backgrounds and UI elements.</p>
+
+<p><strong>Limitations:</strong> Files are 5-10x larger than JPG for photographic content. Not suitable for large photos on bandwidth-limited websites.</p>
+
+<h2>WebP - The Modern All-Rounder</h2>
+
+<p><strong>Best for:</strong> Web images of all types. The best general-purpose format in 2026.</p>
+
+<p>WebP, created by Google, supports both lossy and lossless compression plus transparency. Lossy WebP is 25-35% smaller than JPG. Lossless WebP is 25% smaller than PNG. All modern browsers have supported it since 2020.</p>
+
+<p><strong>Limitations:</strong> Some older software (pre-2020) does not support it. Not ideal for print workflows.</p>
+
+<p><strong>Convert to WebP:</strong> <a href="/convert/jpg-to-webp">JPG to WebP</a> | <a href="/convert/png-to-webp">PNG to WebP</a></p>
+
+<h2>AVIF - Maximum Compression</h2>
+
+<p><strong>Best for:</strong> Websites where every kilobyte matters. The smallest files available.</p>
+
+<p>AVIF is based on the AV1 video codec. It produces files 50%+ smaller than JPG and 20-30% smaller than WebP at the same visual quality. It supports transparency, HDR, and wide color gamuts.</p>
+
+<p><strong>Limitations:</strong> Slower to encode than WebP or JPG. Browser support at ~95% (missing some older Safari versions). Not widely supported outside of web browsers yet.</p>
+
+<p><strong>Convert to AVIF:</strong> <a href="/convert/jpg-to-avif">JPG to AVIF</a> | <a href="/convert/png-to-avif">PNG to AVIF</a></p>
+
+<h2>GIF - Simple Animations</h2>
+
+<p><strong>Best for:</strong> Short, simple animations. Reaction images.</p>
+
+<p>GIF supports animation (multiple frames in one file) and basic transparency. It is limited to 256 colors per frame, which gives GIFs their characteristic grainy look. File sizes are large compared to modern alternatives.</p>
+
+<p><strong>Limitations:</strong> 256 color limit. Huge file sizes for animations. No partial transparency. For web animations, MP4 or animated WebP is far more efficient.</p>
+
+<h2>TIFF - Professional and Archival</h2>
+
+<p><strong>Best for:</strong> Professional photography, print production, archival storage.</p>
+
+<p>TIFF supports lossless compression at high bit depths. It is the standard delivery format for print shops and professional photographers. Files are very large but preserve maximum quality.</p>
+
+<p><strong>Limitations:</strong> Not supported by web browsers. Files are extremely large (10-100MB+ per image). Not practical for sharing or web use.</p>
+
+<p><strong>Convert from TIFF:</strong> <a href="/convert/tiff-to-jpg">TIFF to JPG</a> | <a href="/convert/tiff-to-png">TIFF to PNG</a></p>
+
+<h2>BMP, SVG, and ICO</h2>
+
+<p><strong>BMP:</strong> Uncompressed raster format. No reason to use it in 2026 unless legacy software requires it. Convert to PNG or JPG for smaller files.</p>
+
+<p><strong>SVG:</strong> Vector format for logos, icons, and illustrations. Scales to any size without quality loss. Tiny file sizes. Not suitable for photographs.</p>
+
+<p><strong>ICO:</strong> Used exclusively for website favicons and Windows application icons. Contains multiple sizes in one file. Convert from PNG when you need an ICO.</p>
+
+<h2>Quick Decision Guide</h2>
+
+<p>Use this to pick the right format quickly:</p>
+
+<ul>
+<li><strong>Photo for web:</strong> WebP (or AVIF with WebP fallback)</li>
+<li><strong>Photo for email/sharing:</strong> JPG</li>
+<li><strong>Photo for print:</strong> TIFF or high-quality JPG</li>
+<li><strong>Screenshot with text:</strong> PNG</li>
+<li><strong>Logo or icon:</strong> SVG (or PNG if SVG is not accepted)</li>
+<li><strong>Image needing transparency:</strong> PNG or WebP</li>
+<li><strong>Short animation:</strong> MP4 (not GIF)</li>
+<li><strong>Favicon:</strong> ICO or SVG</li>
+</ul>
+
+<p>For any conversion between these formats, use the <a href="/">LoveConverts converter</a>. It handles all nine formats and processes up to 30 files at once.</p>
+`,
+  },
 ];
 
 export function getAllPosts(): BlogPost[] {

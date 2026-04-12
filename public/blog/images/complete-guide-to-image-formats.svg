@@ -1,0 +1,147 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="darkBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0F172A"/>
+      <stop offset="50%" style="stop-color:#1E293B"/>
+      <stop offset="100%" style="stop-color:#0F172A"/>
+    </linearGradient>
+    <radialGradient id="centerGlow" cx="50%" cy="55%" r="40%">
+      <stop offset="0%" style="stop-color:#FF4747; stop-opacity:0.08"/>
+      <stop offset="100%" style="stop-color:#FF4747; stop-opacity:0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Dark gradient background -->
+  <rect width="1200" height="630" fill="url(#darkBg)"/>
+  <rect width="1200" height="630" fill="url(#centerGlow)"/>
+
+  <!-- Title -->
+  <text x="600" y="70" font-family="Arial, sans-serif" font-size="52" font-weight="bold" fill="#FFFFFF" text-anchor="middle">Image Format Guide</text>
+  <text x="600" y="108" font-family="Arial, sans-serif" font-size="20" fill="#94A3B8" text-anchor="middle">The complete guide to JPG, PNG, WebP, AVIF, GIF, TIFF &amp; SVG</text>
+
+  <!-- CONSTELLATION DIAGRAM -->
+  <!-- Center node -->
+  <circle cx="600" cy="360" r="45" fill="#1E293B" stroke="#FF4747" stroke-width="3"/>
+  <text x="600" y="355" font-family="Arial, sans-serif" font-size="13" fill="#94A3B8" text-anchor="middle">IMAGE</text>
+  <text x="600" y="375" font-family="Arial, sans-serif" font-size="15" fill="#fff" text-anchor="middle" font-weight="bold">FORMATS</text>
+
+  <!-- Connection lines from center to each format -->
+  <!-- JPG -->
+  <line x1="600" y1="360" x2="280" y2="220" stroke="#FBBF24" stroke-width="1.5" opacity="0.4"/>
+  <line x1="280" y1="220" x2="480" y2="500" stroke="#FBBF24" stroke-width="1" opacity="0.15" stroke-dasharray="4,4"/>
+
+  <!-- PNG -->
+  <line x1="600" y1="360" x2="480" y2="200" stroke="#3B82F6" stroke-width="1.5" opacity="0.4"/>
+  <line x1="480" y1="200" x2="280" y2="220" stroke="#3B82F6" stroke-width="1" opacity="0.15" stroke-dasharray="4,4"/>
+
+  <!-- WebP -->
+  <line x1="600" y1="360" x2="760" y2="190" stroke="#22C55E" stroke-width="1.5" opacity="0.4"/>
+  <line x1="760" y1="190" x2="480" y2="200" stroke="#22C55E" stroke-width="1" opacity="0.15" stroke-dasharray="4,4"/>
+
+  <!-- AVIF -->
+  <line x1="600" y1="360" x2="940" y2="240" stroke="#A855F7" stroke-width="1.5" opacity="0.4"/>
+  <line x1="940" y1="240" x2="760" y2="190" stroke="#A855F7" stroke-width="1" opacity="0.15" stroke-dasharray="4,4"/>
+
+  <!-- GIF -->
+  <line x1="600" y1="360" x2="920" y2="420" stroke="#EC4899" stroke-width="1.5" opacity="0.4"/>
+  <line x1="920" y1="420" x2="940" y2="240" stroke="#EC4899" stroke-width="1" opacity="0.15" stroke-dasharray="4,4"/>
+
+  <!-- TIFF -->
+  <line x1="600" y1="360" x2="780" y2="520" stroke="#F97316" stroke-width="1.5" opacity="0.4"/>
+  <line x1="780" y1="520" x2="920" y2="420" stroke="#F97316" stroke-width="1" opacity="0.15" stroke-dasharray="4,4"/>
+
+  <!-- SVG -->
+  <line x1="600" y1="360" x2="480" y2="500" stroke="#FF4747" stroke-width="1.5" opacity="0.4"/>
+  <line x1="480" y1="500" x2="780" y2="520" stroke="#FF4747" stroke-width="1" opacity="0.15" stroke-dasharray="4,4"/>
+
+  <!-- Cross connections (constellation effect) -->
+  <line x1="280" y1="220" x2="940" y2="240" stroke="#fff" stroke-width="0.5" opacity="0.05"/>
+  <line x1="480" y1="200" x2="780" y2="520" stroke="#fff" stroke-width="0.5" opacity="0.05"/>
+  <line x1="760" y1="190" x2="480" y2="500" stroke="#fff" stroke-width="0.5" opacity="0.05"/>
+
+  <!-- JPG Node -->
+  <g transform="translate(280, 220)">
+    <circle r="40" fill="#1E293B" stroke="#FBBF24" stroke-width="2.5"/>
+    <text x="0" y="-5" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#FBBF24" text-anchor="middle">JPG</text>
+    <text x="0" y="14" font-family="Arial, sans-serif" font-size="10" fill="#94A3B8" text-anchor="middle">Lossy</text>
+    <!-- Orbit dot -->
+    <circle cx="45" cy="-15" r="3" fill="#FBBF24" opacity="0.4"/>
+  </g>
+
+  <!-- PNG Node -->
+  <g transform="translate(480, 200)">
+    <circle r="40" fill="#1E293B" stroke="#3B82F6" stroke-width="2.5"/>
+    <text x="0" y="-5" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#3B82F6" text-anchor="middle">PNG</text>
+    <text x="0" y="14" font-family="Arial, sans-serif" font-size="10" fill="#94A3B8" text-anchor="middle">Lossless</text>
+    <circle cx="40" cy="15" r="3" fill="#3B82F6" opacity="0.4"/>
+  </g>
+
+  <!-- WebP Node -->
+  <g transform="translate(760, 190)">
+    <circle r="42" fill="#1E293B" stroke="#22C55E" stroke-width="2.5"/>
+    <text x="0" y="-5" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#22C55E" text-anchor="middle">WebP</text>
+    <text x="0" y="14" font-family="Arial, sans-serif" font-size="10" fill="#94A3B8" text-anchor="middle">Modern</text>
+    <!-- Star highlight for "recommended" -->
+    <g transform="translate(35, -25)" fill="#22C55E" opacity="0.6">
+      <polygon points="0,-8 2,-2 8,-2 3,2 5,8 0,4 -5,8 -3,2 -8,-2 -2,-2"/>
+    </g>
+  </g>
+
+  <!-- AVIF Node -->
+  <g transform="translate(940, 240)">
+    <circle r="42" fill="#1E293B" stroke="#A855F7" stroke-width="2.5"/>
+    <text x="0" y="-5" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#A855F7" text-anchor="middle">AVIF</text>
+    <text x="0" y="14" font-family="Arial, sans-serif" font-size="10" fill="#94A3B8" text-anchor="middle">Next-Gen</text>
+    <g transform="translate(35, -28)" fill="#A855F7" opacity="0.6">
+      <polygon points="0,-8 2,-2 8,-2 3,2 5,8 0,4 -5,8 -3,2 -8,-2 -2,-2"/>
+    </g>
+  </g>
+
+  <!-- GIF Node -->
+  <g transform="translate(920, 420)">
+    <circle r="38" fill="#1E293B" stroke="#EC4899" stroke-width="2.5"/>
+    <text x="0" y="-5" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#EC4899" text-anchor="middle">GIF</text>
+    <text x="0" y="14" font-family="Arial, sans-serif" font-size="10" fill="#94A3B8" text-anchor="middle">Animated</text>
+    <circle cx="-35" cy="18" r="3" fill="#EC4899" opacity="0.4"/>
+  </g>
+
+  <!-- TIFF Node -->
+  <g transform="translate(780, 520)">
+    <circle r="36" fill="#1E293B" stroke="#F97316" stroke-width="2.5"/>
+    <text x="0" y="-5" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#F97316" text-anchor="middle">TIFF</text>
+    <text x="0" y="14" font-family="Arial, sans-serif" font-size="10" fill="#94A3B8" text-anchor="middle">Print</text>
+    <circle cx="30" cy="-25" r="3" fill="#F97316" opacity="0.4"/>
+  </g>
+
+  <!-- SVG Node -->
+  <g transform="translate(480, 500)">
+    <circle r="38" fill="#1E293B" stroke="#FF4747" stroke-width="2.5"/>
+    <text x="0" y="-5" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#FF4747" text-anchor="middle">SVG</text>
+    <text x="0" y="14" font-family="Arial, sans-serif" font-size="10" fill="#94A3B8" text-anchor="middle">Vector</text>
+    <circle cx="-38" cy="-10" r="3" fill="#FF4747" opacity="0.4"/>
+  </g>
+
+  <!-- Decorative stars / dots (constellation background) -->
+  <g fill="#fff" opacity="0.15">
+    <circle cx="100" cy="150" r="2"/>
+    <circle cx="200" cy="400" r="1.5"/>
+    <circle cx="350" cy="100" r="1"/>
+    <circle cx="550" cy="550" r="2"/>
+    <circle cx="700" cy="100" r="1.5"/>
+    <circle cx="850" cy="550" r="1"/>
+    <circle cx="1000" cy="150" r="2"/>
+    <circle cx="1100" cy="350" r="1.5"/>
+    <circle cx="150" cy="550" r="1"/>
+    <circle cx="1050" cy="500" r="1.5"/>
+    <circle cx="300" cy="550" r="1"/>
+    <circle cx="680" cy="580" r="1.5"/>
+    <circle cx="130" cy="320" r="1"/>
+    <circle cx="1070" cy="180" r="1"/>
+    <circle cx="50" cy="450" r="1.5"/>
+    <circle cx="160" cy="180" r="1"/>
+    <circle cx="400" cy="580" r="1.5"/>
+  </g>
+
+  <!-- Branding -->
+  <text x="1150" y="600" font-family="Arial, sans-serif" font-size="18" fill="#475569" text-anchor="end" opacity="0.8">LoveConverts</text>
+</svg>

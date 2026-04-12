@@ -1,0 +1,124 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="blurBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#F8FAFC"/>
+      <stop offset="100%" style="stop-color:#E2E8F0"/>
+    </linearGradient>
+    <filter id="blurFilter">
+      <feGaussianBlur stdDeviation="4"/>
+    </filter>
+    <filter id="slightBlur">
+      <feGaussianBlur stdDeviation="2"/>
+    </filter>
+    <clipPath id="leftPanel">
+      <rect x="60" y="150" width="480" height="370"/>
+    </clipPath>
+    <clipPath id="rightPanel">
+      <rect x="660" y="150" width="480" height="370"/>
+    </clipPath>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#blurBg)"/>
+
+  <!-- Title -->
+  <text x="600" y="75" font-family="Arial, sans-serif" font-size="56" font-weight="bold" fill="#1E293B" text-anchor="middle">Fix Blurry Images</text>
+  <text x="600" y="115" font-family="Arial, sans-serif" font-size="22" fill="#64748B" text-anchor="middle">Sharpen and enhance your photos instantly</text>
+
+  <!-- LEFT PANEL: Blurry/Before -->
+  <rect x="60" y="150" width="480" height="370" rx="16" fill="#fff" stroke="#CBD5E1" stroke-width="2"/>
+
+  <!-- Blurry image content -->
+  <g filter="url(#blurFilter)" clip-path="url(#leftPanel)">
+    <!-- Sky -->
+    <rect x="60" y="150" width="480" height="180" fill="#87CEEB" opacity="0.6"/>
+    <!-- Sun -->
+    <circle cx="160" cy="220" r="35" fill="#FCD34D" opacity="0.7"/>
+    <!-- Mountains -->
+    <polygon points="60,330 200,220 340,330" fill="#6B7280" opacity="0.5"/>
+    <polygon points="200,330 380,200 540,330" fill="#4B5563" opacity="0.5"/>
+    <!-- Ground -->
+    <rect x="60" y="330" width="480" height="190" fill="#86EFAC" opacity="0.4"/>
+    <!-- Trees -->
+    <polygon points="120,300 140,240 160,300" fill="#22C55E" opacity="0.4"/>
+    <rect x="136" y="300" width="8" height="30" fill="#92400E" opacity="0.4"/>
+    <polygon points="350,290 375,220 400,290" fill="#22C55E" opacity="0.4"/>
+    <rect x="371" y="290" width="8" height="40" fill="#92400E" opacity="0.4"/>
+  </g>
+
+  <!-- "BEFORE" label -->
+  <rect x="75" y="165" width="100" height="32" rx="6" fill="#EF4444" opacity="0.9"/>
+  <text x="125" y="187" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#fff" text-anchor="middle">BEFORE</text>
+
+  <!-- Blurry indicator icon - wavy lines -->
+  <g transform="translate(300, 440)" opacity="0.4">
+    <path d="M-30,0 Q-15,-10 0,0 Q15,10 30,0" fill="none" stroke="#94A3B8" stroke-width="2"/>
+    <path d="M-30,12 Q-15,2 0,12 Q15,22 30,12" fill="none" stroke="#94A3B8" stroke-width="2"/>
+    <path d="M-30,24 Q-15,14 0,24 Q15,34 30,24" fill="none" stroke="#94A3B8" stroke-width="2"/>
+  </g>
+
+  <!-- CENTER ARROW -->
+  <g transform="translate(570, 335)">
+    <circle cx="30" cy="0" r="30" fill="#FF4747"/>
+    <line x1="12" y1="0" x2="42" y2="0" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+    <polyline points="35,-10 45,0 35,10" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- RIGHT PANEL: Sharp/After -->
+  <rect x="660" y="150" width="480" height="370" rx="16" fill="#fff" stroke="#22C55E" stroke-width="2.5"/>
+
+  <!-- Sharp image content -->
+  <g clip-path="url(#rightPanel)">
+    <!-- Sky -->
+    <rect x="660" y="150" width="480" height="180" fill="#60A5FA" opacity="0.8"/>
+    <!-- Sun -->
+    <circle cx="760" cy="220" r="35" fill="#FBBF24"/>
+    <!-- Sun rays -->
+    <g stroke="#FBBF24" stroke-width="2" opacity="0.6">
+      <line x1="760" y1="175" x2="760" y2="165"/>
+      <line x1="760" y1="265" x2="760" y2="275"/>
+      <line x1="715" y1="220" x2="705" y2="220"/>
+      <line x1="805" y1="220" x2="815" y2="220"/>
+      <line x1="728" y1="188" x2="721" y2="181"/>
+      <line x1="792" y1="252" x2="799" y2="259"/>
+      <line x1="728" y1="252" x2="721" y2="259"/>
+      <line x1="792" y1="188" x2="799" y2="181"/>
+    </g>
+    <!-- Mountains -->
+    <polygon points="660,330 800,220 940,330" fill="#6B7280"/>
+    <polygon points="800,330 980,200 1140,330" fill="#374151"/>
+    <!-- Snow caps -->
+    <polygon points="800,220 785,245 815,245" fill="#fff" opacity="0.8"/>
+    <polygon points="980,200 965,225 995,225" fill="#fff" opacity="0.8"/>
+    <!-- Ground -->
+    <rect x="660" y="330" width="480" height="190" fill="#4ADE80"/>
+    <!-- Trees -->
+    <polygon points="720,300 740,240 760,300" fill="#16A34A"/>
+    <rect x="736" y="300" width="8" height="30" fill="#78350F"/>
+    <polygon points="950,290 975,220 1000,290" fill="#16A34A"/>
+    <rect x="971" y="290" width="8" height="40" fill="#78350F"/>
+    <!-- Flowers -->
+    <circle cx="830" cy="400" r="5" fill="#F472B6"/>
+    <circle cx="870" cy="420" r="4" fill="#FBBF24"/>
+    <circle cx="1050" cy="390" r="5" fill="#F472B6"/>
+  </g>
+
+  <!-- "AFTER" label -->
+  <rect x="675" y="165" width="90" height="32" rx="6" fill="#22C55E"/>
+  <text x="720" y="187" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#fff" text-anchor="middle">AFTER</text>
+
+  <!-- Sharp indicator icon - sparkle -->
+  <g transform="translate(900, 440)">
+    <line x1="0" y1="-12" x2="0" y2="12" stroke="#22C55E" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="-12" y1="0" x2="12" y2="0" stroke="#22C55E" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="-8" y1="-8" x2="8" y2="8" stroke="#22C55E" stroke-width="2" stroke-linecap="round"/>
+    <line x1="8" y1="-8" x2="-8" y2="8" stroke="#22C55E" stroke-width="2" stroke-linecap="round"/>
+  </g>
+
+  <!-- Bottom comparison text -->
+  <text x="300" y="555" font-family="Arial, sans-serif" font-size="18" fill="#94A3B8" text-anchor="middle">Blurry &amp; Soft</text>
+  <text x="900" y="555" font-family="Arial, sans-serif" font-size="18" fill="#22C55E" text-anchor="middle" font-weight="bold">Sharp &amp; Clear</text>
+
+  <!-- Branding -->
+  <text x="1150" y="600" font-family="Arial, sans-serif" font-size="18" fill="#94A3B8" text-anchor="end" opacity="0.8">LoveConverts</text>
+</svg>
