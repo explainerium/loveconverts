@@ -8,7 +8,7 @@ import {
   Menu, X, User, LogOut, LayoutDashboard, ChevronDown,
   Headphones, ShieldCheck, Settings, History, Image, Minimize2,
   Maximize2, Crop, Download, Music, Film, AlertTriangle, Wand2,
-  Zap, Crown, Sparkles,
+  Zap, Crown, Sparkles, Video,
 } from "lucide-react";
 import Logo from "./Logo";
 
@@ -19,6 +19,7 @@ const IMAGE_TOOLS = [
   { href: "/tools/convert-to-jpg", label: "Convert to JPG",    icon: Image,      desc: "Any format into universal JPG" },
   { href: "/tools/photo-editor",   label: "Photo Editor",      icon: Wand2,      desc: "Adjust brightness, filters & more" },
   { href: "/tools/enhance",        label: "AI Enhance",        icon: Sparkles,   desc: "Upscale, denoise, sharpen & HDR" },
+  { href: "/tools/compress-video", label: "Compress Video",    icon: Video,      desc: "Shrink MP4, MOV, WEBM up to 90%" },
 ];
 
 const DOWNLOADERS_LEFT = [
@@ -66,14 +67,14 @@ function DropdownMenu({
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen(o => !o)}
-        className={`flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+        className={`flex items-center gap-1 px-3.5 py-2 rounded-lg text-[13.5px] font-semibold transition-all duration-200 ${
           open
-            ? "bg-primary/10 text-primary"
-            : "text-[#475569] hover:text-[#1A1A2E] hover:bg-[#F1F5F9]"
+            ? "text-primary bg-[#FFF5F5]"
+            : "text-[#334155] hover:text-[#0F172A] hover:bg-[#F8FAFC]"
         }`}
       >
         {label}
-        <ChevronDown size={13} className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
+        <ChevronDown size={13} className={`transition-transform duration-200 ${open ? "rotate-180 text-primary" : "text-[#94A3B8]"}`} />
       </button>
       {open && (
         <div className="animate-fade-in-up" onClick={() => setOpen(false)}>
@@ -124,41 +125,47 @@ export default function Header() {
 
         {/* Center navigation — does NOT take flex-1, stays in true center */}
         <nav className="hidden lg:flex items-center gap-1 flex-shrink-0">
-          {/* Image Tools dropdown */}
-          <DropdownMenu label="Image Tools">
-            <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-80 bg-white border border-[#E2E8F0] rounded-2xl shadow-2xl py-2 z-50">
-              <div className="px-4 py-2">
-                <p className="text-[10px] font-bold text-[#94A3B8] uppercase tracking-[1.5px]">Image Tools</p>
-              </div>
-              {IMAGE_TOOLS.map(({ href, label, icon: Icon, desc }) => (
-                <Link
-                  key={href}
-                  href={href}
-                  className="flex items-center gap-3 px-4 py-2.5 hover:bg-[#FFF5F5] transition-all duration-150 group mx-1 rounded-xl"
-                >
-                  <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary/10 to-orange-500/10 flex items-center justify-center flex-shrink-0 group-hover:from-primary/20 group-hover:to-orange-500/20 transition-all duration-150">
-                    <Icon size={16} className="text-primary" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-[#1A1A2E] group-hover:text-primary transition-colors">{label}</p>
-                    <p className="text-[11px] text-[#94A3B8] leading-tight">{desc}</p>
-                  </div>
+          {/* All Tools mega-menu */}
+          <DropdownMenu label="All Tools">
+            <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-[640px] bg-white border border-[#E2E8F0] rounded-2xl shadow-2xl p-3 z-50">
+              <div className="flex items-center justify-between px-2 pb-2 mb-1 border-b border-[#F1F5F9]">
+                <p className="text-[10px] font-bold text-[#94A3B8] uppercase tracking-[1.5px]">Image & Video Tools</p>
+                <Link href="/tools" className="text-[11px] font-bold text-primary hover:underline flex items-center gap-1">
+                  <Zap size={12} /> View all
                 </Link>
-              ))}
-              <div className="border-t border-[#E2E8F0] mt-1 mx-3" />
-              <Link href="/tools" className="flex items-center gap-2 px-4 py-2.5 text-sm font-bold text-primary hover:bg-[#FFF5F5] transition-colors mx-1 rounded-xl">
-                <Zap size={14} />
-                View All Tools
-              </Link>
+              </div>
+              <div className="grid grid-cols-2 gap-1">
+                {IMAGE_TOOLS.map(({ href, label, icon: Icon, desc }) => (
+                  <Link
+                    key={href}
+                    href={href}
+                    className="flex items-start gap-3 px-3 py-2.5 hover:bg-[#FFF5F5] transition-all duration-150 group rounded-xl"
+                  >
+                    <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-primary/10 to-orange-500/10 flex items-center justify-center flex-shrink-0 group-hover:from-primary/20 group-hover:to-orange-500/20 transition-all duration-150">
+                      <Icon size={16} className="text-primary" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-[#1A1A2E] group-hover:text-primary transition-colors leading-tight">{label}</p>
+                      <p className="text-[11px] text-[#94A3B8] leading-tight mt-0.5 truncate">{desc}</p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
             </div>
           </DropdownMenu>
 
           {/* Downloaders dropdown */}
           <DropdownMenu label="Downloaders">
-            <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-[340px] bg-white border border-[#E2E8F0] rounded-2xl shadow-2xl py-2 z-50">
-              <div className="grid grid-cols-2 gap-0 divide-x divide-[#E2E8F0]">
-                <div className="px-3 py-2">
-                  <p className="text-[10px] font-bold text-[#94A3B8] uppercase tracking-[1.5px] mb-2 px-1">Social Media</p>
+            <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-[420px] bg-white border border-[#E2E8F0] rounded-2xl shadow-2xl p-3 z-50">
+              <div className="flex items-center justify-between px-2 pb-2 mb-1 border-b border-[#F1F5F9]">
+                <p className="text-[10px] font-bold text-[#94A3B8] uppercase tracking-[1.5px]">Video & Audio Downloaders</p>
+                <Link href="/downloaders" className="text-[11px] font-bold text-primary hover:underline">
+                  View all &rarr;
+                </Link>
+              </div>
+              <div className="grid grid-cols-2 gap-x-2">
+                <div>
+                  <p className="text-[10px] font-bold text-[#CBD5E1] uppercase tracking-wider px-2 pt-1.5 pb-1">Social</p>
                   {DOWNLOADERS_LEFT.map(({ href, label, warn }) => (
                     <Link
                       key={href}
@@ -166,13 +173,13 @@ export default function Header() {
                       className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-[#FFF5F5] transition-all duration-150 text-sm text-[#1A1A2E] hover:text-primary"
                     >
                       <Download size={12} className="text-[#94A3B8] flex-shrink-0" />
-                      {label}
+                      <span className="truncate">{label}</span>
                       {warn && <AlertTriangle size={10} className="text-amber-400 flex-shrink-0 ml-auto" />}
                     </Link>
                   ))}
                 </div>
-                <div className="px-3 py-2">
-                  <p className="text-[10px] font-bold text-[#94A3B8] uppercase tracking-[1.5px] mb-2 px-1">Audio & Video</p>
+                <div>
+                  <p className="text-[10px] font-bold text-[#CBD5E1] uppercase tracking-wider px-2 pt-1.5 pb-1">Media</p>
                   {DOWNLOADERS_RIGHT.map(({ href, label }) => (
                     <Link
                       key={href}
@@ -180,17 +187,9 @@ export default function Header() {
                       className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-[#FFF5F5] transition-all duration-150 text-sm text-[#1A1A2E] hover:text-primary"
                     >
                       <Download size={12} className="text-[#94A3B8] flex-shrink-0" />
-                      {label}
+                      <span className="truncate">{label}</span>
                     </Link>
                   ))}
-                  <div className="border-t border-[#E2E8F0] mt-2 pt-2">
-                    <Link
-                      href="/downloaders"
-                      className="flex items-center gap-2 px-2 py-1.5 text-xs font-bold text-primary hover:bg-[#FFF5F5] rounded-lg transition-colors"
-                    >
-                      All Downloaders &rarr;
-                    </Link>
-                  </div>
                 </div>
               </div>
             </div>
@@ -202,10 +201,10 @@ export default function Header() {
             { href: "/faq",          label: "FAQ" },
             { href: "/about",        label: "About" },
           ].map(({ href, label }) => (
-            <Link key={href} href={href} className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+            <Link key={href} href={href} className={`px-3.5 py-2 rounded-lg text-[13.5px] font-semibold transition-all duration-200 ${
               pathname === href
-                ? "bg-primary/10 text-primary"
-                : "text-[#475569] hover:text-[#1A1A2E] hover:bg-[#F1F5F9]"
+                ? "text-primary bg-[#FFF5F5]"
+                : "text-[#334155] hover:text-[#0F172A] hover:bg-[#F8FAFC]"
             }`}>
               {label}
             </Link>
@@ -282,16 +281,17 @@ export default function Header() {
               )}
             </div>
           ) : (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
+              <div className="w-px h-6 bg-[#E2E8F0] mr-2" />
               <Link
                 href="/auth/signin"
-                className="px-4 py-2 rounded-xl text-sm font-semibold text-[#475569] hover:text-[#1A1A2E] hover:bg-[#F1F5F9] transition-all duration-200"
+                className="px-4 py-2 rounded-xl text-[13.5px] font-semibold text-[#334155] hover:text-[#0F172A] hover:bg-[#F8FAFC] transition-all duration-200"
               >
                 Log In
               </Link>
               <Link
                 href="/auth/signup"
-                className="px-5 py-2 rounded-xl text-sm font-bold text-white transition-all duration-200 shadow-md hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]"
+                className="px-5 py-2.5 rounded-xl text-[13.5px] font-bold text-white transition-all duration-200 shadow-[0_4px_12px_rgba(255,71,71,0.25)] hover:shadow-[0_6px_16px_rgba(255,71,71,0.35)] hover:scale-[1.02] active:scale-[0.98]"
                 style={{ background: "linear-gradient(135deg, #FF4747 0%, #FF8C42 100%)" }}
               >
                 Sign Up Free

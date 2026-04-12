@@ -3,6 +3,7 @@ import Logo from "./Logo";
 
 const IMAGE_TOOLS = [
   { href: "/tools/compress",       label: "Compress Image" },
+  { href: "/tools/compress-video", label: "Compress Video" },
   { href: "/tools/resize",         label: "Resize Image"   },
   { href: "/tools/crop",           label: "Crop Image"     },
   { href: "/tools/convert-to-jpg", label: "Convert to JPG" },

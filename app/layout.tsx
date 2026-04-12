@@ -21,9 +21,10 @@ export const metadata: Metadata = {
     template: "%s | LoveConverts",
   },
   description:
-    "Free online image converter, compressor, resizer and social media downloader. Convert JPG, PNG, WEBP, AVIF. Download videos from TikTok, Instagram, YouTube. No signup required.",
+    "Free online image converter, compressor, resizer, video compressor and social media downloader. Convert JPG, PNG, WEBP, AVIF. Compress MP4, MOV, WEBM videos. Download videos from TikTok, Instagram, YouTube. No signup required.",
   keywords: [
     "image converter", "compress image", "resize image", "webp converter", "free image tools",
+    "compress video", "video compressor", "compress mp4", "shrink video",
     "tiktok downloader", "instagram downloader", "youtube downloader", "facebook video downloader",
     "free media converter", "online converter", "loveconverts",
   ],

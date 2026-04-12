@@ -1,7 +1,13 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  serverExternalPackages: ["sharp", "better-sqlite3"],
+  serverExternalPackages: [
+    "sharp",
+    "better-sqlite3",
+    "fluent-ffmpeg",
+    "@ffmpeg-installer/ffmpeg",
+    "@ffprobe-installer/ffprobe",
+  ],
   images: {
     formats: ["image/avif", "image/webp"],
   },

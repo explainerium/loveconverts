@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Minimize2, Maximize2, Crop, FileImage, Wand2, ImageIcon, Sparkles, Droplets, FileOutput, Eraser, ArrowUpCircle, PenTool } from "lucide-react";
+import { Minimize2, Maximize2, Crop, FileImage, Wand2, ImageIcon, Sparkles, Droplets, FileOutput, Eraser, ArrowUpCircle, PenTool, Video } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "All Free Image Tools: Converter Compressor Resizer",
-  description: "All free image tools in one place. Convert, compress, resize, crop, edit, watermark, upscale, remove background, and convert to PDF. No signup, always free.",
+  title: "All Free Image & Video Tools: Converter Compressor Resizer",
+  description: "All free image and video tools in one place. Convert, compress, resize, crop, edit, watermark, upscale, remove background, compress video, and convert to PDF. No signup, always free.",
   alternates: { canonical: "https://loveconverts.com/tools" },
   openGraph: { url: "https://loveconverts.com/tools" },
 };
@@ -113,6 +113,14 @@ const TOOLS = [
     desc: "Edit images with AI. Describe the change you want in plain English and AI does the rest.",
     badge: "New",
     color: "bg-purple-50 text-purple-600 border-purple-100",
+  },
+  {
+    href: "/tools/compress-video",
+    icon: Video,
+    label: "Compress Video",
+    desc: "Shrink MP4, MOV, AVI, WEBM and MKV videos up to 90% smaller. Perfect for email and WhatsApp.",
+    badge: "New",
+    color: "bg-sky-50 text-sky-600 border-sky-100",
   },
 ];
 

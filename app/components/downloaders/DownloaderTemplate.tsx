@@ -167,7 +167,16 @@ export default function DownloaderTemplate({ config }: { config: PlatformConfig 
   }
 
   const [downloading, setDownloading] = useState(false);
-  const [downloadProgress, setDownloadProgress] = useState("");
+  const [downloadPct, setDownloadPct] = useState(0);
+  const [downloadStage, setDownloadStage] = useState("");
+  const [downloadError, setDownloadError] = useState<string | null>(null);
+  const pollRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (pollRef.current) window.clearInterval(pollRef.current);
+    };
+  }, []);
 
   async function handleDownload(downloadUrl: string, label?: string) {
     const title = result?.title || "download";
@@ -175,76 +184,97 @@ export default function DownloaderTemplate({ config }: { config: PlatformConfig 
     const safeTitle = title.replace(/[<>:"/\\|?*]/g, "_");
 
     setDownloading(true);
-    setDownloadProgress("Starting download...");
+    setDownloadPct(0);
+    setDownloadStage("Starting download…");
+    setDownloadError(null);
 
     try {
-      // For yt-dlp downloads (YouTube etc.), use the server proxy with blob approach
-      // since yt-dlp needs to process the video server-side
-      if (result?.useYtDlp && result?.pageUrl) {
-        setDownloadProgress("Downloading via yt-dlp (may take a moment)...");
-        const res = await fetch("/api/downloaders/stream", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            url: downloadUrl,
-            title: safeTitle,
-            ext,
-            pageUrl: result.pageUrl,
-            useYtDlp: true,
-          }),
-        });
+      // ─── Start background job on server ───
+      const startRes = await fetch("/api/downloaders/start", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          url: downloadUrl,
+          title: safeTitle,
+          ext,
+          pageUrl: result?.pageUrl,
+          useYtDlp: result?.useYtDlp,
+        }),
+      });
 
-        if (!res.ok) {
-          const data = await res.json().catch(() => ({ error: "Download failed" }));
-          toast.error(data.error || `Download failed (${res.status}). Try fetching the link again.`);
-          return;
-        }
-
-        setDownloadProgress("Saving file...");
-        const blob = await res.blob();
-        if (blob.size < 1000 && blob.type.includes("json")) {
-          const text = await blob.text();
-          try { toast.error(JSON.parse(text).error || "Download failed"); } catch { toast.error("Download failed"); }
-          return;
-        }
-        const blobUrl = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = blobUrl;
-        a.download = `${safeTitle}.${ext}`;
-        a.style.display = "none";
-        document.body.appendChild(a);
-        a.click();
-        setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(blobUrl); }, 500);
-        toast.success(`${label || format} downloaded successfully!`);
+      if (!startRes.ok) {
+        const data = await startRes.json().catch(() => ({ error: "Download failed" }));
+        setDownloadError(data.error || `Download failed (${startRes.status})`);
+        toast.error(data.error || `Download failed (${startRes.status})`);
         return;
       }
 
-      // For direct CDN URLs (Instagram embed, TikTok, Facebook etc.),
-      // use an iframe/link approach for instant download without buffering
-      setDownloadProgress("Downloading...");
+      const { jobId } = await startRes.json();
+      if (!jobId) {
+        setDownloadError("Download failed to start");
+        toast.error("Download failed to start");
+        return;
+      }
 
-      // Try opening download via hidden iframe for instant save
-      const proxyUrl = `/api/downloaders/stream?` + new URLSearchParams({
-        url: downloadUrl,
-        title: safeTitle,
-        ext,
-      }).toString();
+      // ─── Poll job status ───
+      await new Promise<void>((resolve) => {
+        pollRef.current = window.setInterval(async () => {
+          try {
+            const r = await fetch(`/api/jobs/status?id=${jobId}`);
+            if (!r.ok) throw new Error(`Status HTTP ${r.status}`);
+            const data = await r.json();
 
-      const a = document.createElement("a");
-      a.href = proxyUrl;
-      a.download = `${safeTitle}.${ext}`;
-      a.style.display = "none";
-      document.body.appendChild(a);
-      a.click();
-      setTimeout(() => document.body.removeChild(a), 1000);
+            if (typeof data.percent === "number") setDownloadPct(data.percent);
+            if (data.stage) setDownloadStage(data.stage);
 
-      toast.success(`${label || format} download started!`);
+            if (data.status === "done") {
+              if (pollRef.current) {
+                window.clearInterval(pollRef.current);
+                pollRef.current = null;
+              }
+              setDownloadStage("Saving file…");
+              // Trigger browser download via GET on result endpoint
+              const a = document.createElement("a");
+              a.href = `/api/jobs/result?id=${jobId}`;
+              a.download = `${safeTitle}.${ext}`;
+              a.style.display = "none";
+              document.body.appendChild(a);
+              a.click();
+              setTimeout(() => document.body.removeChild(a), 500);
+              toast.success(`${label || format} downloaded successfully!`);
+              resolve();
+            } else if (data.status === "error") {
+              if (pollRef.current) {
+                window.clearInterval(pollRef.current);
+                pollRef.current = null;
+              }
+              setDownloadError(data.error || "Download failed");
+              toast.error(data.error || "Download failed");
+              resolve();
+            }
+          } catch (err) {
+            if (pollRef.current) {
+              window.clearInterval(pollRef.current);
+              pollRef.current = null;
+            }
+            const msg = err instanceof Error ? err.message : "Status check failed";
+            setDownloadError(msg);
+            toast.error(msg);
+            resolve();
+          }
+        }, 700);
+      });
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Network error";
-      toast.error(`Download failed: ${msg}. Try fetching the link again.`);
+      setDownloadError(msg);
+      toast.error(`Download failed: ${msg}`);
     } finally {
       setDownloading(false);
-      setDownloadProgress("");
+      // Leave percent/stage briefly so the user sees 100%, then clear
+      setTimeout(() => {
+        setDownloadPct(0);
+        setDownloadStage("");
+      }, 1500);
     }
   }
 
@@ -411,9 +441,30 @@ export default function DownloaderTemplate({ config }: { config: PlatformConfig 
 
                 <div className="mt-4 flex flex-wrap gap-2">
                   {downloading && (
-                    <div className="w-full flex items-center gap-2 text-sm text-[#64748B] mb-2 bg-[#F8FAFC] rounded-lg px-3 py-2 border border-[#E2E8F0]">
-                      <Loader2 size={14} className="animate-spin text-[#FF4747] flex-shrink-0" />
-                      <span>{downloadProgress || "Downloading..."}</span>
+                    <div className="w-full mb-3 bg-[#F8FAFC] rounded-xl px-4 py-3 border border-[#E2E8F0]">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2 text-sm font-semibold text-[#1A1A2E] min-w-0">
+                          <Loader2 size={14} className="animate-spin text-[#FF4747] flex-shrink-0" />
+                          <span className="truncate">{downloadStage || "Downloading…"}</span>
+                        </div>
+                        <span className="text-sm font-bold text-[#FF4747] tabular-nums flex-shrink-0 ml-2">
+                          {Math.round(downloadPct)}%
+                        </span>
+                      </div>
+                      <div className="h-2 bg-[#E2E8F0] rounded-full overflow-hidden">
+                        <div
+                          className="h-2 rounded-full transition-all duration-300"
+                          style={{
+                            width: `${Math.round(downloadPct)}%`,
+                            background: "linear-gradient(90deg,#FF4747,#FF8C42)",
+                          }}
+                        />
+                      </div>
+                    </div>
+                  )}
+                  {downloadError && !downloading && (
+                    <div className="w-full mb-2 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+                      {downloadError}
                     </div>
                   )}
                   {result.formats && result.formats.length > 0 ? (

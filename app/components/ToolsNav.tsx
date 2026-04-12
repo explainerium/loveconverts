@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   ChevronDown, ImageIcon, Minimize2, Maximize2, Crop, Wand2, FileImage, Sparkles,
-  Eraser, Droplets, FileOutput, FileInput, ArrowUpCircle, Stamp, Layers,
+  Eraser, Droplets, FileOutput, FileInput, ArrowUpCircle, Stamp, Layers, Video,
 } from "lucide-react";
 
 const TOOLS = [
@@ -15,9 +15,11 @@ const TOOLS = [
   { href: "/tools/convert-to-jpg", label: "CONVERT TO JPG", icon: FileImage },
   { href: "/tools/photo-editor",   label: "PHOTO EDITOR",   icon: Wand2     },
   { href: "/tools/enhance",        label: "AI ENHANCE",     icon: Sparkles  },
+  { href: "/tools/compress-video", label: "COMPRESS VIDEO", icon: Video     },
 ];
 
 const MORE_AVAILABLE = [
+  { href: "/tools/compress-video", label: "Compress Video",  icon: Video,     desc: "Shrink MP4 & MOV" },
   { href: "/tools/enhance",        label: "AI Enhance",      icon: Sparkles,  desc: "Upscale & enhance" },
   { href: "/tools/compress",       label: "Compress Image",  icon: Minimize2, desc: "Reduce file size" },
   { href: "/tools/resize",         label: "Resize Image",    icon: Maximize2, desc: "Change dimensions" },
@@ -51,41 +53,44 @@ export default function ToolsNav() {
   return (
     <div className="sticky top-16 z-30 bg-white/95 backdrop-blur-md border-b border-border shadow-sm">
       <div className="max-w-[1400px] mx-auto px-4">
-        <div className="flex items-center overflow-x-auto scrollbar-hide">
-          {/* Home tool link */}
-          <Link
-            href="/"
-            className={`flex items-center gap-1.5 px-3 py-3.5 text-[11px] font-bold tracking-widest whitespace-nowrap border-b-2 transition-all duration-200 ${
-              pathname === "/"
-                ? "border-primary text-primary"
-                : "border-transparent text-muted hover:text-foreground hover:border-primary/30"
-            }`}
-          >
-            <ImageIcon size={13} />
-            CONVERT
-          </Link>
+        <div className="flex items-center justify-center">
+          {/* Scrollable tool row — overflow only here so it doesn't clip the dropdown */}
+          <div className="flex items-center overflow-x-auto scrollbar-hide min-w-0">
+            {/* Home tool link */}
+            <Link
+              href="/"
+              className={`flex items-center gap-1.5 px-3 py-3.5 text-[11px] font-bold tracking-widest whitespace-nowrap border-b-2 transition-all duration-200 ${
+                pathname === "/"
+                  ? "border-primary text-primary"
+                  : "border-transparent text-muted hover:text-foreground hover:border-primary/30"
+              }`}
+            >
+              <ImageIcon size={13} />
+              CONVERT
+            </Link>
 
-          <div className="w-px h-4 bg-border mx-1 flex-shrink-0" />
+            <div className="w-px h-4 bg-border mx-1 flex-shrink-0" />
 
-          {TOOLS.map(({ href, label, icon: Icon }) => {
-            const active = pathname === href || pathname.startsWith(href + "/");
-            return (
-              <Link
-                key={href}
-                href={href}
-                className={`flex items-center gap-1.5 px-3 py-3.5 text-[11px] font-bold tracking-widest whitespace-nowrap border-b-2 transition-all duration-200 ${
-                  active
-                    ? "border-primary text-primary"
-                    : "border-transparent text-muted hover:text-foreground hover:border-primary/30"
-                }`}
-              >
-                <Icon size={12} className="hidden sm:block" />
-                {label}
-              </Link>
-            );
-          })}
+            {TOOLS.map(({ href, label, icon: Icon }) => {
+              const active = pathname === href || pathname.startsWith(href + "/");
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  className={`flex items-center gap-1.5 px-3 py-3.5 text-[11px] font-bold tracking-widest whitespace-nowrap border-b-2 transition-all duration-200 ${
+                    active
+                      ? "border-primary text-primary"
+                      : "border-transparent text-muted hover:text-foreground hover:border-primary/30"
+                  }`}
+                >
+                  <Icon size={12} className="hidden sm:block" />
+                  {label}
+                </Link>
+              );
+            })}
+          </div>
 
-          {/* More tools dropdown */}
+          {/* More tools dropdown — sibling of scroll row so the panel isn't clipped */}
           <div className="relative flex-shrink-0" ref={dropRef}>
             <button
               onClick={() => setOpen((o) => !o)}

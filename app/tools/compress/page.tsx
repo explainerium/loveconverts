@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
-import { Minimize2, Upload, Download, X, CheckCircle2, Loader2, Package, Maximize2, Crop, Wand2, Plus, ImageIcon } from "lucide-react";
+import { Minimize2, Upload, Download, X, CheckCircle2, Package, Maximize2, Crop, Wand2, Plus, ImageIcon } from "lucide-react";
 import Link from "next/link";
 import JSZip from "jszip";
 
@@ -26,7 +26,7 @@ export default function CompressPage() {
   const [files, setFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const [results, setResults] = useState<Result[]>([]);
-  const [progress, setProgress] = useState({ done: 0, total: 0 });
+  const [progress, setProgress] = useState({ done: 0, total: 0, currentPct: 0, currentName: "" });
   const [error, setError] = useState<string | null>(null);
 
   const onDrop = useCallback((accepted: File[]) => {
@@ -52,10 +52,53 @@ export default function CompressPage() {
     setPreviews((p) => p.filter((_, i) => i !== index));
   };
 
+  const compressOne = (
+    file: File,
+    onUploadPct: (pct: number) => void
+  ): Promise<{ blob: Blob; name: string; origSize: number; compSize: number } | { error: string }> => {
+    return new Promise((resolve) => {
+      const fd = new FormData();
+      fd.append("file", file);
+      fd.append("quality", "80");
+
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", "/api/tools/compress");
+      xhr.responseType = "blob";
+      xhr.upload.onprogress = (e) => {
+        if (e.lengthComputable) onUploadPct((e.loaded / e.total) * 100);
+      };
+      xhr.onload = () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          const blob = xhr.response as Blob;
+          const origSize = parseInt(xhr.getResponseHeader("X-Original-Size") || "0") || file.size;
+          const compSize = parseInt(xhr.getResponseHeader("X-Compressed-Size") || "0") || blob.size;
+          const disp = xhr.getResponseHeader("Content-Disposition") || "";
+          const match = disp.match(/filename="(.+?)"/);
+          const name = match?.[1] || file.name;
+          resolve({ blob, name, origSize, compSize });
+        } else {
+          const reader = new FileReader();
+          reader.onload = () => {
+            try {
+              const data = JSON.parse(reader.result as string);
+              resolve({ error: data.error || `HTTP ${xhr.status}` });
+            } catch {
+              resolve({ error: `HTTP ${xhr.status}` });
+            }
+          };
+          reader.onerror = () => resolve({ error: `HTTP ${xhr.status}` });
+          reader.readAsText(xhr.response);
+        }
+      };
+      xhr.onerror = () => resolve({ error: "Network error" });
+      xhr.send(fd);
+    });
+  };
+
   const compressAll = async () => {
     if (files.length === 0) return;
     setStage("compressing");
-    setProgress({ done: 0, total: files.length });
+    setProgress({ done: 0, total: files.length, currentPct: 0, currentName: files[0]?.name || "" });
     setResults([]);
     setError(null);
 
@@ -63,40 +106,29 @@ export default function CompressPage() {
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
-      try {
-        const fd = new FormData();
-        fd.append("file", file);
-        fd.append("quality", "80");
+      setProgress((p) => ({ ...p, currentPct: 0, currentName: file.name }));
 
-        const res = await fetch("/api/tools/compress", {
-          method: "POST",
-          body: fd,
-        });
+      const res = await compressOne(file, (pct) => {
+        setProgress((p) => ({ ...p, currentPct: pct }));
+      });
 
-        if (!res.ok) {
-          const data = await res.json().catch(() => ({ error: "Compression failed" }));
-          setError(data.error || `Failed to compress ${file.name}`);
-          continue;
-        }
-
-        const blob = await res.blob();
-        const origSize = parseInt(res.headers.get("X-Original-Size") || "0") || file.size;
-        const compSize = parseInt(res.headers.get("X-Compressed-Size") || "0") || blob.size;
-        const disp = res.headers.get("Content-Disposition") || "";
-        const match = disp.match(/filename="(.+?)"/);
-        const name = match?.[1] || file.name;
-
+      if ("error" in res) {
+        setError(`${file.name}: ${res.error}`);
+      } else {
         newResults.push({
-          name,
-          originalSize: origSize,
-          compressedSize: compSize,
-          url: URL.createObjectURL(blob),
+          name: res.name,
+          originalSize: res.origSize,
+          compressedSize: res.compSize,
+          url: URL.createObjectURL(res.blob),
         });
-      } catch {
-        setError(`Failed to compress ${file.name}`);
       }
 
-      setProgress({ done: i + 1, total: files.length });
+      setProgress({
+        done: i + 1,
+        total: files.length,
+        currentPct: 100,
+        currentName: file.name,
+      });
     }
 
     setResults(newResults);
@@ -236,24 +268,87 @@ export default function CompressPage() {
         </div>
       )}
 
-      {/* ─── STAGE 2: Compressing ─── */}
-      {stage === "compressing" && (
-        <div className="max-w-md mx-auto px-4 py-32 text-center space-y-6">
-          <Loader2 size={48} className="animate-spin text-primary mx-auto" />
-          <div>
-            <h2 className="text-xl font-bold text-foreground mb-1">Compressing images...</h2>
-            <p className="text-sm text-muted">
-              {progress.done} of {progress.total} done
-            </p>
+      {/* ─── STAGE 2: Compressing — rich progress ─── */}
+      {stage === "compressing" && (() => {
+        const overall =
+          progress.total > 0
+            ? ((progress.done + progress.currentPct / 100) / progress.total) * 100
+            : 0;
+        const overallRounded = Math.min(100, Math.round(overall));
+        return (
+          <div className="max-w-xl mx-auto px-4 py-16 space-y-8">
+            <div className="text-center space-y-2">
+              <div className="inline-flex items-center gap-2 bg-primary-light text-primary text-xs font-bold px-3 py-1 rounded-full">
+                <Minimize2 size={12} />
+                Compressing
+              </div>
+              <h2 className="text-2xl font-extrabold text-foreground">
+                {progress.done < progress.total ? "Compressing images…" : "Finalizing…"}
+              </h2>
+              <p className="text-sm text-muted">
+                {Math.min(progress.done + 1, progress.total)} of {progress.total}
+                {progress.currentName && (
+                  <span className="block text-xs mt-0.5 truncate max-w-xs mx-auto" title={progress.currentName}>
+                    {progress.currentName}
+                  </span>
+                )}
+              </p>
+            </div>
+
+            <div className="relative w-48 h-48 mx-auto">
+              <svg className="w-48 h-48 -rotate-90" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" strokeWidth="8" className="text-gray-100" />
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="45"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="8"
+                  strokeLinecap="round"
+                  strokeDasharray={`${2 * Math.PI * 45}`}
+                  strokeDashoffset={`${2 * Math.PI * 45 * (1 - overallRounded / 100)}`}
+                  className="text-primary transition-all duration-300"
+                />
+              </svg>
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <p className="text-4xl font-extrabold text-foreground tabular-nums">{overallRounded}%</p>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-muted">complete</p>
+              </div>
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <p className="text-xs font-bold uppercase tracking-wider text-muted">Files</p>
+                <p className="text-xs font-bold text-muted tabular-nums">
+                  {progress.done} / {progress.total}
+                </p>
+              </div>
+              <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                <div
+                  className="h-2 bg-primary rounded-full transition-all duration-300"
+                  style={{ width: `${progress.total > 0 ? (progress.done / progress.total) * 100 : 0}%` }}
+                />
+              </div>
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <p className="text-xs font-bold uppercase tracking-wider text-primary">Current file</p>
+                <p className="text-xs font-bold text-primary tabular-nums">
+                  {Math.round(progress.currentPct)}%
+                </p>
+              </div>
+              <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                <div
+                  className="h-2 bg-gradient-to-r from-primary to-orange-500 rounded-full transition-all duration-300"
+                  style={{ width: `${Math.round(progress.currentPct)}%` }}
+                />
+              </div>
+            </div>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
-            <div
-              className="bg-primary h-2 rounded-full transition-all"
-              style={{ width: `${progress.total > 0 ? (progress.done / progress.total) * 100 : 0}%` }}
-            />
-          </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* ─── STAGE 3: Results ─── */}
       {stage === "done" && results.length > 0 && (

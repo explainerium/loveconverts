@@ -3,7 +3,10 @@
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
-import { Search, ChevronLeft, ChevronRight, Shield, ShieldOff } from "lucide-react";
+import {
+  Search, ChevronLeft, ChevronRight, Shield, ShieldOff,
+  Crown, Ban, CheckCircle2, Trash2, ArrowUpDown,
+} from "lucide-react";
 
 interface UserRow {
   id: string;
@@ -11,8 +14,11 @@ interface UserRow {
   name: string | null;
   plan: string;
   is_admin: number;
+  banned: number;
+  ban_reason: string | null;
   created_at: number;
   conversions_today: number;
+  total_conversions: number;
 }
 
 export default function AdminUsersClient({
@@ -36,7 +42,7 @@ export default function AdminUsersClient({
 
   const [search, setSearch] = useState(currentSearch);
   const [rows,   setRows]   = useState(initialRows);
-  const [toggling, setToggling] = useState<string | null>(null);
+  const [busy, setBusy]     = useState<string | null>(null);
 
   function buildUrl(overrides: Record<string, string | number>) {
     const p = new URLSearchParams();
@@ -48,22 +54,59 @@ export default function AdminUsersClient({
     startTransition(() => router.push(buildUrl({ page: 1 })));
   }
 
-  async function toggleAdmin(userId: string, currentAdmin: number) {
-    if (userId === currentUserId) { alert("You cannot change your own admin status."); return; }
-    const newVal = currentAdmin === 1 ? 0 : 1;
-    if (!confirm(`${newVal ? "Grant" : "Revoke"} admin access for this user?`)) return;
-
-    setToggling(userId);
+  async function userAction(userId: string, action: string, extra?: Record<string, unknown>) {
+    setBusy(userId);
     try {
-      await fetch("/api/admin/users", {
-        method: "PATCH",
+      const res = await fetch("/api/admin/users", {
+        method: action === "delete" ? "DELETE" : "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, is_admin: newVal === 1 }),
+        body: JSON.stringify({ userId, action, ...extra }),
       });
-      setRows((prev) => prev.map((r) => r.id === userId ? { ...r, is_admin: newVal } : r));
+      const data = await res.json();
+      if (!res.ok) { alert(data.error || "Failed"); return; }
+
+      if (action === "delete") {
+        setRows(prev => prev.filter(r => r.id !== userId));
+      } else {
+        setRows(prev => prev.map(r => {
+          if (r.id !== userId) return r;
+          return { ...r, ...data };
+        }));
+      }
     } finally {
-      setToggling(null);
+      setBusy(null);
     }
+  }
+
+  function handleToggleAdmin(row: UserRow) {
+    if (row.id === currentUserId) { alert("Cannot change your own admin status."); return; }
+    const newVal = row.is_admin === 1 ? 0 : 1;
+    if (!confirm(`${newVal ? "Grant" : "Revoke"} admin access for ${row.email}?`)) return;
+    userAction(row.id, "toggle_admin");
+  }
+
+  function handleChangePlan(row: UserRow) {
+    const newPlan = row.plan === "pro" ? "free" : "pro";
+    if (!confirm(`Change ${row.email} to ${newPlan.toUpperCase()} plan?`)) return;
+    userAction(row.id, "change_plan", { plan: newPlan });
+  }
+
+  function handleBan(row: UserRow) {
+    if (row.banned) {
+      if (!confirm(`Unban ${row.email}?`)) return;
+      userAction(row.id, "unban");
+    } else {
+      const reason = prompt(`Ban ${row.email}?\n\nEnter reason (optional):`);
+      if (reason === null) return; // cancelled
+      userAction(row.id, "ban", { reason });
+    }
+  }
+
+  function handleDelete(row: UserRow) {
+    if (row.id === currentUserId) { alert("Cannot delete yourself."); return; }
+    if (!confirm(`PERMANENTLY delete ${row.email} and all their data?\n\nThis cannot be undone!`)) return;
+    if (!confirm(`Are you absolutely sure? Type OK to confirm.`)) return;
+    userAction(row.id, "delete");
   }
 
   return (
@@ -73,7 +116,7 @@ export default function AdminUsersClient({
         <Search size={14} className="text-muted flex-shrink-0" />
         <input
           type="text"
-          placeholder="Search by name or email…"
+          placeholder="Search by name or email..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && applySearch()}
@@ -93,7 +136,7 @@ export default function AdminUsersClient({
           <table className="w-full text-sm">
             <thead className="bg-gray-50 border-b border-border">
               <tr>
-                {["Name / Email", "Plan", "Convs Today", "Admin", "Joined", "Actions"].map((h) => (
+                {["User", "Plan", "Status", "Conversions", "Admin", "Joined", "Actions"].map((h) => (
                   <th key={h} className="px-4 py-3 text-left text-xs font-bold text-muted uppercase tracking-wider whitespace-nowrap">
                     {h}
                   </th>
@@ -102,19 +145,46 @@ export default function AdminUsersClient({
             </thead>
             <tbody className="divide-y divide-border">
               {rows.map((row) => (
-                <tr key={row.id} className="hover:bg-gray-50 transition-colors">
+                <tr key={row.id} className={`hover:bg-gray-50 transition-colors ${row.banned ? "bg-red-50/30" : ""}`}>
+                  {/* User */}
                   <td className="px-4 py-3">
                     <p className="font-medium text-foreground text-[13px]">{row.name || "—"}</p>
                     <p className="text-[11px] text-muted">{row.email}</p>
                   </td>
+
+                  {/* Plan */}
                   <td className="px-4 py-3">
-                    <span className={`px-2 py-0.5 rounded-full text-[11px] font-bold capitalize ${
+                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold capitalize ${
                       row.plan === "pro" ? "bg-amber-100 text-amber-700" : "bg-gray-100 text-gray-600"
                     }`}>
+                      {row.plan === "pro" && <Crown size={10} />}
                       {row.plan}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-[13px] text-foreground text-center">{row.conversions_today}</td>
+
+                  {/* Status */}
+                  <td className="px-4 py-3">
+                    {row.banned ? (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-red-100 text-red-700" title={row.ban_reason || undefined}>
+                        <Ban size={10} /> Banned
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-green-100 text-green-700">
+                        <CheckCircle2 size={10} /> Active
+                      </span>
+                    )}
+                  </td>
+
+                  {/* Conversions */}
+                  <td className="px-4 py-3 text-[13px] text-foreground">
+                    <span className="font-semibold">{row.conversions_today}</span>
+                    <span className="text-muted"> today</span>
+                    <span className="text-muted mx-1">/</span>
+                    <span className="font-semibold">{row.total_conversions}</span>
+                    <span className="text-muted"> total</span>
+                  </td>
+
+                  {/* Admin badge */}
                   <td className="px-4 py-3">
                     {row.is_admin === 1 ? (
                       <span className="flex items-center gap-1 text-[11px] font-bold text-primary">
@@ -124,29 +194,75 @@ export default function AdminUsersClient({
                       <span className="text-[11px] text-muted">No</span>
                     )}
                   </td>
+
+                  {/* Joined */}
                   <td className="px-4 py-3 text-[12px] text-muted whitespace-nowrap">
                     {new Date(row.created_at * 1000).toLocaleDateString()}
                   </td>
+
+                  {/* Actions */}
                   <td className="px-4 py-3">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      {/* Plan toggle */}
                       <button
-                        onClick={() => toggleAdmin(row.id, row.is_admin)}
-                        disabled={toggling === row.id || row.id === currentUserId}
-                        className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors disabled:opacity-40 ${
+                        onClick={() => handleChangePlan(row)}
+                        disabled={busy === row.id}
+                        className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-semibold transition-colors disabled:opacity-40 ${
+                          row.plan === "pro"
+                            ? "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                            : "bg-amber-50 text-amber-700 hover:bg-amber-100"
+                        }`}
+                        title={row.plan === "pro" ? "Downgrade to Free" : "Upgrade to Pro"}
+                      >
+                        <ArrowUpDown size={10} />
+                        {row.plan === "pro" ? "Free" : "Pro"}
+                      </button>
+
+                      {/* Admin toggle */}
+                      <button
+                        onClick={() => handleToggleAdmin(row)}
+                        disabled={busy === row.id || row.id === currentUserId}
+                        className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-semibold transition-colors disabled:opacity-40 ${
                           row.is_admin === 1
                             ? "bg-red-50 text-red-600 hover:bg-red-100"
                             : "bg-primary-light text-primary hover:bg-primary/20"
                         }`}
                       >
-                        {row.is_admin === 1 ? <ShieldOff size={11} /> : <Shield size={11} />}
-                        {row.is_admin === 1 ? "Revoke" : "Grant"}
+                        {row.is_admin === 1 ? <ShieldOff size={10} /> : <Shield size={10} />}
+                        {row.is_admin === 1 ? "Revoke" : "Admin"}
                       </button>
+
+                      {/* Ban/Unban */}
+                      <button
+                        onClick={() => handleBan(row)}
+                        disabled={busy === row.id || row.id === currentUserId}
+                        className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-semibold transition-colors disabled:opacity-40 ${
+                          row.banned
+                            ? "bg-green-50 text-green-700 hover:bg-green-100"
+                            : "bg-orange-50 text-orange-700 hover:bg-orange-100"
+                        }`}
+                      >
+                        <Ban size={10} />
+                        {row.banned ? "Unban" : "Ban"}
+                      </button>
+
+                      {/* History */}
                       <Link
                         href={`/dashboard/history?user=${row.id}`}
-                        className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+                        className="px-2 py-1 rounded-lg text-[11px] font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
                       >
                         History
                       </Link>
+
+                      {/* Delete */}
+                      <button
+                        onClick={() => handleDelete(row)}
+                        disabled={busy === row.id || row.id === currentUserId}
+                        className="flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-semibold bg-red-50 text-red-600 hover:bg-red-100 transition-colors disabled:opacity-40"
+                      >
+                        <Trash2 size={10} />
+                        Delete
+                      </button>
                     </div>
                   </td>
                 </tr>

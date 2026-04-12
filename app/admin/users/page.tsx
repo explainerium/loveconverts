@@ -11,8 +11,11 @@ interface UserRow {
   name: string | null;
   plan: string;
   is_admin: number;
+  banned: number;
+  ban_reason: string | null;
   created_at: number;
   conversions_today: number;
+  total_conversions: number;
 }
 
 interface SearchParams { search?: string; page?: string; }
@@ -39,8 +42,9 @@ export default async function AdminUsersPage({
   const total = (db.prepare(`SELECT COUNT(*) as cnt FROM users u ${where}`).get(...params) as { cnt: number }).cnt;
   const rows  = db
     .prepare(
-      `SELECT u.id, u.email, u.name, u.plan, u.is_admin, u.created_at,
-              (SELECT COUNT(*) FROM conversions c WHERE c.user_id = u.id AND date(c.created_at,'unixepoch') = date('now')) as conversions_today
+      `SELECT u.id, u.email, u.name, u.plan, u.is_admin, u.banned, u.ban_reason, u.created_at,
+              (SELECT COUNT(*) FROM conversions c WHERE c.user_id = u.id AND date(c.created_at,'unixepoch') = date('now')) as conversions_today,
+              (SELECT COUNT(*) FROM conversions c2 WHERE c2.user_id = u.id) as total_conversions
        FROM users u ${where} ORDER BY u.created_at DESC LIMIT ? OFFSET ?`
     )
     .all(...params, pageSize, offset) as UserRow[];

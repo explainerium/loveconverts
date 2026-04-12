@@ -1,19 +1,9 @@
 import { NextRequest } from "next/server";
-import { auth } from "@/auth";
 import db from "@/lib/db";
+import { requireAdmin, auditLog } from "@/lib/admin";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
-
-async function requireAdmin() {
-  const session = await auth();
-  if (!session?.user?.id) return null;
-  if (!db) return null;
-  const user = db.prepare("SELECT is_admin FROM users WHERE id = ?").get(session.user.id) as
-    | { is_admin: number }
-    | undefined;
-  return user?.is_admin === 1 ? session : null;
-}
 
 export async function PATCH(
   request: NextRequest,
@@ -36,6 +26,12 @@ export async function PATCH(
       reason = excluded.reason,
       updated_at = excluded.updated_at
   `).run(platform, disabled ? 1 : 0, reason ?? null);
+
+  auditLog(
+    session.user.id, session.user.email || "unknown",
+    disabled ? "disable_platform" : "enable_platform",
+    "downloader", platform, reason || undefined,
+  );
 
   return Response.json({ success: true, platform, disabled });
 }

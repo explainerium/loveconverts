@@ -9,13 +9,17 @@ import {
   ShieldCheck,
   ArrowLeft,
   Bell,
+  Wrench,
+  ScrollText,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 
 const NAV = [
   { href: "/admin/inquiries", icon: MessageSquare, label: "Inquiries"  },
   { href: "/admin/users",     icon: Users,         label: "Users"      },
+  { href: "/admin/tools",     icon: Wrench,        label: "Tools"      },
   { href: "/admin/stats",     icon: BarChart3,     label: "Statistics" },
+  { href: "/admin/audit-log", icon: ScrollText,    label: "Audit Log"  },
 ];
 
 export default function AdminSidebar() {

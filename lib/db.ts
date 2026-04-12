@@ -100,11 +100,30 @@ try {
       reason     TEXT,
       updated_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
+
+    CREATE TABLE IF NOT EXISTS tool_blocklist (
+      tool       TEXT PRIMARY KEY NOT NULL,
+      disabled   INTEGER NOT NULL DEFAULT 0,
+      reason     TEXT,
+      updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+
+    CREATE TABLE IF NOT EXISTS admin_audit_log (
+      id         INTEGER PRIMARY KEY AUTOINCREMENT,
+      admin_id   TEXT NOT NULL,
+      admin_email TEXT NOT NULL,
+      action     TEXT NOT NULL,
+      target_type TEXT NOT NULL,
+      target_id  TEXT,
+      details    TEXT,
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
   `);
 
-  try {
-    db.exec(`ALTER TABLE users ADD COLUMN is_admin INTEGER NOT NULL DEFAULT 0`);
-  } catch { /* column already exists */ }
+  // Safe column additions — ignore if already exist
+  try { db.exec(`ALTER TABLE users ADD COLUMN is_admin INTEGER NOT NULL DEFAULT 0`); } catch {}
+  try { db.exec(`ALTER TABLE users ADD COLUMN banned INTEGER NOT NULL DEFAULT 0`); } catch {}
+  try { db.exec(`ALTER TABLE users ADD COLUMN ban_reason TEXT`); } catch {}
 
 } catch (err) {
   console.warn("SQLite unavailable (likely Vercel/read-only FS):", (err as Error).message);

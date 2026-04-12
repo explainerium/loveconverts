@@ -7,6 +7,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     { url: baseUrl, lastModified: today, changeFrequency: "weekly", priority: 1.0 },
     { url: `${baseUrl}/tools/compress`, lastModified: today, changeFrequency: "monthly", priority: 0.9 },
+    { url: `${baseUrl}/tools/compress-video`, lastModified: today, changeFrequency: "monthly", priority: 0.9 },
     { url: `${baseUrl}/tools/resize`, lastModified: today, changeFrequency: "monthly", priority: 0.9 },
     { url: `${baseUrl}/tools/crop`, lastModified: today, changeFrequency: "monthly", priority: 0.9 },
     { url: `${baseUrl}/tools/convert-to-jpg`, lastModified: today, changeFrequency: "monthly", priority: 0.9 },
