@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Minimize2, Maximize2, Crop, FileImage, Wand2, ImageIcon, Sparkles, Droplets, FileOutput, Eraser, ArrowUpCircle, PenTool, Video } from "lucide-react";
+import { Minimize2, Maximize2, Crop, FileImage, Wand2, ImageIcon, Sparkles, FileOutput, Eraser, ArrowUpCircle, PenTool, Video, Layers, ArrowRight, Smartphone } from "lucide-react";
+import { ALL_PAIRS, getPairData } from "@/lib/conversion-pairs";
 
 export const metadata: Metadata = {
   title: "All Free Image & Video Tools: Converter Compressor Resizer",
@@ -75,14 +76,6 @@ const TOOLS = [
     color: "bg-pink-50 text-pink-600 border-pink-100",
   },
   {
-    href: "/tools/watermark",
-    icon: Droplets,
-    label: "Add Watermark",
-    desc: "Add text watermarks to your images. Choose position, opacity, size, and color.",
-    badge: "New",
-    color: "bg-cyan-50 text-cyan-600 border-cyan-100",
-  },
-  {
     href: "/tools/image-to-pdf",
     icon: FileImage,
     label: "Image to PDF",
@@ -115,6 +108,22 @@ const TOOLS = [
     color: "bg-purple-50 text-purple-600 border-purple-100",
   },
   {
+    href: "/tools/batch-convert",
+    icon: Layers,
+    label: "Batch Convert",
+    desc: "Convert multiple images to JPG, PNG, WebP, or AVIF at once. Download as ZIP.",
+    badge: "New",
+    color: "bg-teal-50 text-teal-600 border-teal-100",
+  },
+  {
+    href: "/tools/heic-to-jpg",
+    icon: Smartphone,
+    label: "HEIC to JPG",
+    desc: "Convert iPhone HEIC photos to universal JPG format. Batch convert up to 30 files at once.",
+    badge: "New",
+    color: "bg-purple-50 text-purple-600 border-purple-100",
+  },
+  {
     href: "/tools/compress-video",
     icon: Video,
     label: "Compress Video",
@@ -133,9 +142,9 @@ export default function ToolsPage() {
           <div className="inline-flex items-center gap-2 bg-primary-light text-primary text-xs font-bold px-3 py-1 rounded-full">
             ✦ Free Tools
           </div>
-          <h1 className="text-4xl font-extrabold text-foreground">All Image Tools</h1>
+          <h1 className="text-4xl font-extrabold text-foreground">All Image & Video Tools</h1>
           <p className="text-muted max-w-xl mx-auto">
-            Professional-grade image processing in your browser. No sign-up required. Free forever.
+            Professional-grade image and video processing in your browser. No sign-up required. Free forever.
           </p>
         </div>
 
@@ -164,6 +173,33 @@ export default function ToolsPage() {
                 <p className="text-sm text-muted mt-1 leading-relaxed">{desc}</p>
               </Link>
             ))}
+          </div>
+        </div>
+
+        {/* Format Conversions */}
+        <div>
+          <div className="flex items-center justify-between mb-5">
+            <h2 className="text-sm font-bold text-muted uppercase tracking-wider">Format Conversions</h2>
+            <Link href="/convert" className="text-xs font-bold text-primary hover:underline">
+              View all &rarr;
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+            {ALL_PAIRS.map((pair) => {
+              const d = getPairData(pair);
+              if (!d) return null;
+              return (
+                <Link
+                  key={pair}
+                  href={`/convert/${pair}`}
+                  className="group flex items-center justify-center gap-2 px-3 py-2.5 bg-card border border-border rounded-xl hover:border-primary/30 hover:shadow-sm transition-all"
+                >
+                  <span className="text-xs font-bold text-foreground">{d.from}</span>
+                  <ArrowRight size={12} className="text-muted group-hover:text-primary transition-colors" />
+                  <span className="text-xs font-bold text-primary">{d.to}</span>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </div>

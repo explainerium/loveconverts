@@ -2,13 +2,20 @@ import Link from "next/link";
 import Logo from "./Logo";
 
 const IMAGE_TOOLS = [
-  { href: "/tools/compress",       label: "Compress Image" },
-  { href: "/tools/compress-video", label: "Compress Video" },
-  { href: "/tools/resize",         label: "Resize Image"   },
-  { href: "/tools/crop",           label: "Crop Image"     },
-  { href: "/tools/convert-to-jpg", label: "Convert to JPG" },
-  { href: "/tools/photo-editor",   label: "Photo Editor"   },
-  { href: "/tools",                label: "All Tools →",   bold: true },
+  { href: "/tools/compress",           label: "Compress Image" },
+  { href: "/tools/compress-video",     label: "Compress Video" },
+  { href: "/tools/resize",             label: "Resize Image"   },
+  { href: "/tools/crop",               label: "Crop Image"     },
+  { href: "/tools/convert-to-jpg",     label: "Convert to JPG" },
+  { href: "/tools/photo-editor",       label: "Photo Editor"   },
+  { href: "/tools/remove-background",  label: "Remove Background" },
+  { href: "/tools/upscale",            label: "Upscale Image"  },
+  { href: "/tools/image-to-pdf",       label: "Image to PDF"   },
+  { href: "/tools/pdf-to-image",       label: "PDF to Image"   },
+  { href: "/tools/batch-convert",      label: "Batch Convert"  },
+  { href: "/tools/heic-to-jpg",        label: "HEIC to JPG"    },
+  { href: "/convert",                  label: "All Conversions →", bold: true },
+  { href: "/tools",                    label: "All Tools →",   bold: true },
 ];
 
 const DOWNLOADERS = [
@@ -24,6 +31,7 @@ const COMPANY = [
   { href: "/about",        label: "About"           },
   { href: "/how-it-works", label: "How It Works"    },
   { href: "/faq",          label: "FAQ"             },
+  { href: "/blog",         label: "Blog"            },
   { href: "/support",      label: "Support Center"  },
   { href: "/upgrade",      label: "Pricing"         },
   { href: "/terms",        label: "Terms of Service"},
@@ -69,16 +77,11 @@ export default function Footer() {
             <p className="text-[#94A3B8] text-[13px] leading-[1.7]">
               Free image conversion and video downloading. No signup required. Your files are processed in memory and never stored.
             </p>
-            {/* Social icons */}
+            {/* Social */}
             <div className="flex gap-3 pt-1">
-              <a href="#" aria-label="Twitter" className="text-[#64748B] hover:text-[#FF8C42] transition-colors">
+              <a href="https://web.facebook.com/mohammadnajir02/" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="text-[#64748B] hover:text-[#FF8C42] transition-colors">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M18.2 3H21l-7.2 8.3L22.5 21H16l-4.8-6.3L5.3 21H2.5l7.7-8.8L2 3h6.7l4.4 5.8L18.2 3zm-1 16.2h1.7L7 4.8H5.2L17.2 19.2z"/>
-                </svg>
-              </a>
-              <a href="#" aria-label="GitHub" className="text-[#64748B] hover:text-[#FF8C42] transition-colors">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 2C6.48 2 2 6.48 2 12c0 4.42 2.87 8.17 6.84 9.49.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1 .07 1.53 1.03 1.53 1.03.89 1.52 2.34 1.08 2.91.83.09-.65.35-1.08.63-1.33-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.10-.25-.45-1.27.10-2.65 0 0 .84-.27 2.75 1.02A9.56 9.56 0 0 1 12 6.8c.85 0 1.71.11 2.51.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.38.20 2.4.10 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.69-4.57 4.94.36.31.68.92.68 1.85v2.75c0 .27.18.58.69.48A10.01 10.01 0 0 0 22 12c0-5.52-4.48-10-10-10z"/>
+                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
                 </svg>
               </a>
             </div>

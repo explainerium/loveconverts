@@ -6,12 +6,69 @@ import { Maximize2, Upload, Download, X, CheckCircle2, Loader2, Package, Minimiz
 import Link from "next/link";
 import JSZip from "jszip";
 
-const PRESETS = [
-  { label: "Instagram (1080\u00d71080)", w: 1080, h: 1080 },
-  { label: "Twitter (1200\u00d7675)",    w: 1200, h: 675  },
-  { label: "Facebook (1200\u00d7630)",   w: 1200, h: 630  },
-  { label: "HD (1920\u00d71080)",        w: 1920, h: 1080 },
-  { label: "4K (3840\u00d72160)",        w: 3840, h: 2160 },
+interface Preset { label: string; w: number; h: number }
+
+const PLATFORM_PRESETS: { platform: string; icon: string; presets: Preset[] }[] = [
+  {
+    platform: "Instagram",
+    icon: "IG",
+    presets: [
+      { label: "Square Post", w: 1080, h: 1080 },
+      { label: "Portrait Post", w: 1080, h: 1350 },
+      { label: "Story / Reel", w: 1080, h: 1920 },
+      { label: "Profile Photo", w: 320, h: 320 },
+    ],
+  },
+  {
+    platform: "Facebook",
+    icon: "FB",
+    presets: [
+      { label: "Post", w: 1200, h: 630 },
+      { label: "Cover Photo", w: 851, h: 315 },
+      { label: "Story", w: 1080, h: 1920 },
+    ],
+  },
+  {
+    platform: "X (Twitter)",
+    icon: "X",
+    presets: [
+      { label: "Post Image", w: 1600, h: 900 },
+      { label: "Profile Photo", w: 400, h: 400 },
+      { label: "Header", w: 1500, h: 500 },
+    ],
+  },
+  {
+    platform: "LinkedIn",
+    icon: "LI",
+    presets: [
+      { label: "Post Image", w: 1200, h: 627 },
+      { label: "Cover Photo", w: 1584, h: 396 },
+      { label: "Profile Photo", w: 400, h: 400 },
+    ],
+  },
+  {
+    platform: "YouTube",
+    icon: "YT",
+    presets: [
+      { label: "Thumbnail", w: 1280, h: 720 },
+      { label: "Channel Art", w: 2560, h: 1440 },
+    ],
+  },
+  {
+    platform: "WhatsApp",
+    icon: "WA",
+    presets: [
+      { label: "Profile Photo", w: 500, h: 500 },
+    ],
+  },
+  {
+    platform: "Standard",
+    icon: "HD",
+    presets: [
+      { label: "HD 1080p", w: 1920, h: 1080 },
+      { label: "4K UHD", w: 3840, h: 2160 },
+    ],
+  },
 ];
 
 interface Result {
@@ -46,6 +103,7 @@ export default function ResizePage() {
   const [height, setHeight] = useState("");
   const [locked, setLocked] = useState(true);
   const [fit, setFit] = useState("inside");
+  const [selectedPlatform, setSelectedPlatform] = useState<string | null>(null);
 
   const applyPreset = (w: number, h: number) => {
     setWidth(String(w));
@@ -267,24 +325,56 @@ export default function ResizePage() {
 
               {/* Controls card */}
               <div className="bg-card border border-border rounded-2xl p-6 space-y-5">
-                {/* Presets */}
+                {/* Platform tabs */}
                 <div>
-                  <p className="text-xs font-bold text-muted uppercase tracking-wider mb-2">Quick Presets</p>
-                  <div className="flex flex-wrap gap-2">
-                    {PRESETS.map((p) => (
+                  <p className="text-xs font-bold text-muted uppercase tracking-wider mb-2">Social Media Presets</p>
+                  <div className="flex flex-wrap gap-1.5 mb-3">
+                    {PLATFORM_PRESETS.map((group) => (
                       <button
-                        key={p.label}
-                        onClick={() => applyPreset(p.w, p.h)}
-                        className={`px-3 py-1.5 border rounded-full text-xs font-medium transition-colors ${
-                          width === String(p.w) && height === String(p.h)
-                            ? "border-primary bg-primary/10 text-primary"
-                            : "border-border text-foreground hover:border-primary hover:text-primary"
+                        key={group.platform}
+                        onClick={() => setSelectedPlatform(selectedPlatform === group.platform ? null : group.platform)}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                          selectedPlatform === group.platform
+                            ? "bg-primary text-white shadow-sm"
+                            : "bg-gray-100 text-foreground hover:bg-gray-200"
                         }`}
                       >
-                        {p.label}
+                        {group.platform}
                       </button>
                     ))}
+                    <button
+                      onClick={() => { setSelectedPlatform(null); setWidth(""); setHeight(""); }}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                        !selectedPlatform && !width && !height
+                          ? "bg-primary text-white shadow-sm"
+                          : "bg-gray-100 text-foreground hover:bg-gray-200"
+                      }`}
+                    >
+                      Custom
+                    </button>
                   </div>
+
+                  {/* Preset buttons for selected platform */}
+                  {selectedPlatform && (
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                      {PLATFORM_PRESETS.find((g) => g.platform === selectedPlatform)?.presets.map((p) => (
+                        <button
+                          key={p.label}
+                          onClick={() => applyPreset(p.w, p.h)}
+                          className={`px-3 py-2.5 border rounded-xl text-left transition-all ${
+                            width === String(p.w) && height === String(p.h)
+                              ? "border-primary bg-primary/5"
+                              : "border-border hover:border-primary/40"
+                          }`}
+                        >
+                          <p className={`text-xs font-semibold ${width === String(p.w) && height === String(p.h) ? "text-primary" : "text-foreground"}`}>
+                            {p.label}
+                          </p>
+                          <p className="text-[10px] text-muted mt-0.5">{p.w} x {p.h}</p>
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 {/* Dimensions */}
@@ -464,6 +554,24 @@ export default function ResizePage() {
               ))}
             </div>
           </>
+        )}
+
+        {/* Social media sizes SEO section */}
+        {stage === "upload" && (
+          <div className="bg-card border border-border rounded-2xl p-6">
+            <h2 className="font-bold text-foreground mb-3">Standard Image Sizes for Social Media in 2026</h2>
+            <p className="text-sm text-muted leading-relaxed mb-4">
+              Each social media platform has specific image dimensions that produce the best results.
+              Instagram portrait posts (1080x1350) take up the most feed space and get the highest engagement.
+              Facebook post images work best at 1200x630. X/Twitter crops in-feed images to 16:9, so use 1600x900.
+              YouTube thumbnails should always be 1280x720. Using the correct dimensions prevents awkward cropping
+              and ensures your content looks polished on every platform.
+            </p>
+            <p className="text-sm text-muted leading-relaxed">
+              Upload your images above and select any platform preset to resize automatically.
+              The resizer preserves aspect ratio by default, so your images are never stretched or distorted.
+            </p>
+          </div>
         )}
 
         {/* Related Tools */}

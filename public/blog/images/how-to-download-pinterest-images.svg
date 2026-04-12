@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <rect width="1200" height="630" fill="#FFF5F5"/>
+  <!-- Pinterest-style pin board columns -->
+  <rect x="80" y="60" width="180" height="240" rx="16" fill="#FEE2E2"/>
+  <rect x="80" y="320" width="180" height="160" rx="16" fill="#FECACA"/>
+  <rect x="280" y="60" width="180" height="160" rx="16" fill="#FECACA"/>
+  <rect x="280" y="240" width="180" height="260" rx="16" fill="#FEE2E2"/>
+  <rect x="480" y="60" width="180" height="200" rx="16" fill="#FCA5A5"/>
+  <rect x="480" y="280" width="180" height="220" rx="16" fill="#FEE2E2"/>
+  <!-- Pin icon on central card -->
+  <circle cx="370" cy="370" r="30" fill="#E60023"/>
+  <!-- Pin shape -->
+  <path d="M370,350 C365,365 358,380 358,388 C358,395 365,398 370,398 C375,398 382,395 382,388 C382,380 375,365 370,350 Z" fill="#fff"/>
+  <!-- Download arrow overlay -->
+  <circle cx="570" cy="380" r="35" fill="#FF4747" opacity="0.9"/>
+  <line x1="570" y1="362" x2="570" y2="398" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+  <polygon points="556,392 570,410 584,392" fill="#fff"/>
+  <!-- Title -->
+  <text x="900" y="220" font-family="Arial, sans-serif" font-size="52" font-weight="bold" fill="#1A1A2E" text-anchor="middle">Download</text>
+  <text x="900" y="295" font-family="Arial, sans-serif" font-size="52" font-weight="bold" fill="#E60023" text-anchor="middle">Pinterest</text>
+  <text x="900" y="370" font-family="Arial, sans-serif" font-size="52" font-weight="bold" fill="#1A1A2E" text-anchor="middle">Images</text>
+  <!-- Subtitle -->
+  <text x="900" y="420" font-family="Arial, sans-serif" font-size="22" fill="#9CA3AF" text-anchor="middle">Full Resolution, No Watermark</text>
+  <!-- Branding -->
+  <text x="1150" y="600" font-family="Arial, sans-serif" font-size="18" fill="#D1D5DB" text-anchor="end">LoveConverts</text>
+</svg>

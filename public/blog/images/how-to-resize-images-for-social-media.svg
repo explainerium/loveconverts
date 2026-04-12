@@ -1,0 +1,65 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="warmGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF4747"/>
+      <stop offset="100%" style="stop-color:#FF8C42"/>
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#warmGrad)"/>
+  <!-- Subtle overlay pattern -->
+  <circle cx="0" cy="0" r="400" fill="#FFFFFF" opacity="0.03"/>
+  <circle cx="1200" cy="630" r="350" fill="#000000" opacity="0.05"/>
+  <!-- Title -->
+  <text x="600" y="100" font-family="Arial, sans-serif" font-size="52" font-weight="bold" fill="#FFFFFF" text-anchor="middle">Social Media</text>
+  <text x="600" y="160" font-family="Arial, sans-serif" font-size="52" font-weight="bold" fill="#FFFFFF" text-anchor="middle">Image Sizes</text>
+  <text x="600" y="200" font-family="Arial, sans-serif" font-size="20" fill="#FFFFFF" text-anchor="middle" opacity="0.85">Perfect dimensions for every platform</text>
+  <!-- Phone outline (Instagram story) -->
+  <g transform="translate(120, 240)">
+    <rect x="0" y="0" width="120" height="220" rx="16" fill="none" stroke="#FFFFFF" stroke-width="3"/>
+    <rect x="8" y="24" width="104" height="172" rx="4" fill="#FFFFFF" opacity="0.1"/>
+    <rect x="40" y="8" width="40" height="6" rx="3" fill="#FFFFFF" opacity="0.3"/>
+    <text x="60" y="125" font-family="Arial, sans-serif" font-size="13" fill="#FFFFFF" text-anchor="middle" opacity="0.9">1080</text>
+    <text x="60" y="142" font-family="Arial, sans-serif" font-size="13" fill="#FFFFFF" text-anchor="middle" opacity="0.9">x</text>
+    <text x="60" y="159" font-family="Arial, sans-serif" font-size="13" fill="#FFFFFF" text-anchor="middle" opacity="0.9">1920</text>
+    <text x="60" y="250" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#FFFFFF" text-anchor="middle">Story</text>
+  </g>
+  <!-- Square (Instagram post) -->
+  <g transform="translate(320, 270)">
+    <rect x="0" y="0" width="170" height="170" rx="12" fill="none" stroke="#FFFFFF" stroke-width="3"/>
+    <rect x="8" y="8" width="154" height="154" rx="4" fill="#FFFFFF" opacity="0.1"/>
+    <text x="85" y="80" font-family="Arial, sans-serif" font-size="16" fill="#FFFFFF" text-anchor="middle" opacity="0.9">1080</text>
+    <text x="85" y="100" font-family="Arial, sans-serif" font-size="16" fill="#FFFFFF" text-anchor="middle" opacity="0.9">x</text>
+    <text x="85" y="120" font-family="Arial, sans-serif" font-size="16" fill="#FFFFFF" text-anchor="middle" opacity="0.9">1080</text>
+    <text x="85" y="210" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#FFFFFF" text-anchor="middle">Post</text>
+  </g>
+  <!-- Wide rectangle (YouTube/Facebook) -->
+  <g transform="translate(570, 290)">
+    <rect x="0" y="0" width="260" height="146" rx="12" fill="none" stroke="#FFFFFF" stroke-width="3"/>
+    <rect x="8" y="8" width="244" height="130" rx="4" fill="#FFFFFF" opacity="0.1"/>
+    <!-- Play button -->
+    <polygon points="115,55 115,91 145,73" fill="#FFFFFF" opacity="0.3"/>
+    <text x="130" y="110" font-family="Arial, sans-serif" font-size="14" fill="#FFFFFF" text-anchor="middle" opacity="0.9">1920 x 1080</text>
+    <text x="130" y="180" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#FFFFFF" text-anchor="middle">Cover / Thumb</text>
+  </g>
+  <!-- Banner (Twitter header) -->
+  <g transform="translate(900, 310)">
+    <rect x="0" y="0" width="220" height="73" rx="10" fill="none" stroke="#FFFFFF" stroke-width="3"/>
+    <rect x="6" y="6" width="208" height="61" rx="4" fill="#FFFFFF" opacity="0.1"/>
+    <text x="110" y="44" font-family="Arial, sans-serif" font-size="13" fill="#FFFFFF" text-anchor="middle" opacity="0.9">1500 x 500</text>
+    <text x="110" y="110" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#FFFFFF" text-anchor="middle">Banner</text>
+  </g>
+  <!-- Resize arrows icon bottom center -->
+  <g transform="translate(560, 530)">
+    <line x1="0" y1="20" x2="30" y2="20" stroke="#FFFFFF" stroke-width="2" opacity="0.5"/>
+    <line x1="30" y1="0" x2="30" y2="20" stroke="#FFFFFF" stroke-width="2" opacity="0.5"/>
+    <polygon points="35,0 25,0 30,-8" fill="#FFFFFF" opacity="0.5"/>
+    <polygon points="0,15 0,25 -8,20" fill="#FFFFFF" opacity="0.5"/>
+    <line x1="50" y1="20" x2="80" y2="20" stroke="#FFFFFF" stroke-width="2" opacity="0.5"/>
+    <line x1="50" y1="0" x2="50" y2="20" stroke="#FFFFFF" stroke-width="2" opacity="0.5"/>
+    <polygon points="45,0 55,0 50,-8" fill="#FFFFFF" opacity="0.5"/>
+    <polygon points="80,15 80,25 88,20" fill="#FFFFFF" opacity="0.5"/>
+  </g>
+  <!-- Branding -->
+  <text x="1160" y="600" font-family="Arial, sans-serif" font-size="16" fill="#FFFFFF" text-anchor="end" opacity="0.7">LoveConverts</text>
+</svg>

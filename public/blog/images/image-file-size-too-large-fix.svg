@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="amberbg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#F59E0B"/>
+      <stop offset="100%" style="stop-color:#D97706"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#amberbg)"/>
+  <!-- Warning pattern stripes -->
+  <rect x="0" y="0" width="1200" height="12" fill="#B45309" opacity="0.3"/>
+  <rect x="0" y="618" width="1200" height="12" fill="#B45309" opacity="0.3"/>
+  <!-- Oversized file icon -->
+  <rect x="160" y="120" width="220" height="280" rx="12" fill="#fff" opacity="0.95"/>
+  <path d="M320,120 L380,180 L380,120 Z" fill="#FDE68A"/>
+  <rect x="190" y="200" width="160" height="15" rx="4" fill="#FDE68A"/>
+  <rect x="190" y="230" width="130" height="12" rx="4" fill="#FEF3C7"/>
+  <rect x="190" y="255" width="140" height="12" rx="4" fill="#FEF3C7"/>
+  <!-- Huge size badge -->
+  <rect x="200" y="300" width="140" height="50" rx="10" fill="#EF4444"/>
+  <text x="270" y="333" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#fff" text-anchor="middle">48 MB!</text>
+  <!-- Shrink arrows pointing inward -->
+  <line x1="440" y1="200" x2="500" y2="260" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+  <polygon points="490,240 510,265 480,260" fill="#fff"/>
+  <line x1="440" y1="400" x2="500" y2="340" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+  <polygon points="490,360 510,335 480,340" fill="#fff"/>
+  <!-- Resulting small file -->
+  <rect x="530" y="220" width="130" height="160" rx="10" fill="#fff" opacity="0.95"/>
+  <rect x="550" y="260" width="90" height="10" rx="3" fill="#FDE68A"/>
+  <rect x="550" y="280" width="70" height="8" rx="3" fill="#FEF3C7"/>
+  <!-- Small size badge -->
+  <rect x="545" y="320" width="100" height="40" rx="8" fill="#10B981"/>
+  <text x="595" y="347" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#fff" text-anchor="middle">500 KB</text>
+  <!-- Title -->
+  <text x="920" y="220" font-family="Arial, sans-serif" font-size="56" font-weight="bold" fill="#fff" text-anchor="middle">File Too</text>
+  <text x="920" y="295" font-family="Arial, sans-serif" font-size="56" font-weight="bold" fill="#fff" text-anchor="middle">Large?</text>
+  <text x="920" y="380" font-family="Arial, sans-serif" font-size="60" font-weight="bold" fill="#7C2D12" text-anchor="middle">Fix It</text>
+  <text x="920" y="430" font-family="Arial, sans-serif" font-size="22" fill="#FEF3C7" text-anchor="middle">Instant Online Compression</text>
+  <!-- Branding -->
+  <text x="1150" y="600" font-family="Arial, sans-serif" font-size="18" fill="#92400E" text-anchor="end" opacity="0.7">LoveConverts</text>
+</svg>

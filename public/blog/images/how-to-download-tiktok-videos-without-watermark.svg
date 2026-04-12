@@ -1,0 +1,61 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="tiktokGlow1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#000000"/>
+      <stop offset="100%" style="stop-color:#111111"/>
+    </linearGradient>
+    <linearGradient id="neonCyan" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#25F4EE"/>
+      <stop offset="100%" style="stop-color:#69C9D0"/>
+    </linearGradient>
+    <linearGradient id="neonPink" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#FE2C55"/>
+      <stop offset="100%" style="stop-color:#FF4747"/>
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#tiktokGlow1)"/>
+  <!-- Neon glow circles -->
+  <circle cx="200" cy="315" r="300" fill="#25F4EE" opacity="0.03"/>
+  <circle cx="1000" cy="315" r="300" fill="#FE2C55" opacity="0.03"/>
+  <!-- Scan lines effect -->
+  <rect x="0" y="0" width="1200" height="2" fill="#25F4EE" opacity="0.05"/>
+  <rect x="0" y="100" width="1200" height="1" fill="#FE2C55" opacity="0.03"/>
+  <rect x="0" y="200" width="1200" height="1" fill="#25F4EE" opacity="0.03"/>
+  <rect x="0" y="300" width="1200" height="1" fill="#FE2C55" opacity="0.03"/>
+  <rect x="0" y="400" width="1200" height="1" fill="#25F4EE" opacity="0.03"/>
+  <rect x="0" y="500" width="1200" height="1" fill="#FE2C55" opacity="0.03"/>
+  <!-- TikTok-style music note icon -->
+  <g transform="translate(530, 220)">
+    <!-- Note body -->
+    <rect x="100" y="0" width="14" height="120" rx="4" fill="#25F4EE"/>
+    <rect x="104" y="4" width="14" height="120" rx="4" fill="#FE2C55" opacity="0.6"/>
+    <!-- Note head -->
+    <ellipse cx="90" cy="130" rx="28" ry="20" fill="#25F4EE"/>
+    <ellipse cx="94" cy="134" rx="28" ry="20" fill="#FE2C55" opacity="0.6"/>
+    <!-- Flag -->
+    <path d="M114,0 Q160,20 140,60 L114,50" fill="#25F4EE"/>
+    <path d="M118,4 Q164,24 144,64 L118,54" fill="#FE2C55" opacity="0.5"/>
+  </g>
+  <!-- Title with neon effect -->
+  <text x="600" y="130" font-family="Arial, sans-serif" font-size="58" font-weight="bold" fill="#FFFFFF" text-anchor="middle">Download TikTok</text>
+  <text x="602" y="132" font-family="Arial, sans-serif" font-size="58" font-weight="bold" fill="#25F4EE" text-anchor="middle" opacity="0.15">Download TikTok</text>
+  <text x="600" y="190" font-family="Arial, sans-serif" font-size="58" font-weight="bold" fill="#FE2C55" text-anchor="middle">Videos</text>
+  <text x="602" y="192" font-family="Arial, sans-serif" font-size="58" font-weight="bold" fill="#25F4EE" text-anchor="middle" opacity="0.15">Videos</text>
+  <!-- "No Watermark" badge -->
+  <rect x="420" y="420" width="360" height="60" rx="30" fill="none" stroke="#25F4EE" stroke-width="2"/>
+  <text x="600" y="458" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#25F4EE" text-anchor="middle">NO WATERMARK</text>
+  <!-- Download arrow icon -->
+  <g transform="translate(570, 490)">
+    <rect x="20" y="0" width="20" height="40" rx="4" fill="#FFFFFF" opacity="0.4"/>
+    <polygon points="0,35 30,35 60,35 30,60" fill="#FFFFFF" opacity="0.4"/>
+    <line x1="5" y1="72" x2="55" y2="72" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" opacity="0.4"/>
+  </g>
+  <!-- Side decorative elements -->
+  <rect x="40" y="260" width="4" height="110" rx="2" fill="#FE2C55" opacity="0.5"/>
+  <rect x="55" y="280" width="4" height="70" rx="2" fill="#25F4EE" opacity="0.5"/>
+  <rect x="1140" y="260" width="4" height="110" rx="2" fill="#25F4EE" opacity="0.5"/>
+  <rect x="1155" y="280" width="4" height="70" rx="2" fill="#FE2C55" opacity="0.5"/>
+  <!-- Branding -->
+  <text x="1160" y="600" font-family="Arial, sans-serif" font-size="16" fill="#FF4747" text-anchor="end" opacity="0.8">LoveConverts</text>
+</svg>

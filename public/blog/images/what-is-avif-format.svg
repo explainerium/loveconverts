@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="violetbg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4C1D95"/>
+      <stop offset="50%" style="stop-color:#6D28D9"/>
+      <stop offset="100%" style="stop-color:#8B5CF6"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#violetbg)"/>
+  <!-- Abstract compression waves -->
+  <path d="M0,400 Q150,350 300,400 Q450,450 600,400 Q750,350 900,400 Q1050,450 1200,400" fill="none" stroke="#A78BFA" stroke-width="2" opacity="0.3"/>
+  <path d="M0,430 Q150,380 300,430 Q450,480 600,430 Q750,380 900,430 Q1050,480 1200,430" fill="none" stroke="#A78BFA" stroke-width="2" opacity="0.2"/>
+  <path d="M0,460 Q150,410 300,460 Q450,510 600,460 Q750,410 900,460 Q1050,510 1200,460" fill="none" stroke="#A78BFA" stroke-width="2" opacity="0.15"/>
+  <!-- Large AVIF text -->
+  <text x="600" y="200" font-family="Arial, sans-serif" font-size="140" font-weight="bold" fill="#fff" text-anchor="middle" opacity="0.1">AVIF</text>
+  <!-- Central content -->
+  <text x="600" y="280" font-family="Arial, sans-serif" font-size="72" font-weight="bold" fill="#fff" text-anchor="middle">What Is</text>
+  <text x="600" y="370" font-family="Arial, sans-serif" font-size="72" font-weight="bold" fill="#FF4747" text-anchor="middle">AVIF?</text>
+  <!-- Compression visual - blocks getting smaller -->
+  <rect x="300" y="430" width="60" height="60" rx="4" fill="#fff" opacity="0.3"/>
+  <rect x="380" y="440" width="50" height="50" rx="4" fill="#fff" opacity="0.4"/>
+  <rect x="450" y="448" width="42" height="42" rx="4" fill="#fff" opacity="0.5"/>
+  <rect x="510" y="454" width="36" height="36" rx="4" fill="#fff" opacity="0.6"/>
+  <rect x="565" y="458" width="32" height="32" rx="4" fill="#fff" opacity="0.7"/>
+  <rect x="615" y="461" width="28" height="28" rx="4" fill="#FF4747" opacity="0.9"/>
+  <!-- Arrow indicating compression -->
+  <text x="680" y="482" font-family="Arial, sans-serif" font-size="20" fill="#C4B5FD" text-anchor="start">50% smaller</text>
+  <!-- Subtitle -->
+  <text x="600" y="560" font-family="Arial, sans-serif" font-size="22" fill="#C4B5FD" text-anchor="middle">The Next-Gen Image Format Explained</text>
+  <!-- Branding -->
+  <text x="1150" y="600" font-family="Arial, sans-serif" font-size="18" fill="#A78BFA" text-anchor="end" opacity="0.7">LoveConverts</text>
+</svg>

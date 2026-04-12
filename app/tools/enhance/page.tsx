@@ -4,6 +4,8 @@ import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { Upload, Download, Loader2, Sparkles, Minimize2, Maximize2, Crop, Wand2, ImageIcon } from "lucide-react";
 import Link from "next/link";
+import { useToolShortcuts } from "@/app/components/useToolShortcuts";
+import KeyboardShortcuts from "@/app/components/KeyboardShortcuts";
 
 function fmtBytes(n: number) {
   if (n < 1024) return n + " B";
@@ -128,6 +130,42 @@ export default function EnhancePage() {
     setScale(2);
   };
 
+  const handlePastedFile = useCallback((pastedFile: File) => {
+    setError(null);
+    setFile(pastedFile);
+    setOriginalSize(pastedFile.size);
+    setMode("auto");
+    setScale(2);
+
+    const isHeic =
+      pastedFile.name.toLowerCase().endsWith(".heic") ||
+      pastedFile.name.toLowerCase().endsWith(".heif") ||
+      pastedFile.type === "image/heic" ||
+      pastedFile.type === "image/heif";
+
+    if (isHeic) {
+      setPreview("");
+    } else {
+      setPreview(URL.createObjectURL(pastedFile));
+    }
+  }, []);
+
+  useToolShortcuts({
+    onPaste: handlePastedFile,
+    onReset: () => reset(),
+    onAction: () => enhance(),
+    onDownload: () => {
+      if (resultUrl) {
+        const a = document.createElement("a");
+        a.href = resultUrl;
+        a.download = resultName;
+        a.click();
+      }
+    },
+    canAct: !!file && stage === "upload",
+    canDownload: stage === "done" && !!resultUrl,
+  });
+
   const modeLabel = MODES.find((m) => m.key === mode)?.label || mode;
 
   return (
@@ -162,6 +200,7 @@ export default function EnhancePage() {
               </p>
               <p className="text-sm text-muted">or drag and drop it here</p>
               <p className="text-xs text-muted mt-3">JPG, PNG, WEBP, HEIC. Up to 50 MB.</p>
+              <p className="text-[11px] text-muted/60 mt-2">You can also paste an image directly with Ctrl+V / Cmd+V</p>
             </div>
           ) : (
             <div className="max-w-2xl mx-auto space-y-6">
@@ -382,6 +421,9 @@ export default function EnhancePage() {
             ))}
           </div>
         </div>
+      </div>
+      <div className="max-w-3xl mx-auto px-4 pb-6">
+        <KeyboardShortcuts />
       </div>
     </div>
   );

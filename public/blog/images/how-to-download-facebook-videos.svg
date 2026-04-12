@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <rect width="1200" height="630" fill="#0A0A1A"/>
+  <!-- Blue accent glow -->
+  <ellipse cx="300" cy="315" rx="350" ry="300" fill="#1877F2" opacity="0.08"/>
+  <!-- Facebook-style rounded square -->
+  <rect x="180" y="160" width="280" height="280" rx="50" fill="#1877F2"/>
+  <!-- "f" letter -->
+  <text x="320" y="370" font-family="Arial, sans-serif" font-size="200" font-weight="bold" fill="#fff" text-anchor="middle">f</text>
+  <!-- Download arrow overlay -->
+  <circle cx="400" cy="380" r="40" fill="#FF4747"/>
+  <line x1="400" y1="360" x2="400" y2="400" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+  <polygon points="385,395 400,415 415,395" fill="#fff"/>
+  <!-- Play icon small -->
+  <circle cx="260" cy="480" r="25" fill="none" stroke="#1877F2" stroke-width="2"/>
+  <polygon points="253,468 253,492 273,480" fill="#1877F2"/>
+  <!-- Title -->
+  <text x="800" y="230" font-family="Arial, sans-serif" font-size="54" font-weight="bold" fill="#fff" text-anchor="middle">Download</text>
+  <text x="800" y="305" font-family="Arial, sans-serif" font-size="54" font-weight="bold" fill="#1877F2" text-anchor="middle">Facebook</text>
+  <text x="800" y="380" font-family="Arial, sans-serif" font-size="54" font-weight="bold" fill="#fff" text-anchor="middle">Videos</text>
+  <!-- Subtitle pill -->
+  <rect x="710" y="410" width="180" height="40" rx="20" fill="#1877F2" opacity="0.2"/>
+  <text x="800" y="436" font-family="Arial, sans-serif" font-size="18" fill="#60A5FA" text-anchor="middle">HD Quality</text>
+  <!-- Branding -->
+  <text x="1150" y="600" font-family="Arial, sans-serif" font-size="18" fill="#334155" text-anchor="end">LoveConverts</text>
+</svg>

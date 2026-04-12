@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <!-- Split design: green left, blue right -->
+  <rect x="0" y="0" width="600" height="630" fill="#064E3B"/>
+  <rect x="600" y="0" width="600" height="630" fill="#1E3A5F"/>
+  <!-- Diagonal split line -->
+  <polygon points="560,0 640,0 640,630 560,630" fill="#0F172A"/>
+  <!-- PNG side -->
+  <rect x="120" y="200" width="200" height="120" rx="14" fill="#10B981"/>
+  <text x="220" y="275" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="#fff" text-anchor="middle">PNG</text>
+  <text x="220" y="360" font-family="Arial, sans-serif" font-size="20" fill="#6EE7B7">Lossless</text>
+  <text x="220" y="390" font-family="Arial, sans-serif" font-size="20" fill="#6EE7B7">Transparency</text>
+  <text x="220" y="420" font-family="Arial, sans-serif" font-size="20" fill="#A7F3D0">~2.4 MB</text>
+  <!-- Arrow across the split -->
+  <line x1="460" y1="260" x2="720" y2="260" stroke="#FF4747" stroke-width="6" stroke-linecap="round"/>
+  <polygon points="715,240 755,260 715,280" fill="#FF4747"/>
+  <!-- WebP side -->
+  <rect x="860" y="200" width="200" height="120" rx="14" fill="#3B82F6"/>
+  <text x="960" y="275" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="#fff" text-anchor="middle">WebP</text>
+  <text x="960" y="360" font-family="Arial, sans-serif" font-size="20" fill="#93C5FD">Both lossy/lossless</text>
+  <text x="960" y="390" font-family="Arial, sans-serif" font-size="20" fill="#93C5FD">Transparency</text>
+  <text x="960" y="420" font-family="Arial, sans-serif" font-size="20" fill="#BFDBFE">~600 KB</text>
+  <!-- Title top center -->
+  <text x="600" y="80" font-family="Arial, sans-serif" font-size="52" font-weight="bold" fill="#fff" text-anchor="middle">PNG to WebP</text>
+  <text x="600" y="130" font-family="Arial, sans-serif" font-size="24" fill="#FF4747" text-anchor="middle">Convert &amp; Optimize</text>
+  <!-- Size comparison bar at bottom -->
+  <rect x="200" y="500" width="800" height="8" rx="4" fill="#1F2937"/>
+  <rect x="200" y="500" width="600" height="8" rx="4" fill="#10B981" opacity="0.7"/>
+  <rect x="200" y="520" width="800" height="8" rx="4" fill="#1F2937"/>
+  <rect x="200" y="520" width="200" height="8" rx="4" fill="#3B82F6" opacity="0.7"/>
+  <text x="200" y="558" font-family="Arial, sans-serif" font-size="14" fill="#6B7280">75% smaller file size</text>
+  <!-- Branding -->
+  <text x="1150" y="600" font-family="Arial, sans-serif" font-size="18" fill="#475569" text-anchor="end">LoveConverts</text>
+</svg>

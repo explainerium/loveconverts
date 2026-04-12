@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <rect width="1200" height="630" fill="#1A1A2E"/>
+  <!-- Grid pattern -->
+  <line x1="0" y1="0" x2="1200" y2="630" stroke="#2A2A4E" stroke-width="1" opacity="0.3"/>
+  <line x1="400" y1="0" x2="1200" y2="530" stroke="#2A2A4E" stroke-width="1" opacity="0.3"/>
+  <line x1="0" y1="200" x2="800" y2="630" stroke="#2A2A4E" stroke-width="1" opacity="0.3"/>
+  <!-- Title -->
+  <text x="600" y="100" font-family="Arial, sans-serif" font-size="52" font-weight="bold" fill="#fff" text-anchor="middle">Best Image Format</text>
+  <text x="600" y="160" font-family="Arial, sans-serif" font-size="52" font-weight="bold" fill="#FF4747" text-anchor="middle">for the Web</text>
+  <!-- Format comparison bars -->
+  <!-- JPG -->
+  <text x="180" y="250" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#fff" text-anchor="end">JPG</text>
+  <rect x="200" y="228" width="700" height="32" rx="6" fill="#333"/>
+  <rect x="200" y="228" width="560" height="32" rx="6" fill="#FF4747"/>
+  <text x="780" y="252" font-family="Arial, sans-serif" font-size="16" fill="#aaa">80%</text>
+  <!-- PNG -->
+  <text x="180" y="310" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#fff" text-anchor="end">PNG</text>
+  <rect x="200" y="288" width="700" height="32" rx="6" fill="#333"/>
+  <rect x="200" y="288" width="490" height="32" rx="6" fill="#3B82F6"/>
+  <text x="710" y="312" font-family="Arial, sans-serif" font-size="16" fill="#aaa">70%</text>
+  <!-- WebP -->
+  <text x="180" y="370" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#fff" text-anchor="end">WebP</text>
+  <rect x="200" y="348" width="700" height="32" rx="6" fill="#333"/>
+  <rect x="200" y="348" width="630" height="32" rx="6" fill="#10B981"/>
+  <text x="850" y="372" font-family="Arial, sans-serif" font-size="16" fill="#aaa">90%</text>
+  <!-- AVIF -->
+  <text x="180" y="430" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#fff" text-anchor="end">AVIF</text>
+  <rect x="200" y="408" width="700" height="32" rx="6" fill="#333"/>
+  <rect x="200" y="408" width="665" height="32" rx="6" fill="#8B5CF6"/>
+  <text x="885" y="432" font-family="Arial, sans-serif" font-size="16" fill="#aaa">95%</text>
+  <!-- Legend -->
+  <text x="600" y="500" font-family="Arial, sans-serif" font-size="18" fill="#666" text-anchor="middle">Compression Efficiency Score</text>
+  <!-- Branding -->
+  <text x="1150" y="600" font-family="Arial, sans-serif" font-size="18" fill="#666" text-anchor="end" opacity="0.8">LoveConverts</text>
+</svg>

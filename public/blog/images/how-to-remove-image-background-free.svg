@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <!-- Checkered transparency pattern -->
+  <defs>
+    <pattern id="checker" width="40" height="40" patternUnits="userSpaceOnUse">
+      <rect width="20" height="20" fill="#E5E5E5"/>
+      <rect x="20" y="0" width="20" height="20" fill="#fff"/>
+      <rect x="0" y="20" width="20" height="20" fill="#fff"/>
+      <rect x="20" y="20" width="20" height="20" fill="#E5E5E5"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="630" fill="url(#checker)"/>
+  <!-- Semi-transparent overlay left side -->
+  <rect x="0" y="0" width="500" height="630" fill="#1A1A2E" opacity="0.92"/>
+  <!-- Person silhouette cutout -->
+  <ellipse cx="750" cy="180" rx="60" ry="65" fill="#FF4747" opacity="0.9"/>
+  <path d="M650,350 Q700,260 750,260 Q800,260 850,350 L870,500 L630,500 Z" fill="#FF4747" opacity="0.9"/>
+  <!-- Dashed cutout line around silhouette -->
+  <ellipse cx="750" cy="180" rx="65" ry="70" fill="none" stroke="#FF4747" stroke-width="3" stroke-dasharray="8,5"/>
+  <path d="M645,355 Q695,255 750,255 Q805,255 855,355 L875,505 L625,505 Z" fill="none" stroke="#FF4747" stroke-width="3" stroke-dasharray="8,5"/>
+  <!-- Scissors icon -->
+  <circle cx="620" cy="400" r="18" fill="none" stroke="#FF4747" stroke-width="3"/>
+  <circle cx="620" cy="440" r="18" fill="none" stroke="#FF4747" stroke-width="3"/>
+  <line x1="632" y1="388" x2="660" y2="350" stroke="#FF4747" stroke-width="3"/>
+  <line x1="632" y1="452" x2="660" y2="490" stroke="#FF4747" stroke-width="3"/>
+  <!-- Title text -->
+  <text x="250" y="230" font-family="Arial, sans-serif" font-size="56" font-weight="bold" fill="#fff" text-anchor="middle">Remove</text>
+  <text x="250" y="300" font-family="Arial, sans-serif" font-size="56" font-weight="bold" fill="#FF4747" text-anchor="middle">Background</text>
+  <text x="250" y="360" font-family="Arial, sans-serif" font-size="28" fill="#ccc" text-anchor="middle">Free Online Tool</text>
+  <!-- Branding -->
+  <rect x="0" y="580" width="1200" height="50" fill="#1A1A2E" opacity="0.7"/>
+  <text x="1150" y="610" font-family="Arial, sans-serif" font-size="18" fill="#999" text-anchor="end">LoveConverts</text>
+</svg>

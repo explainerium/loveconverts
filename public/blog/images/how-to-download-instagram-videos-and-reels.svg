@@ -1,0 +1,101 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="igGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#FCAF45"/>
+      <stop offset="25%" style="stop-color:#F77737"/>
+      <stop offset="50%" style="stop-color:#F56040"/>
+      <stop offset="65%" style="stop-color:#FD1D1D"/>
+      <stop offset="80%" style="stop-color:#E1306C"/>
+      <stop offset="90%" style="stop-color:#C13584"/>
+      <stop offset="100%" style="stop-color:#833AB4"/>
+    </linearGradient>
+    <linearGradient id="igGradLight" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#FCAF45;stop-opacity:0.2"/>
+      <stop offset="50%" style="stop-color:#F56040;stop-opacity:0.2"/>
+      <stop offset="100%" style="stop-color:#833AB4;stop-opacity:0.2"/>
+    </linearGradient>
+  </defs>
+  <!-- Background with Instagram gradient -->
+  <rect width="1200" height="630" fill="url(#igGrad)"/>
+  <!-- Overlay for depth -->
+  <rect width="1200" height="630" fill="#000000" opacity="0.3"/>
+  <!-- Decorative large circles -->
+  <circle cx="200" cy="500" r="250" fill="#FFFFFF" opacity="0.03"/>
+  <circle cx="1000" cy="150" r="200" fill="#FFFFFF" opacity="0.03"/>
+  <!-- Title -->
+  <text x="600" y="110" font-family="Arial, sans-serif" font-size="56" font-weight="bold" fill="#FFFFFF" text-anchor="middle">Download Instagram</text>
+  <text x="600" y="175" font-family="Arial, sans-serif" font-size="56" font-weight="bold" fill="#FFFFFF" text-anchor="middle">Reels</text>
+  <text x="600" y="215" font-family="Arial, sans-serif" font-size="22" fill="#FFFFFF" text-anchor="middle" opacity="0.8">Save videos and reels in HD quality</text>
+  <!-- Camera/Instagram icon -->
+  <g transform="translate(480, 270)">
+    <!-- Outer rounded square -->
+    <rect x="0" y="0" width="120" height="120" rx="30" fill="none" stroke="#FFFFFF" stroke-width="5"/>
+    <!-- Lens circle -->
+    <circle cx="60" cy="60" r="30" fill="none" stroke="#FFFFFF" stroke-width="4"/>
+    <!-- Flash dot -->
+    <circle cx="95" cy="25" r="7" fill="#FFFFFF"/>
+    <!-- Inner dot -->
+    <circle cx="60" cy="60" r="8" fill="#FFFFFF" opacity="0.4"/>
+  </g>
+  <!-- Play button overlay on camera -->
+  <g transform="translate(515, 305)">
+    <circle cx="25" cy="25" r="22" fill="#FFFFFF" opacity="0.25"/>
+    <polygon points="18,12 18,38 38,25" fill="#FFFFFF" opacity="0.8"/>
+  </g>
+  <!-- Reel film strip left -->
+  <g transform="translate(130, 280)">
+    <rect x="0" y="0" width="50" height="200" rx="6" fill="#FFFFFF" opacity="0.08"/>
+    <rect x="8" y="10" width="14" height="10" rx="2" fill="#FFFFFF" opacity="0.15"/>
+    <rect x="28" y="10" width="14" height="10" rx="2" fill="#FFFFFF" opacity="0.15"/>
+    <rect x="8" y="30" width="14" height="10" rx="2" fill="#FFFFFF" opacity="0.15"/>
+    <rect x="28" y="30" width="14" height="10" rx="2" fill="#FFFFFF" opacity="0.15"/>
+    <rect x="8" y="50" width="14" height="10" rx="2" fill="#FFFFFF" opacity="0.15"/>
+    <rect x="28" y="50" width="14" height="10" rx="2" fill="#FFFFFF" opacity="0.15"/>
+    <rect x="8" y="70" width="14" height="10" rx="2" fill="#FFFFFF" opacity="0.15"/>
+    <rect x="28" y="70" width="14" height="10" rx="2" fill="#FFFFFF" opacity="0.15"/>
+    <rect x="8" y="90" width="14" height="10" rx="2" fill="#FFFFFF" opacity="0.15"/>
+    <rect x="28" y="90" width="14" height="10" rx="2" fill="#FFFFFF" opacity="0.15"/>
+    <rect x="8" y="110" width="14" height="10" rx="2" fill="#FFFFFF" opacity="0.15"/>
+    <rect x="28" y="110" width="14" height="10" rx="2" fill="#FFFFFF" opacity="0.15"/>
+    <rect x="8" y="130" width="14" height="10" rx="2" fill="#FFFFFF" opacity="0.15"/>
+    <rect x="28" y="130" width="14" height="10" rx="2" fill="#FFFFFF" opacity="0.15"/>
+    <rect x="8" y="150" width="14" height="10" rx="2" fill="#FFFFFF" opacity="0.15"/>
+    <rect x="28" y="150" width="14" height="10" rx="2" fill="#FFFFFF" opacity="0.15"/>
+    <rect x="8" y="170" width="14" height="10" rx="2" fill="#FFFFFF" opacity="0.15"/>
+    <rect x="28" y="170" width="14" height="10" rx="2" fill="#FFFFFF" opacity="0.15"/>
+  </g>
+  <!-- Reel film strip right -->
+  <g transform="translate(1020, 280)">
+    <rect x="0" y="0" width="50" height="200" rx="6" fill="#FFFFFF" opacity="0.08"/>
+    <rect x="8" y="10" width="14" height="10" rx="2" fill="#FFFFFF" opacity="0.15"/>
+    <rect x="28" y="10" width="14" height="10" rx="2" fill="#FFFFFF" opacity="0.15"/>
+    <rect x="8" y="30" width="14" height="10" rx="2" fill="#FFFFFF" opacity="0.15"/>
+    <rect x="28" y="30" width="14" height="10" rx="2" fill="#FFFFFF" opacity="0.15"/>
+    <rect x="8" y="50" width="14" height="10" rx="2" fill="#FFFFFF" opacity="0.15"/>
+    <rect x="28" y="50" width="14" height="10" rx="2" fill="#FFFFFF" opacity="0.15"/>
+    <rect x="8" y="70" width="14" height="10" rx="2" fill="#FFFFFF" opacity="0.15"/>
+    <rect x="28" y="70" width="14" height="10" rx="2" fill="#FFFFFF" opacity="0.15"/>
+    <rect x="8" y="90" width="14" height="10" rx="2" fill="#FFFFFF" opacity="0.15"/>
+    <rect x="28" y="90" width="14" height="10" rx="2" fill="#FFFFFF" opacity="0.15"/>
+    <rect x="8" y="110" width="14" height="10" rx="2" fill="#FFFFFF" opacity="0.15"/>
+    <rect x="28" y="110" width="14" height="10" rx="2" fill="#FFFFFF" opacity="0.15"/>
+    <rect x="8" y="130" width="14" height="10" rx="2" fill="#FFFFFF" opacity="0.15"/>
+    <rect x="28" y="130" width="14" height="10" rx="2" fill="#FFFFFF" opacity="0.15"/>
+    <rect x="8" y="150" width="14" height="10" rx="2" fill="#FFFFFF" opacity="0.15"/>
+    <rect x="28" y="150" width="14" height="10" rx="2" fill="#FFFFFF" opacity="0.15"/>
+    <rect x="8" y="170" width="14" height="10" rx="2" fill="#FFFFFF" opacity="0.15"/>
+    <rect x="28" y="170" width="14" height="10" rx="2" fill="#FFFFFF" opacity="0.15"/>
+  </g>
+  <!-- Download button -->
+  <rect x="450" y="440" width="300" height="60" rx="30" fill="#FFFFFF"/>
+  <text x="600" y="478" font-family="Arial, sans-serif" font-size="22" font-weight="bold" fill="#E1306C" text-anchor="middle">Save to Device</text>
+  <!-- Quality badges -->
+  <rect x="390" y="525" width="80" height="34" rx="17" fill="#FFFFFF" opacity="0.15"/>
+  <text x="430" y="547" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#FFFFFF" text-anchor="middle">HD</text>
+  <rect x="490" y="525" width="100" height="34" rx="17" fill="#FFFFFF" opacity="0.15"/>
+  <text x="540" y="547" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#FFFFFF" text-anchor="middle">1080p</text>
+  <rect x="610" y="525" width="120" height="34" rx="17" fill="#FFFFFF" opacity="0.15"/>
+  <text x="670" y="547" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#FFFFFF" text-anchor="middle">No Login</text>
+  <!-- Branding -->
+  <text x="1160" y="600" font-family="Arial, sans-serif" font-size="16" fill="#FFFFFF" text-anchor="end" opacity="0.7">LoveConverts</text>
+</svg>

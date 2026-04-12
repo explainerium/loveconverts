@@ -2,16 +2,16 @@
 
 import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
-import { FileImage, Upload, Download, X, CheckCircle2, Loader2, Package, Minimize2, Maximize2, Crop, Wand2, Plus, ImageIcon } from "lucide-react";
+import { FileImage, Upload, Download, X, CheckCircle2, Loader2, Package, Plus, ImageIcon, Minimize2, Maximize2, Crop } from "lucide-react";
 import Link from "next/link";
 import JSZip from "jszip";
+import JsonLd from "@/app/components/JsonLd";
 import { useToolShortcuts } from "@/app/components/useToolShortcuts";
 import KeyboardShortcuts from "@/app/components/KeyboardShortcuts";
 
 interface Result {
   name: string;
   originalName: string;
-  originalFormat: string;
   originalSize: number;
   newSize: number;
   url: string;
@@ -23,14 +23,9 @@ function fmtBytes(n: number) {
   return (n / (1024 * 1024)).toFixed(2) + " MB";
 }
 
-function getFormat(filename: string): string {
-  const ext = filename.split(".").pop()?.toUpperCase() || "IMG";
-  return ext;
-}
-
 type Stage = "upload" | "converting" | "done";
 
-export default function ConvertToJpgPage() {
+export default function HeicToJpgPage() {
   const [stage, setStage] = useState<Stage>("upload");
   const [files, setFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
@@ -44,13 +39,12 @@ export default function ConvertToJpgPage() {
     setError(null);
     const newFiles = [...files, ...accepted].slice(0, 30);
     setFiles(newFiles);
-    const newPreviews = newFiles.map((f) => URL.createObjectURL(f));
-    setPreviews(newPreviews);
+    setPreviews(newFiles.map((f) => URL.createObjectURL(f)));
   }, [files]);
 
   const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
     onDrop,
-    accept: { "image/*": [] },
+    accept: { "image/heic": [".heic"], "image/heif": [".heif"] },
     maxSize: 20 * 1024 * 1024,
     noClick: files.length > 0,
     noKeyboard: files.length > 0,
@@ -96,14 +90,7 @@ export default function ConvertToJpgPage() {
         const match = disp.match(/filename="(.+?)"/);
         const name = match?.[1] || file.name.replace(/\.[^.]+$/, ".jpg");
 
-        newResults.push({
-          name,
-          originalName: file.name,
-          originalFormat: getFormat(file.name),
-          originalSize: origSize,
-          newSize,
-          url: URL.createObjectURL(blob),
-        });
+        newResults.push({ name, originalName: file.name, originalSize: origSize, newSize, url: URL.createObjectURL(blob) });
       } catch {
         setError(`Failed to convert ${file.name}`);
       }
@@ -112,47 +99,25 @@ export default function ConvertToJpgPage() {
     }
 
     setResults(newResults);
-    if (newResults.length > 0) {
-      setStage("done");
-    } else {
-      setStage("upload");
-      if (!error) setError("Conversion failed. Please try again.");
-    }
+    if (newResults.length > 0) setStage("done");
+    else { setStage("upload"); if (!error) setError("Conversion failed. Please try again."); }
   };
 
   const downloadAll = async () => {
     if (results.length === 1) {
-      const a = document.createElement("a");
-      a.href = results[0].url;
-      a.download = results[0].name;
-      a.click();
-      return;
+      const a = document.createElement("a"); a.href = results[0].url; a.download = results[0].name; a.click(); return;
     }
-
     const zip = new JSZip();
-    for (const r of results) {
-      const resp = await fetch(r.url);
-      const blob = await resp.blob();
-      zip.file(r.name, blob);
-    }
+    for (const r of results) { const resp = await fetch(r.url); const blob = await resp.blob(); zip.file(r.name, blob); }
     const content = await zip.generateAsync({ type: "blob" });
     const url = URL.createObjectURL(content);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "converted-to-jpg.zip";
-    a.click();
-    URL.revokeObjectURL(url);
+    const a = document.createElement("a"); a.href = url; a.download = "heic-to-jpg.zip"; a.click(); URL.revokeObjectURL(url);
   };
 
   const reset = () => {
     previews.forEach((p) => URL.revokeObjectURL(p));
     results.forEach((r) => URL.revokeObjectURL(r.url));
-    setFiles([]);
-    setPreviews([]);
-    setResults([]);
-    setQuality(90);
-    setStage("upload");
-    setError(null);
+    setFiles([]); setPreviews([]); setResults([]); setQuality(90); setStage("upload"); setError(null);
   };
 
   const handlePastedFile = useCallback((file: File) => {
@@ -171,27 +136,37 @@ export default function ConvertToJpgPage() {
     canDownload: stage === "done" && results.length > 0,
   });
 
+  const faqData = [
+    { question: "What is HEIC format?", answer: "HEIC (High Efficiency Image Container) is the default photo format on iPhones since iOS 11. It produces smaller files than JPG but is not supported by most Windows software, websites, or older apps." },
+    { question: "Will I lose quality converting HEIC to JPG?", answer: "At 85% quality or above the difference is not visible to the human eye. Use the quality slider to control output size versus quality." },
+    { question: "Is this tool free?", answer: "Yes, completely free. No signup, no watermark, no limits." },
+    { question: "Does it work on Windows and Android?", answer: "Yes. LoveConverts runs in any browser on any device. You do not need to install anything." },
+  ];
+
   return (
     <div className="min-h-screen bg-background">
+      <JsonLd data={{
+        "@context": "https://schema.org", "@type": "FAQPage",
+        mainEntity: faqData.map(f => ({ "@type": "Question", name: f.question, acceptedAnswer: { "@type": "Answer", text: f.answer } })),
+      }} />
+
       {/* ─── STAGE 1: Upload ─── */}
       {stage === "upload" && (
         <div className="max-w-4xl mx-auto px-4 py-16">
-          {/* Hero */}
           <div className="text-center space-y-3 mb-10">
-            <h1 className="text-4xl font-extrabold text-foreground">Convert to JPG</h1>
+            <h1 className="text-4xl font-extrabold text-foreground">HEIC to JPG Converter</h1>
             <p className="text-muted max-w-lg mx-auto">
-              Convert PNG, WEBP, AVIF, GIF, BMP and TIFF images to JPG format.
+              iPhone and iPad cameras save photos in HEIC format by default.
+              Most apps, websites, and Windows computers do not support HEIC files.
+              Converting to JPG makes your photos work everywhere instantly.
             </p>
           </div>
 
-          {/* Drop zone */}
           {files.length === 0 ? (
             <div
               {...getRootProps()}
               className={`border-2 border-dashed rounded-3xl p-16 text-center cursor-pointer transition-all max-w-xl mx-auto ${
-                isDragActive
-                  ? "border-primary bg-primary-light"
-                  : "border-border hover:border-primary/60 hover:bg-primary-light/30"
+                isDragActive ? "border-primary bg-primary-light" : "border-border hover:border-primary/60 hover:bg-primary-light/30"
               }`}
             >
               <input {...getInputProps()} />
@@ -199,83 +174,56 @@ export default function ConvertToJpgPage() {
                 <Upload size={28} className="text-primary" />
               </div>
               <p className="font-bold text-foreground text-lg mb-1">
-                {isDragActive ? "Drop images here" : "Select images"}
+                {isDragActive ? "Drop HEIC files here" : "Select HEIC files"}
               </p>
               <p className="text-sm text-muted">or drag and drop them here</p>
-              <p className="text-xs text-muted mt-3">PNG, WEBP, AVIF, GIF, BMP, TIFF. Up to 20 MB each. Max 30 files.</p>
+              <p className="text-xs text-muted mt-3">HEIC and HEIF files only. Up to 20 MB each. Max 30 files.</p>
               <p className="text-[11px] text-muted/60 mt-2">You can also paste an image directly with Ctrl+V / Cmd+V</p>
             </div>
           ) : (
             <div className="max-w-2xl mx-auto space-y-4">
-              {/* File thumbnails grid */}
               <div {...getRootProps()} className="grid grid-cols-4 sm:grid-cols-6 gap-3">
                 <input {...getInputProps()} />
                 {files.map((f, i) => (
                   <div key={f.name + i} className="relative group">
-                    <div className="aspect-square rounded-xl overflow-hidden bg-gray-100 border border-border">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={previews[i]} alt={f.name} className="w-full h-full object-cover" />
+                    <div className="aspect-square rounded-xl overflow-hidden bg-gray-100 border border-border flex items-center justify-center">
+                      <FileImage size={24} className="text-muted" />
                     </div>
-                    <button
-                      onClick={(e) => { e.stopPropagation(); removeFile(i); }}
-                      className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                    >
+                    <button onClick={(e) => { e.stopPropagation(); removeFile(i); }}
+                      className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                       <X size={10} />
                     </button>
                     <p className="text-[9px] text-muted text-center mt-1 truncate">{fmtBytes(f.size)}</p>
                   </div>
                 ))}
-
-                {/* Add more button */}
-                <button
-                  onClick={(e) => { e.stopPropagation(); open(); }}
-                  className="aspect-square rounded-xl border-2 border-dashed border-border hover:border-primary/60 flex flex-col items-center justify-center gap-1 transition-colors"
-                >
-                  <Plus size={20} className="text-muted" />
-                  <span className="text-[10px] text-muted">Add</span>
+                <button onClick={(e) => { e.stopPropagation(); open(); }}
+                  className="aspect-square rounded-xl border-2 border-dashed border-border hover:border-primary/60 flex flex-col items-center justify-center gap-1 transition-colors">
+                  <Plus size={20} className="text-muted" /><span className="text-[10px] text-muted">Add</span>
                 </button>
               </div>
 
-              <p className="text-xs text-muted text-center">
-                {files.length} image{files.length !== 1 ? "s" : ""} selected
-              </p>
+              <p className="text-xs text-muted text-center">{files.length} file{files.length !== 1 ? "s" : ""} selected</p>
 
-              {/* Quality slider */}
               <div className="bg-card border border-border rounded-2xl p-4">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm font-semibold text-foreground">JPEG Quality</span>
                   <span className="text-sm font-bold text-primary">{quality}%</span>
                 </div>
-                <input
-                  type="range"
-                  min={1}
-                  max={100}
-                  value={quality}
-                  onChange={(e) => setQuality(Number(e.target.value))}
-                  className="custom-range w-full"
-                />
-                <div className="flex justify-between text-[10px] text-muted mt-1">
-                  <span>Smallest file</span>
-                  <span>Best quality</span>
-                </div>
+                <input type="range" min={1} max={100} value={quality} onChange={(e) => setQuality(Number(e.target.value))} className="custom-range w-full" />
+                <div className="flex justify-between text-[10px] text-muted mt-1"><span>Smallest file</span><span>Best quality</span></div>
               </div>
 
-              {/* Convert button */}
-              <button
-                onClick={convertAll}
-                className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-primary text-white text-base font-bold rounded-2xl hover:bg-primary-hover transition-colors shadow-lg"
-              >
+              <button onClick={convertAll}
+                className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-primary text-white text-base font-bold rounded-2xl hover:bg-primary-hover transition-colors shadow-lg">
                 <FileImage size={18} />
-                Convert {files.length > 1 ? `${files.length} Images` : "Image"} to JPG
+                Convert {files.length > 1 ? `${files.length} Files` : "File"} to JPG
               </button>
             </div>
           )}
 
-          {/* Error */}
           {error && (
             <div className="max-w-xl mx-auto mt-4 flex items-center gap-2 text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
-              <ImageIcon size={16} />
-              {error}
+              <ImageIcon size={16} />{error}
             </div>
           )}
         </div>
@@ -286,16 +234,11 @@ export default function ConvertToJpgPage() {
         <div className="max-w-md mx-auto px-4 py-32 text-center space-y-6">
           <Loader2 size={48} className="animate-spin text-primary mx-auto" />
           <div>
-            <h2 className="text-xl font-bold text-foreground mb-1">Converting images...</h2>
-            <p className="text-sm text-muted">
-              {progress.done} of {progress.total} done
-            </p>
+            <h2 className="text-xl font-bold text-foreground mb-1">Converting HEIC to JPG...</h2>
+            <p className="text-sm text-muted">{progress.done} of {progress.total} done</p>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">
-            <div
-              className="bg-primary h-2 rounded-full transition-all"
-              style={{ width: `${progress.total > 0 ? (progress.done / progress.total) * 100 : 0}%` }}
-            />
+            <div className="bg-primary h-2 rounded-full transition-all" style={{ width: `${progress.total > 0 ? (progress.done / progress.total) * 100 : 0}%` }} />
           </div>
         </div>
       )}
@@ -303,63 +246,44 @@ export default function ConvertToJpgPage() {
       {/* ─── STAGE 3: Results ─── */}
       {stage === "done" && results.length > 0 && (
         <div className="max-w-3xl mx-auto px-4 py-12 space-y-6">
-          {/* Summary card */}
           <div className="bg-green-50 border border-green-200 rounded-2xl p-6 text-center space-y-2">
             <CheckCircle2 size={40} className="text-green-500 mx-auto" />
-            <h2 className="text-xl font-bold text-foreground">
-              {results.length} image{results.length !== 1 ? "s" : ""} converted to JPG
-            </h2>
-            <p className="text-sm text-green-700">
-              All files successfully converted to JPEG format
-            </p>
+            <h2 className="text-xl font-bold text-foreground">{results.length} file{results.length !== 1 ? "s" : ""} converted to JPG</h2>
+            <p className="text-sm text-green-700">HEIC files successfully converted to JPEG format</p>
           </div>
 
-          {/* Download button */}
-          <button
-            onClick={downloadAll}
-            className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-primary text-white text-base font-bold rounded-2xl hover:bg-primary-hover transition-colors shadow-lg"
-          >
+          <button onClick={downloadAll}
+            className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-primary text-white text-base font-bold rounded-2xl hover:bg-primary-hover transition-colors shadow-lg">
             {results.length > 1 ? <Package size={18} /> : <Download size={18} />}
             {results.length > 1 ? "Download All (ZIP)" : "Download JPG Image"}
           </button>
 
-          {/* Individual results */}
           <div className="space-y-2">
             {results.map((r) => (
               <div key={r.name} className="bg-card border border-border rounded-xl p-3 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={r.url} alt={r.name} className="w-full h-full object-cover" />
+                <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
+                  <FileImage size={18} className="text-muted" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-foreground truncate">{r.name}</p>
                   <div className="flex items-center gap-2 text-xs text-muted">
-                    <span className="font-semibold text-foreground/70">{r.originalFormat}</span>
-                    <span>→</span>
+                    <span className="font-semibold text-foreground/70">HEIC</span><span>&rarr;</span>
                     <span className="text-amber-600 font-semibold">JPG</span>
                     <span className="text-muted/60">|</span>
-                    <span>{fmtBytes(r.originalSize)}</span>
-                    <span>→</span>
+                    <span>{fmtBytes(r.originalSize)}</span><span>&rarr;</span>
                     <span className="text-green-600 font-semibold">{fmtBytes(r.newSize)}</span>
                   </div>
                 </div>
-                <a
-                  href={r.url}
-                  download={r.name}
-                  className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-colors flex-shrink-0"
-                >
+                <a href={r.url} download={r.name} className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-colors flex-shrink-0">
                   <Download size={16} />
                 </a>
               </div>
             ))}
           </div>
 
-          {/* Start over */}
-          <button
-            onClick={reset}
-            className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-bold text-muted border border-border rounded-xl hover:border-primary/40 transition-colors"
-          >
-            Convert More Images
+          <button onClick={reset}
+            className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-bold text-muted border border-border rounded-xl hover:border-primary/40 transition-colors">
+            Convert More Files
           </button>
         </div>
       )}
@@ -368,19 +292,16 @@ export default function ConvertToJpgPage() {
       <div className="max-w-3xl mx-auto px-4 pb-12 space-y-8">
         {stage === "upload" && (
           <>
-            {/* How it works */}
             <div className="bg-card border border-border rounded-2xl p-6">
               <h2 className="font-bold text-foreground mb-4">How it works</h2>
               <div className="grid grid-cols-3 gap-4 text-center">
                 {[
-                  { step: "1", title: "Upload", desc: "Select one or more images from your device" },
-                  { step: "2", title: "Convert", desc: "We convert your images to high-quality JPG format" },
+                  { step: "1", title: "Upload", desc: "Select HEIC files from your iPhone or device" },
+                  { step: "2", title: "Convert", desc: "We convert your HEIC photos to universal JPG format" },
                   { step: "3", title: "Download", desc: "Download converted files individually or as ZIP" },
                 ].map(({ step, title, desc }) => (
                   <div key={step} className="space-y-2">
-                    <div className="w-8 h-8 rounded-full bg-primary text-white text-sm font-bold flex items-center justify-center mx-auto">
-                      {step}
-                    </div>
+                    <div className="w-8 h-8 rounded-full bg-primary text-white text-sm font-bold flex items-center justify-center mx-auto">{step}</div>
                     <p className="text-sm font-semibold text-foreground">{title}</p>
                     <p className="text-xs text-muted">{desc}</p>
                   </div>
@@ -388,10 +309,9 @@ export default function ConvertToJpgPage() {
               </div>
             </div>
 
-            {/* Features */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {[
-                { label: "PNG, WEBP, AVIF, GIF", sub: "All formats" },
+                { label: "HEIC & HEIF", sub: "iPhone photos" },
                 { label: "Up to 30 files", sub: "Batch convert" },
                 { label: "No sign-up", sub: "Free forever" },
                 { label: "Files never stored", sub: "100% private" },
@@ -405,14 +325,26 @@ export default function ConvertToJpgPage() {
           </>
         )}
 
-        {/* Related Tools */}
+        {/* FAQ */}
+        <div>
+          <h2 className="font-bold text-foreground mb-4">Frequently Asked Questions</h2>
+          <div className="space-y-2">
+            {faqData.map((faq, i) => (
+              <div key={i} className="bg-card border border-border rounded-xl p-5">
+                <h3 className="font-semibold text-foreground mb-2 text-sm">{faq.question}</h3>
+                <p className="text-sm text-muted leading-relaxed">{faq.answer}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
         <div>
           <h3 className="text-sm font-bold text-muted uppercase tracking-wider mb-3">Related Tools</h3>
           <div className="grid grid-cols-3 gap-3">
             {[
-              { href: "/tools/heic-to-jpg", icon: FileImage, label: "HEIC to JPG" },
               { href: "/tools/compress", icon: Minimize2, label: "Compress" },
               { href: "/tools/resize", icon: Maximize2, label: "Resize Image" },
+              { href: "/tools/crop", icon: Crop, label: "Crop Image" },
             ].map(({ href, icon: Icon, label }) => (
               <Link key={href} href={href}
                 className="flex flex-col items-center gap-2 p-3 rounded-xl border border-border hover:border-primary/30 hover:shadow-sm transition-all text-center group">

@@ -1,0 +1,44 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="navyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1A1A2E"/>
+      <stop offset="100%" style="stop-color:#16213E"/>
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#navyGrad)"/>
+  <!-- Decorative circles -->
+  <circle cx="150" cy="500" r="200" fill="#FF4747" opacity="0.05"/>
+  <circle cx="1050" cy="130" r="180" fill="#FF4747" opacity="0.05"/>
+  <!-- Subtle grid lines -->
+  <line x1="0" y1="315" x2="1200" y2="315" stroke="#ffffff" stroke-width="0.5" opacity="0.03"/>
+  <line x1="600" y1="0" x2="600" y2="630" stroke="#ffffff" stroke-width="0.5" opacity="0.03"/>
+  <!-- Title -->
+  <text x="600" y="160" font-family="Arial, sans-serif" font-size="56" font-weight="bold" fill="#FFFFFF" text-anchor="middle">WebP to JPG</text>
+  <text x="600" y="210" font-family="Arial, sans-serif" font-size="24" fill="#AAAACC" text-anchor="middle">The Complete Conversion Guide</text>
+  <!-- WebP Badge -->
+  <rect x="200" y="280" width="240" height="120" rx="16" fill="#2D2D5E" stroke="#FF4747" stroke-width="3"/>
+  <text x="320" y="330" font-family="Arial, sans-serif" font-size="18" fill="#AAAACC" text-anchor="middle">FORMAT</text>
+  <text x="320" y="370" font-family="Arial, sans-serif" font-size="42" font-weight="bold" fill="#FF4747" text-anchor="middle">.WebP</text>
+  <!-- Arrow -->
+  <line x1="480" y1="340" x2="700" y2="340" stroke="#FF4747" stroke-width="4" stroke-linecap="round"/>
+  <polygon points="710,340 690,325 690,355" fill="#FF4747"/>
+  <!-- Arrow circle -->
+  <circle cx="590" cy="340" r="30" fill="none" stroke="#FF4747" stroke-width="2" opacity="0.3"/>
+  <text x="590" y="347" font-family="Arial, sans-serif" font-size="18" fill="#FF4747" text-anchor="middle" opacity="0.6">&#x2192;</text>
+  <!-- JPG Badge -->
+  <rect x="760" y="280" width="240" height="120" rx="16" fill="#2D2D5E" stroke="#4CAF50" stroke-width="3"/>
+  <text x="880" y="330" font-family="Arial, sans-serif" font-size="18" fill="#AAAACC" text-anchor="middle">FORMAT</text>
+  <text x="880" y="370" font-family="Arial, sans-serif" font-size="42" font-weight="bold" fill="#4CAF50" text-anchor="middle">.JPG</text>
+  <!-- Bottom decorative bar -->
+  <rect x="300" y="450" width="600" height="4" rx="2" fill="#FF4747" opacity="0.3"/>
+  <!-- Feature tags -->
+  <rect x="320" y="475" width="120" height="36" rx="18" fill="#2D2D5E"/>
+  <text x="380" y="498" font-family="Arial, sans-serif" font-size="14" fill="#AAAACC" text-anchor="middle">Lossless</text>
+  <rect x="460" y="475" width="120" height="36" rx="18" fill="#2D2D5E"/>
+  <text x="520" y="498" font-family="Arial, sans-serif" font-size="14" fill="#AAAACC" text-anchor="middle">Fast</text>
+  <rect x="600" y="475" width="160" height="36" rx="18" fill="#2D2D5E"/>
+  <text x="680" y="498" font-family="Arial, sans-serif" font-size="14" fill="#AAAACC" text-anchor="middle">No Upload</text>
+  <!-- Branding -->
+  <text x="1160" y="600" font-family="Arial, sans-serif" font-size="16" fill="#FF4747" text-anchor="end" opacity="0.8">LoveConverts</text>
+</svg>

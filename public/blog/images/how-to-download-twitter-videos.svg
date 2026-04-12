@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <rect width="1200" height="630" fill="#000"/>
+  <!-- Blue accent glow -->
+  <circle cx="250" cy="300" r="300" fill="#1DA1F2" opacity="0.06"/>
+  <!-- X/Twitter style elements -->
+  <!-- Large X lettermark -->
+  <text x="260" y="370" font-family="Arial, sans-serif" font-size="280" font-weight="bold" fill="#fff" text-anchor="middle" opacity="0.08">X</text>
+  <!-- Bird silhouette (simplified) -->
+  <path d="M180,200 Q200,170 230,180 Q250,160 270,175 Q290,155 310,170 Q320,170 330,180 Q340,175 345,185 Q330,190 325,200 Q335,220 330,240 Q320,260 290,270 Q260,280 230,270 Q210,280 200,270 Q215,265 220,255 Q200,250 190,230 Q185,215 180,200 Z" fill="#1DA1F2"/>
+  <!-- Download indicator -->
+  <rect x="340" y="320" width="160" height="160" rx="20" fill="#1A1A2A"/>
+  <circle cx="420" cy="380" r="40" fill="#1DA1F2" opacity="0.2"/>
+  <line x1="420" y1="360" x2="420" y2="405" stroke="#1DA1F2" stroke-width="4" stroke-linecap="round"/>
+  <polygon points="405,398 420,418 435,398" fill="#1DA1F2"/>
+  <line x1="390" y1="430" x2="450" y2="430" stroke="#1DA1F2" stroke-width="3" stroke-linecap="round"/>
+  <!-- Blue accent lines -->
+  <line x1="540" y1="200" x2="540" y2="430" stroke="#1DA1F2" stroke-width="1" opacity="0.2"/>
+  <!-- Title -->
+  <text x="860" y="220" font-family="Arial, sans-serif" font-size="54" font-weight="bold" fill="#fff" text-anchor="middle">Download</text>
+  <text x="860" y="300" font-family="Arial, sans-serif" font-size="54" font-weight="bold" fill="#1DA1F2" text-anchor="middle">X / Twitter</text>
+  <text x="860" y="380" font-family="Arial, sans-serif" font-size="54" font-weight="bold" fill="#fff" text-anchor="middle">Videos</text>
+  <!-- Quality badges -->
+  <rect x="750" y="410" width="70" height="32" rx="6" fill="#1DA1F2" opacity="0.15"/>
+  <text x="785" y="432" font-family="Arial, sans-serif" font-size="15" font-weight="bold" fill="#1DA1F2" text-anchor="middle">720p</text>
+  <rect x="830" y="410" width="80" height="32" rx="6" fill="#1DA1F2" opacity="0.25"/>
+  <text x="870" y="432" font-family="Arial, sans-serif" font-size="15" font-weight="bold" fill="#1DA1F2" text-anchor="middle">1080p</text>
+  <rect x="920" y="410" width="60" height="32" rx="6" fill="#1DA1F2" opacity="0.35"/>
+  <text x="950" y="432" font-family="Arial, sans-serif" font-size="15" font-weight="bold" fill="#fff" text-anchor="middle">4K</text>
+  <!-- Branding -->
+  <text x="1150" y="600" font-family="Arial, sans-serif" font-size="18" fill="#333" text-anchor="end">LoveConverts</text>
+</svg>

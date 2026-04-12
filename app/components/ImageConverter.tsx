@@ -12,6 +12,9 @@ import {
   Plus,
 } from "lucide-react";
 import JSZip from "jszip";
+import { useToolShortcuts } from "./useToolShortcuts";
+import KeyboardShortcuts from "./KeyboardShortcuts";
+import { addRecentFile } from "@/lib/recent-history";
 
 /* ─── Types ─────────────────────────────────────────────────────────────────── */
 
@@ -36,14 +39,44 @@ function fmtBytes(n: number) {
 
 /* ─── Component ─────────────────────────────────────────────────────────────── */
 
-export default function ImageConverter() {
+interface ImageConverterProps {
+  /** Pre-select the output format (e.g. "JPG"). User can still change it. */
+  defaultFormat?: string;
+  /** Restrict accepted input MIME types (e.g. ["image/webp"]). Omit for all. */
+  acceptTypes?: Record<string, string[]>;
+  /** Hide the hero heading + subtitle (useful when embedded in a parent page). */
+  hideHero?: boolean;
+}
+
+export default function ImageConverter({
+  defaultFormat,
+  acceptTypes,
+  hideHero = false,
+}: ImageConverterProps = {}) {
   const [stage, setStage] = useState<Stage>("upload");
   const [files, setFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
-  const [targetFormat, setTargetFormat] = useState<string>("PNG");
+  const [targetFormat, setTargetFormat] = useState<string>(defaultFormat?.toUpperCase() || "PNG");
   const [results, setResults] = useState<Result[]>([]);
   const [progress, setProgress] = useState({ done: 0, total: 0, currentPct: 0, currentName: "" });
   const [error, setError] = useState<string | null>(null);
+
+  /* ── Keyboard shortcuts ── */
+  const handlePastedFile = useCallback((file: File) => {
+    setError(null);
+    const newFiles = [...files, file].slice(0, 30);
+    setFiles(newFiles);
+    setPreviews(newFiles.map((f) => URL.createObjectURL(f)));
+  }, [files]);
+
+  useToolShortcuts({
+    onPaste: handlePastedFile,
+    onReset: () => { previews.forEach((p) => URL.revokeObjectURL(p)); results.forEach((r) => URL.revokeObjectURL(r.url)); setFiles([]); setPreviews([]); setResults([]); setStage("upload"); setError(null); },
+    onAction: () => { if (files.length > 0 && stage === "upload") convertAll(); },
+    onDownload: () => { if (stage === "done" && results.length > 0) downloadAll(); },
+    canAct: files.length > 0 && stage === "upload",
+    canDownload: stage === "done" && results.length > 0,
+  });
 
   /* ── Drop handler ── */
   const onDrop = useCallback(
@@ -60,7 +93,7 @@ export default function ImageConverter() {
 
   const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
     onDrop,
-    accept: { "image/*": [] },
+    accept: acceptTypes || { "image/*": [] },
     maxSize: 20 * 1024 * 1024,
     noClick: files.length > 0,
     noKeyboard: files.length > 0,
@@ -144,6 +177,15 @@ export default function ImageConverter() {
           convertedSize: res.blob.size,
           url: URL.createObjectURL(res.blob),
         });
+        addRecentFile({
+          action: `Converted to ${targetFormat}`,
+          fileName: file.name,
+          fromFormat: file.name.split(".").pop()?.toUpperCase() || "IMG",
+          toFormat: targetFormat,
+          originalSize: file.size,
+          outputSize: res.blob.size,
+          toolUrl: "/",
+        });
       }
 
       setProgress({
@@ -207,15 +249,17 @@ export default function ImageConverter() {
       {stage === "upload" && (
         <div className="max-w-4xl mx-auto px-4 py-16">
           {/* Hero */}
-          <div className="text-center space-y-3 mb-10">
-            <h1 className="text-4xl font-extrabold text-foreground">
-              Convert Images
-            </h1>
-            <p className="text-muted max-w-lg mx-auto">
-              Convert between JPG, PNG, WEBP, AVIF, GIF, TIFF, ICO formats.
-              Free, fast, no files stored.
-            </p>
-          </div>
+          {!hideHero && (
+            <div className="text-center space-y-3 mb-10">
+              <h1 className="text-4xl font-extrabold text-foreground">
+                Convert Images
+              </h1>
+              <p className="text-muted max-w-lg mx-auto">
+                Convert between JPG, PNG, WEBP, AVIF, GIF, TIFF, ICO formats.
+                Free, fast, no files stored.
+              </p>
+            </div>
+          )}
 
           {/* Drop zone or thumbnail grid */}
           {files.length === 0 ? (
@@ -239,6 +283,7 @@ export default function ImageConverter() {
                 JPG, PNG, WEBP, GIF, AVIF, TIFF, ICO. Up to 20 MB each. Max 30
                 files.
               </p>
+              <p className="text-[11px] text-muted/60 mt-2">You can also paste an image directly with Ctrl+V / Cmd+V</p>
             </div>
           ) : (
             <div className="max-w-2xl mx-auto space-y-6">
@@ -562,6 +607,11 @@ export default function ImageConverter() {
           </div>
         </div>
       )}
+
+      {/* Keyboard shortcuts */}
+      <div className="max-w-3xl mx-auto px-4 pb-6">
+        <KeyboardShortcuts />
+      </div>
     </div>
   );
 }

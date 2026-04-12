@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <rect width="1200" height="630" fill="#0F172A"/>
+  <!-- Subtle code-like lines -->
+  <rect x="40" y="30" width="100" height="4" rx="2" fill="#1E293B"/>
+  <rect x="40" y="45" width="160" height="4" rx="2" fill="#1E293B"/>
+  <rect x="40" y="60" width="80" height="4" rx="2" fill="#1E293B"/>
+  <rect x="1060" y="560" width="100" height="4" rx="2" fill="#1E293B"/>
+  <rect x="1000" y="575" width="160" height="4" rx="2" fill="#1E293B"/>
+  <!-- WordPress "W" icon -->
+  <circle cx="250" cy="280" r="100" fill="#21759B"/>
+  <text x="250" y="318" font-family="Arial, sans-serif" font-size="120" font-weight="bold" fill="#fff" text-anchor="middle">W</text>
+  <!-- Plus sign -->
+  <text x="400" y="300" font-family="Arial, sans-serif" font-size="60" fill="#475569" text-anchor="middle">+</text>
+  <!-- Speed gauge -->
+  <circle cx="550" cy="280" r="80" fill="none" stroke="#1E293B" stroke-width="12"/>
+  <path d="M550,360 A80,80 0 1,1 616,320" fill="none" stroke="#10B981" stroke-width="12" stroke-linecap="round"/>
+  <!-- Gauge needle -->
+  <line x1="550" y1="280" x2="600" y2="240" stroke="#FF4747" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="550" cy="280" r="8" fill="#FF4747"/>
+  <!-- Speed labels -->
+  <text x="480" y="380" font-family="Arial, sans-serif" font-size="14" fill="#475569">Slow</text>
+  <text x="610" y="380" font-family="Arial, sans-serif" font-size="14" fill="#10B981" font-weight="bold">Fast</text>
+  <!-- Performance score -->
+  <rect x="460" y="400" width="180" height="50" rx="25" fill="#10B981" opacity="0.15"/>
+  <text x="550" y="432" font-family="Arial, sans-serif" font-size="22" font-weight="bold" fill="#10B981" text-anchor="middle">Score: 98</text>
+  <!-- Title -->
+  <text x="900" y="220" font-family="Arial, sans-serif" font-size="50" font-weight="bold" fill="#fff" text-anchor="middle">Optimize</text>
+  <text x="900" y="290" font-family="Arial, sans-serif" font-size="50" font-weight="bold" fill="#fff" text-anchor="middle">Images for</text>
+  <text x="900" y="360" font-family="Arial, sans-serif" font-size="50" font-weight="bold" fill="#21759B" text-anchor="middle">WordPress</text>
+  <text x="900" y="410" font-family="Arial, sans-serif" font-size="20" fill="#64748B" text-anchor="middle">Speed Up Your Site</text>
+  <!-- Branding -->
+  <text x="1150" y="600" font-family="Arial, sans-serif" font-size="18" fill="#334155" text-anchor="end">LoveConverts</text>
+</svg>

@@ -1,0 +1,57 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="subtleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FAFAFA"/>
+      <stop offset="100%" style="stop-color:#F0F0F0"/>
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#subtleGrad)"/>
+  <!-- Decorative top accent line -->
+  <rect x="0" y="0" width="1200" height="6" fill="#FF4747"/>
+  <!-- Light pattern dots -->
+  <circle cx="100" cy="100" r="60" fill="#FF4747" opacity="0.03"/>
+  <circle cx="1100" cy="530" r="80" fill="#FF4747" opacity="0.03"/>
+  <circle cx="900" cy="80" r="40" fill="#FF4747" opacity="0.03"/>
+  <!-- Title -->
+  <text x="600" y="120" font-family="Arial, sans-serif" font-size="52" font-weight="bold" fill="#1A1A2E" text-anchor="middle">Compress Without</text>
+  <text x="600" y="180" font-family="Arial, sans-serif" font-size="52" font-weight="bold" fill="#FF4747" text-anchor="middle">Quality Loss</text>
+  <!-- Before section -->
+  <text x="300" y="250" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#888888" text-anchor="middle">BEFORE</text>
+  <!-- Before image placeholder -->
+  <rect x="170" y="270" width="260" height="160" rx="12" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="2"/>
+  <!-- Mountain icon in before -->
+  <polygon points="220,400 300,320 340,360 380,300 400,400" fill="#E8E8E8"/>
+  <circle cx="240" cy="310" r="15" fill="#FFD700" opacity="0.5"/>
+  <!-- Before file size bar -->
+  <rect x="170" y="450" width="260" height="40" rx="8" fill="#FFE0E0"/>
+  <rect x="170" y="450" width="260" height="40" rx="8" fill="#FF4747" opacity="0.2"/>
+  <text x="300" y="476" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#FF4747" text-anchor="middle">4.2 MB</text>
+  <!-- Arrow -->
+  <line x1="470" y1="370" x2="570" y2="370" stroke="#FF4747" stroke-width="3" stroke-dasharray="8,4"/>
+  <!-- Compress icon -->
+  <rect x="498" y="345" width="50" height="50" rx="25" fill="#FF4747"/>
+  <polygon points="523,358 513,373 518,373 518,383 528,383 528,373 533,373" fill="#FFFFFF"/>
+  <!-- After section -->
+  <text x="780" y="250" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#888888" text-anchor="middle">AFTER</text>
+  <!-- After image placeholder -->
+  <rect x="650" y="270" width="260" height="160" rx="12" fill="#FFFFFF" stroke="#4CAF50" stroke-width="2"/>
+  <!-- Mountain icon in after (same quality visual) -->
+  <polygon points="700,400 780,320 820,360 860,300 880,400" fill="#E8E8E8"/>
+  <circle cx="720" cy="310" r="15" fill="#FFD700" opacity="0.5"/>
+  <!-- Checkmark badge -->
+  <circle cx="890" cy="290" r="16" fill="#4CAF50"/>
+  <polyline points="882,290 888,296 900,284" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- After file size bar -->
+  <rect x="650" y="450" width="260" height="40" rx="8" fill="#E8F5E9"/>
+  <rect x="650" y="450" width="130" height="40" rx="8" fill="#4CAF50" opacity="0.2"/>
+  <text x="715" y="476" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#4CAF50" text-anchor="middle">1.1 MB</text>
+  <!-- Savings badge -->
+  <rect x="960" y="350" width="160" height="60" rx="12" fill="#FF4747"/>
+  <text x="1040" y="373" font-family="Arial, sans-serif" font-size="14" fill="#FFFFFF" text-anchor="middle" opacity="0.9">Save up to</text>
+  <text x="1040" y="398" font-family="Arial, sans-serif" font-size="26" font-weight="bold" fill="#FFFFFF" text-anchor="middle">75%</text>
+  <!-- Bottom info -->
+  <text x="600" y="545" font-family="Arial, sans-serif" font-size="18" fill="#999999" text-anchor="middle">Smart compression preserves visual quality while reducing file size</text>
+  <!-- Branding -->
+  <text x="1160" y="600" font-family="Arial, sans-serif" font-size="16" fill="#FF4747" text-anchor="end" opacity="0.8">LoveConverts</text>
+</svg>

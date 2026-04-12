@@ -66,21 +66,17 @@ export default function RemoveBackgroundPage() {
         body: fd,
       });
 
-      const data = await res.json();
-
       if (!res.ok) {
+        const data = await res.json();
         setError(data.error || "Background removal failed");
         setStage("upload");
         return;
       }
 
-      if (data.url) {
-        setResultUrl(typeof data.url === "string" ? data.url : String(data.url));
-        setStage("done");
-      } else {
-        setError("No result returned from AI.");
-        setStage("upload");
-      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      setResultUrl(url);
+      setStage("done");
     } catch {
       setError("Background removal failed. Please try again.");
       setStage("upload");

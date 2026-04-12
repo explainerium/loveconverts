@@ -141,6 +141,52 @@ input[type="range"].custom-range::-moz-range-thumb {
   cursor: pointer;
 }
 
+/* ── Blog article typography ─────────────────────────────────────────────── */
+.prose-blog {
+  font-size: 17px;
+  line-height: 1.8;
+  color: var(--foreground);
+}
+.prose-blog p {
+  margin-bottom: 1.25em;
+}
+.prose-blog h2 {
+  font-size: 1.4em;
+  font-weight: 800;
+  margin-top: 2em;
+  margin-bottom: 0.75em;
+  color: var(--foreground);
+}
+.prose-blog h3 {
+  font-size: 1.15em;
+  font-weight: 700;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+}
+.prose-blog ul, .prose-blog ol {
+  margin-bottom: 1.25em;
+  padding-left: 1.5em;
+}
+.prose-blog ul { list-style: disc; }
+.prose-blog ol { list-style: decimal; }
+.prose-blog li {
+  margin-bottom: 0.35em;
+}
+.prose-blog strong {
+  font-weight: 700;
+  color: var(--foreground);
+}
+.prose-blog a {
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.15s;
+}
+.prose-blog a:hover {
+  border-bottom-color: var(--primary);
+}
+
 /* ── Scrollbar thin ──────────────────────────────────────────────────────── */
 .scrollbar-hide::-webkit-scrollbar { display: none; }
 .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }

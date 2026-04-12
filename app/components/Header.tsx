@@ -8,18 +8,24 @@ import {
   Menu, X, User, LogOut, LayoutDashboard, ChevronDown,
   Headphones, ShieldCheck, Settings, History, Image, Minimize2,
   Maximize2, Crop, Download, Music, Film, AlertTriangle, Wand2,
-  Zap, Crown, Sparkles, Video,
+  Zap, Crown, Sparkles, Video, Eraser, FileOutput, FileInput,
+  ArrowUpCircle, Layers,
 } from "lucide-react";
 import Logo from "./Logo";
 
 const IMAGE_TOOLS = [
-  { href: "/tools/compress",       label: "Compress Image",    icon: Minimize2,  desc: "Reduce file size without losing quality" },
-  { href: "/tools/resize",         label: "Resize Image",      icon: Maximize2,  desc: "Change dimensions & social presets" },
-  { href: "/tools/crop",           label: "Crop Image",        icon: Crop,       desc: "Trim to any aspect ratio" },
-  { href: "/tools/convert-to-jpg", label: "Convert to JPG",    icon: Image,      desc: "Any format into universal JPG" },
-  { href: "/tools/photo-editor",   label: "Photo Editor",      icon: Wand2,      desc: "Adjust brightness, filters & more" },
-  { href: "/tools/enhance",        label: "AI Enhance",        icon: Sparkles,   desc: "Upscale, denoise, sharpen & HDR" },
-  { href: "/tools/compress-video", label: "Compress Video",    icon: Video,      desc: "Shrink MP4, MOV, WEBM up to 90%" },
+  { href: "/tools/compress",           label: "Compress Image",    icon: Minimize2,    desc: "Reduce file size without losing quality" },
+  { href: "/tools/resize",             label: "Resize Image",      icon: Maximize2,    desc: "Change dimensions & social presets" },
+  { href: "/tools/crop",               label: "Crop Image",        icon: Crop,         desc: "Trim to any aspect ratio" },
+  { href: "/tools/convert-to-jpg",     label: "Convert to JPG",    icon: Image,        desc: "Any format into universal JPG" },
+  { href: "/tools/photo-editor",       label: "Photo Editor",      icon: Wand2,        desc: "Adjust brightness, filters & more" },
+  { href: "/tools/enhance",            label: "AI Enhance",        icon: Sparkles,     desc: "Upscale, denoise, sharpen & HDR" },
+  { href: "/tools/compress-video",     label: "Compress Video",    icon: Video,        desc: "Shrink MP4, MOV, WEBM up to 90%" },
+  { href: "/tools/remove-background",  label: "Remove Background", icon: Eraser,       desc: "Remove image backgrounds" },
+  { href: "/tools/upscale",            label: "Upscale Image",     icon: ArrowUpCircle, desc: "Enlarge images with sharpening" },
+  { href: "/tools/image-to-pdf",       label: "Image to PDF",      icon: FileOutput,   desc: "Bundle images into a PDF" },
+  { href: "/tools/pdf-to-image",       label: "PDF to Image",      icon: FileInput,    desc: "Extract PDF pages as images" },
+  { href: "/tools/batch-convert",      label: "Batch Convert",     icon: Layers,       desc: "Convert multiple files at once" },
 ];
 
 const DOWNLOADERS_LEFT = [
@@ -319,7 +325,7 @@ export default function Header() {
               onClick={() => setMobileTools(o => !o)}
               className="flex items-center justify-between w-full px-3 py-3 rounded-xl text-sm font-semibold text-[#475569] hover:bg-[#F1F5F9] transition-all duration-200"
             >
-              <span className="flex items-center gap-2"><Image size={16} className="text-primary" /> Image Tools</span>
+              <span className="flex items-center gap-2"><Image size={16} className="text-primary" /> All Tools</span>
               <ChevronDown size={14} className={`transition-transform duration-200 ${mobileTools ? "rotate-180" : ""}`} />
             </button>
             {mobileTools && (
@@ -364,7 +370,9 @@ export default function Header() {
               { href: "/about",        label: "About"        },
             ].map(({ href, label }) => (
               <Link key={href} href={href} className={`px-3 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${
-                pathname === href ? "bg-primary/10 text-primary" : "text-[#475569] hover:text-[#1A1A2E] hover:bg-[#F1F5F9]"
+                pathname === href
+                  ? "bg-primary/10 text-primary"
+                  : "text-[#475569] hover:text-[#1A1A2E] hover:bg-[#F1F5F9]"
               }`}>
                 {label}
               </Link>

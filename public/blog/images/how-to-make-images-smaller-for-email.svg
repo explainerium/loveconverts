@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <rect width="1200" height="630" fill="#F8F9FA"/>
+  <!-- Subtle dots pattern -->
+  <defs>
+    <pattern id="dots" width="30" height="30" patternUnits="userSpaceOnUse">
+      <circle cx="15" cy="15" r="1.5" fill="#ddd"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="630" fill="url(#dots)"/>
+  <!-- Envelope icon -->
+  <rect x="120" y="200" width="340" height="240" rx="12" fill="#fff" stroke="#ddd" stroke-width="2"/>
+  <polyline points="120,200 290,340 460,200" fill="none" stroke="#FF4747" stroke-width="4"/>
+  <line x1="120" y1="440" x2="220" y2="340" stroke="#FF4747" stroke-width="2" opacity="0.5"/>
+  <line x1="460" y1="440" x2="360" y2="340" stroke="#FF4747" stroke-width="2" opacity="0.5"/>
+  <!-- Image icon inside envelope -->
+  <rect x="230" y="270" width="120" height="90" rx="6" fill="#FFE4E4"/>
+  <circle cx="260" cy="295" r="12" fill="#FF4747" opacity="0.5"/>
+  <polyline points="230,340 270,310 300,330 330,300 350,340" fill="none" stroke="#FF4747" stroke-width="2"/>
+  <!-- File size indicator -->
+  <rect x="500" y="260" width="160" height="50" rx="25" fill="#FF4747"/>
+  <text x="580" y="292" font-family="Arial, sans-serif" font-size="22" font-weight="bold" fill="#fff" text-anchor="middle">12 MB</text>
+  <!-- Arrow down -->
+  <line x1="580" y1="330" x2="580" y2="370" stroke="#10B981" stroke-width="4"/>
+  <polygon points="565,370 580,395 595,370" fill="#10B981"/>
+  <!-- Smaller size -->
+  <rect x="520" y="400" width="120" height="44" rx="22" fill="#10B981"/>
+  <text x="580" y="429" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#fff" text-anchor="middle">800 KB</text>
+  <!-- Title -->
+  <text x="900" y="220" font-family="Arial, sans-serif" font-size="52" font-weight="bold" fill="#1A1A2E" text-anchor="middle">Shrink</text>
+  <text x="900" y="290" font-family="Arial, sans-serif" font-size="52" font-weight="bold" fill="#1A1A2E" text-anchor="middle">Images</text>
+  <text x="900" y="360" font-family="Arial, sans-serif" font-size="52" font-weight="bold" fill="#FF4747" text-anchor="middle">for Email</text>
+  <text x="900" y="420" font-family="Arial, sans-serif" font-size="22" fill="#888" text-anchor="middle">Quick &amp; Easy Guide</text>
+  <!-- Branding -->
+  <text x="1150" y="600" font-family="Arial, sans-serif" font-size="18" fill="#999" text-anchor="end">LoveConverts</text>
+</svg>

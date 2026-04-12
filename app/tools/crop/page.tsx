@@ -21,6 +21,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import UpgradeModal from "@/app/components/UpgradeModal";
+import { useToolShortcuts } from "@/app/components/useToolShortcuts";
+import KeyboardShortcuts from "@/app/components/KeyboardShortcuts";
 
 /* ── helpers ─────────────────────────────────────────────── */
 
@@ -181,6 +183,33 @@ export default function CropPage() {
     setError(null);
   };
 
+  const handlePastedFile = useCallback((file: File) => {
+    setError(null);
+    setFile(file);
+    setFileName(file.name.replace(/\.[^.]+$/, ""));
+    setOriginalSize(file.size);
+    setResultUrl("");
+    const reader = new FileReader();
+    reader.onload = () => setImgSrc(reader.result as string);
+    reader.readAsDataURL(file);
+  }, []);
+
+  useToolShortcuts({
+    onPaste: handlePastedFile,
+    onReset: () => reset(),
+    onAction: () => handleCrop(),
+    onDownload: () => {
+      if (resultUrl) {
+        const a = document.createElement("a");
+        a.href = resultUrl;
+        a.download = resultName;
+        a.click();
+      }
+    },
+    canAct: !!completedCrop && !!file && stage === "upload",
+    canDownload: stage === "done" && !!resultUrl,
+  });
+
   /* ── render ──────────────────────────────────────────── */
 
   return (
@@ -220,6 +249,7 @@ export default function CropPage() {
               <p className="text-xs text-muted mt-3">
                 JPG, PNG, WEBP, GIF. Up to 20 MB.
               </p>
+              <p className="text-[11px] text-muted/60 mt-2">You can also paste an image directly with Ctrl+V / Cmd+V</p>
             </div>
           )}
 
@@ -473,6 +503,10 @@ export default function CropPage() {
             ))}
           </div>
         </div>
+      </div>
+
+      <div className="max-w-3xl mx-auto px-4 pb-6">
+        <KeyboardShortcuts />
       </div>
 
       <UpgradeModal

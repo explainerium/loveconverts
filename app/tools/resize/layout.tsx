@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Resize Image Online Free: Change Image Dimensions",
-  description: "Resize images online to any dimension. Presets for Instagram, Twitter, Facebook, icons and more. Free, fast, no signup required.",
+  description: "Resize images for Instagram, Facebook, YouTube, LinkedIn and more. Free online image resizer with social media presets. No signup needed.",
   alternates: { canonical: "https://loveconverts.com/tools/resize" },
   openGraph: { url: "https://loveconverts.com/tools/resize" },
 };

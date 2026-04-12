@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <rect width="1200" height="630" fill="#FAFAFA"/>
+  <!-- Friendly rounded background shapes -->
+  <circle cx="200" cy="500" r="250" fill="#FFF1F2" opacity="0.6"/>
+  <circle cx="1000" cy="150" r="200" fill="#EFF6FF" opacity="0.5"/>
+  <!-- Before: large file -->
+  <rect x="120" y="180" width="220" height="180" rx="16" fill="#fff" stroke="#E5E7EB" stroke-width="2"/>
+  <rect x="140" y="200" width="180" height="100" rx="8" fill="#DBEAFE"/>
+  <circle cx="180" cy="240" r="15" fill="#FBBF24"/>
+  <polyline points="140,280 180,250 220,270 260,240 320,280" fill="none" stroke="#3B82F6" stroke-width="2"/>
+  <text x="230" y="340" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#EF4444" text-anchor="middle">5.2 MB</text>
+  <text x="230" y="395" font-family="Arial, sans-serif" font-size="16" fill="#9CA3AF" text-anchor="middle">Before</text>
+  <!-- Compression funnel/arrow -->
+  <polygon points="380,240 380,300 420,300 440,270 420,240" fill="#FF4747" opacity="0.8"/>
+  <polygon points="440,250 440,290 480,290 500,270 480,250" fill="#FF4747" opacity="0.6"/>
+  <polygon points="500,255 500,285 530,285 540,270 530,255" fill="#FF4747" opacity="0.4"/>
+  <!-- After: small file -->
+  <rect x="580" y="210" width="160" height="130" rx="14" fill="#fff" stroke="#D1FAE5" stroke-width="2"/>
+  <rect x="596" y="226" width="128" height="65" rx="6" fill="#D1FAE5"/>
+  <circle cx="624" cy="252" r="10" fill="#FBBF24"/>
+  <polyline points="596,278 624,258 652,272 680,248 724,278" fill="none" stroke="#10B981" stroke-width="2"/>
+  <text x="660" y="324" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#10B981" text-anchor="middle">480 KB</text>
+  <text x="660" y="375" font-family="Arial, sans-serif" font-size="16" fill="#9CA3AF" text-anchor="middle">After</text>
+  <!-- Percentage saved -->
+  <rect x="350" y="400" width="200" height="50" rx="25" fill="#FF4747"/>
+  <text x="450" y="432" font-family="Arial, sans-serif" font-size="22" font-weight="bold" fill="#fff" text-anchor="middle">91% smaller!</text>
+  <!-- Title -->
+  <text x="980" y="280" font-family="Arial, sans-serif" font-size="60" font-weight="bold" fill="#1A1A2E" text-anchor="middle">Compression</text>
+  <text x="980" y="360" font-family="Arial, sans-serif" font-size="72" font-weight="bold" fill="#FF4747" text-anchor="middle">101</text>
+  <text x="980" y="410" font-family="Arial, sans-serif" font-size="22" fill="#9CA3AF" text-anchor="middle">A Beginner's Guide</text>
+  <!-- Branding -->
+  <text x="1150" y="600" font-family="Arial, sans-serif" font-size="18" fill="#D1D5DB" text-anchor="end">LoveConverts</text>
+</svg>
