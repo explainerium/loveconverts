@@ -4,7 +4,7 @@ import { Clock, ArrowRight } from "lucide-react";
 import { getAllPosts } from "@/lib/blog-data";
 
 export const metadata: Metadata = {
-  title: "Free Image Conversion Tips, Guides & Tutorials | LoveConverts Blog",
+  title: { absolute: "Free Image Conversion Tips, Guides & Tutorials | LoveConverts Blog" },
   description:
     "Practical guides on image conversion, compression, cropping, and video downloading. Written by the team at LoveConverts.",
   alternates: { canonical: "https://loveconverts.com/blog" },

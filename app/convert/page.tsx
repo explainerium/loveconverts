@@ -4,12 +4,12 @@ import { ArrowRight } from "lucide-react";
 import { getPairsBySource } from "@/lib/conversion-pairs";
 
 export const metadata: Metadata = {
-  title: "Free Online Image Converter - All Format Conversions | LoveConverts",
+  title: { absolute: "Free Online Image Converter — All Format Conversions | LoveConverts" },
   description:
     "Convert images between JPG, PNG, WebP, AVIF, GIF, TIFF, BMP, and ICO. All conversions are free, instant, and require no signup. Pick your source and target format below.",
   alternates: { canonical: "https://loveconverts.com/convert" },
   openGraph: {
-    title: "Free Online Image Converter - All Format Conversions | LoveConverts",
+    title: "Free Online Image Converter — All Format Conversions",
     description:
       "Convert images between JPG, PNG, WebP, AVIF, GIF, TIFF, BMP, and ICO. Free, instant, no signup.",
     url: "https://loveconverts.com/convert",
@@ -42,9 +42,10 @@ export default function ConvertIndexPage() {
           <h1 className="text-4xl font-extrabold text-foreground">
             Image Format Conversions
           </h1>
-          <p className="text-muted max-w-xl mx-auto">
-            Convert between any image format for free. No signup, no watermarks. Pick your source format below
-            and choose your target.
+          <p className="text-muted max-w-2xl mx-auto leading-relaxed">
+            Convert any image format to another for free. No signup required and nothing is stored on our servers.
+            Pick your source format below and choose your target format to get started. Supports WebP, JPG, PNG,
+            AVIF, GIF, TIFF, BMP, and ICO.
           </p>
         </div>
 

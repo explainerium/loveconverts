@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   ChevronDown, ImageIcon, Minimize2, Maximize2, Crop, Wand2, FileImage, Sparkles,
-  Eraser, Droplets, FileOutput, FileInput, ArrowUpCircle, Layers, Video, Zap,
+  Eraser, Droplets, FileOutput, FileInput, ArrowUpCircle, Layers, Video, Zap, Type, Wand, Smartphone, PenTool,
 } from "lucide-react";
 
 const TOOLS = [
@@ -19,11 +19,15 @@ const TOOLS = [
 ];
 
 const MORE_TOOLS = [
-  { href: "/tools/remove-background", label: "Remove Background", icon: Eraser,        desc: "Remove image backgrounds" },
+  { href: "/tools/text-to-image",     label: "AI Text to Image",  icon: Wand,           desc: "Generate images from text" },
+  { href: "/tools/add-text",          label: "Add Text to Image", icon: Type,           desc: "Add captions, watermarks, labels" },
+  { href: "/tools/heic-to-jpg",       label: "HEIC to JPG",       icon: Smartphone,     desc: "Convert iPhone HEIC photos" },
+  { href: "/tools/remove-background", label: "Remove Background", icon: Eraser,         desc: "Remove image backgrounds" },
   { href: "/tools/upscale",           label: "Upscale Image",     icon: ArrowUpCircle,  desc: "Enlarge with sharpening" },
   { href: "/tools/image-to-pdf",      label: "Image to PDF",      icon: FileOutput,     desc: "Bundle images into PDF" },
   { href: "/tools/pdf-to-image",      label: "PDF to Image",      icon: FileInput,      desc: "Extract pages as images" },
   { href: "/tools/batch-convert",     label: "Batch Convert",     icon: Layers,         desc: "Convert multiple files" },
+  { href: "/tools/image-to-svg",      label: "Image to SVG",      icon: PenTool,        desc: "Vectorize images to SVG" },
   { href: "/tools/compress-video",    label: "Compress Video",    icon: Video,          desc: "Shrink MP4, MOV, WEBM" },
 ];
 

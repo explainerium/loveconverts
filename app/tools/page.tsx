@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Minimize2, Maximize2, Crop, FileImage, Wand2, ImageIcon, Sparkles, FileOutput, Eraser, ArrowUpCircle, PenTool, Video, Layers, ArrowRight, Smartphone } from "lucide-react";
+import { Minimize2, Maximize2, Crop, FileImage, Wand2, ImageIcon, Sparkles, FileOutput, Eraser, ArrowUpCircle, PenTool, Video, Layers, ArrowRight, Smartphone, Type, Wand } from "lucide-react";
 import { ALL_PAIRS, getPairData } from "@/lib/conversion-pairs";
 
 export const metadata: Metadata = {
@@ -122,6 +122,30 @@ const TOOLS = [
     desc: "Convert iPhone HEIC photos to universal JPG format. Batch convert up to 30 files at once.",
     badge: "New",
     color: "bg-purple-50 text-purple-600 border-purple-100",
+  },
+  {
+    href: "/tools/add-text",
+    icon: Type,
+    label: "Add Text to Image",
+    desc: "Add captions, watermarks, and labels. 50+ fonts, shadows, outlines, batch mode. All in-browser.",
+    badge: "New",
+    color: "bg-rose-50 text-rose-600 border-rose-100",
+  },
+  {
+    href: "/tools/text-to-image",
+    icon: Wand,
+    label: "AI Text to Image",
+    desc: "Generate images from text descriptions with AI. Type what you want and download in seconds. Powered by FLUX.",
+    badge: "AI",
+    color: "bg-violet-50 text-violet-600 border-violet-100",
+  },
+  {
+    href: "/tools/image-to-svg",
+    icon: PenTool,
+    label: "Image to SVG",
+    desc: "Convert any raster image to scalable SVG vector format. B&W or color tracing with adjustable detail.",
+    badge: "New",
+    color: "bg-lime-50 text-lime-600 border-lime-100",
   },
   {
     href: "/tools/compress-video",

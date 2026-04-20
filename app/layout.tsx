@@ -17,11 +17,11 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "LoveConverts: Free Image Converter and Downloader",
+    default: "Free Image Converter & Video Downloader | LoveConverts",
     template: "%s | LoveConverts",
   },
   description:
-    "Free online image converter, compressor, resizer, video compressor and social media downloader. Convert JPG, PNG, WEBP, AVIF. Compress MP4, MOV, WEBM videos. Download videos from TikTok, Instagram, YouTube. No signup required.",
+    "Convert, compress, resize and crop images free. Download videos from TikTok, Instagram, YouTube and Facebook. No signup. Files never stored.",
   keywords: [
     "image converter", "compress image", "resize image", "webp converter", "free image tools",
     "compress video", "video compressor", "compress mp4", "shrink video",
@@ -30,16 +30,27 @@ export const metadata: Metadata = {
   ],
   metadataBase: new URL("https://loveconverts.com"),
   openGraph: {
-    title: "LoveConverts: Free Image Converter and Downloader",
-    description: "Convert images & download videos from 10+ platforms. 100% free, fast, no sign-up.",
     type: "website",
     siteName: "LoveConverts",
+    title: "Free Image Converter & Video Downloader | LoveConverts",
+    description:
+      "Convert, compress, resize and crop images free. Download videos from TikTok, Instagram, YouTube and Facebook. No signup. Files never stored.",
     url: "https://loveconverts.com",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "LoveConverts — Free Image Converter & Video Downloader",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "LoveConverts: Free Image Converter and Downloader",
-    description: "Convert images & download videos from 10+ platforms. 100% free, fast, no sign-up.",
+    title: "Free Image Converter & Video Downloader | LoveConverts",
+    description:
+      "Convert, compress, resize and crop images free. Download from TikTok, Instagram, YouTube and Facebook. No signup.",
+    images: ["/og-image.png"],
   },
   robots: {
     index: true,

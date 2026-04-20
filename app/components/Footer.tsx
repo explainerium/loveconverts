@@ -14,6 +14,9 @@ const IMAGE_TOOLS = [
   { href: "/tools/pdf-to-image",       label: "PDF to Image"   },
   { href: "/tools/batch-convert",      label: "Batch Convert"  },
   { href: "/tools/heic-to-jpg",        label: "HEIC to JPG"    },
+  { href: "/tools/add-text",           label: "Add Text to Image" },
+  { href: "/tools/text-to-image",      label: "AI Text to Image"  },
+  { href: "/tools/image-to-svg",       label: "Image to SVG"      },
   { href: "/convert",                  label: "All Conversions →", bold: true },
   { href: "/tools",                    label: "All Tools →",   bold: true },
 ];

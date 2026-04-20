@@ -9,7 +9,7 @@ import {
   Headphones, ShieldCheck, Settings, History, Image, Minimize2,
   Maximize2, Crop, Download, Music, Film, AlertTriangle, Wand2,
   Zap, Crown, Sparkles, Video, Eraser, FileOutput, FileInput,
-  ArrowUpCircle, Layers,
+  ArrowUpCircle, Layers, Type, Wand, Smartphone, PenTool,
 } from "lucide-react";
 import Logo from "./Logo";
 
@@ -26,6 +26,10 @@ const IMAGE_TOOLS = [
   { href: "/tools/image-to-pdf",       label: "Image to PDF",      icon: FileOutput,   desc: "Bundle images into a PDF" },
   { href: "/tools/pdf-to-image",       label: "PDF to Image",      icon: FileInput,    desc: "Extract PDF pages as images" },
   { href: "/tools/batch-convert",      label: "Batch Convert",     icon: Layers,       desc: "Convert multiple files at once" },
+  { href: "/tools/heic-to-jpg",        label: "HEIC to JPG",       icon: Smartphone,   desc: "Convert iPhone photos to JPG" },
+  { href: "/tools/add-text",           label: "Add Text to Image", icon: Type,         desc: "Captions, watermarks & labels" },
+  { href: "/tools/text-to-image",      label: "AI Text to Image",  icon: Wand,         desc: "Generate images from text" },
+  { href: "/tools/image-to-svg",       label: "Image to SVG",      icon: PenTool,      desc: "Vectorize any image to SVG" },
 ];
 
 const DOWNLOADERS_LEFT = [
@@ -205,6 +209,7 @@ export default function Header() {
           {[
             { href: "/how-it-works", label: "How It Works" },
             { href: "/faq",          label: "FAQ" },
+            { href: "/blog",         label: "Blog" },
             { href: "/about",        label: "About" },
           ].map(({ href, label }) => (
             <Link key={href} href={href} className={`px-3.5 py-2 rounded-lg text-[13.5px] font-semibold transition-all duration-200 ${
@@ -367,6 +372,7 @@ export default function Header() {
             {[
               { href: "/how-it-works", label: "How It Works" },
               { href: "/faq",          label: "FAQ"          },
+              { href: "/blog",         label: "Blog"         },
               { href: "/about",        label: "About"        },
             ].map(({ href, label }) => (
               <Link key={href} href={href} className={`px-3 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${

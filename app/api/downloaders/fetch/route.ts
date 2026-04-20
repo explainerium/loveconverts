@@ -354,6 +354,8 @@ export async function POST(req: NextRequest) {
 
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);
+    // Surface the real yt-dlp stderr in pm2 logs so failures can be diagnosed.
+    console.error(`[yt-dlp] platform=${platform} url=${url}\n${msg}`);
 
     // Instagram fallback: try embed/graphql when yt-dlp fails
     if (platform === "instagram") {
@@ -377,7 +379,11 @@ export async function POST(req: NextRequest) {
     let errorMessage = "Failed to fetch media information.";
     let errorType = "unknown";
 
-    if (msg.includes("login required") || msg.includes("Login required") ||
+    if (msg.includes("Sign in to confirm") || msg.includes("not a bot") ||
+        msg.includes("confirm your age") || msg.includes("age-restricted")) {
+      errorMessage = "YouTube is blocking this download. The video may require a signed-in account or be age-restricted. Please try a different video.";
+      errorType = "bot_check";
+    } else if (msg.includes("login required") || msg.includes("Login required") ||
         msg.includes("not granting access") || msg.includes("empty media response")) {
       errorMessage = "This content requires login to access. Please make sure the post is public and try again.";
       errorType = "login_required";

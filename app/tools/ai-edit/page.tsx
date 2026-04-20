@@ -356,9 +356,9 @@ export default function AiEditPage() {
           <h3 className="text-sm font-bold text-muted uppercase tracking-wider mb-3">Related Tools</h3>
           <div className="grid grid-cols-3 gap-3">
             {[
+              { href: "/tools/text-to-image", icon: Sparkles, label: "AI Text to Image" },
               { href: "/tools/remove-background", icon: Minimize2, label: "Remove Background" },
               { href: "/tools/resize", icon: Maximize2, label: "Resize Image" },
-              { href: "/tools/crop", icon: Crop, label: "Crop Image" },
             ].map(({ href, icon: Icon, label }) => (
               <Link key={href} href={href}
                 className="flex flex-col items-center gap-2 p-3 rounded-xl border border-border hover:border-primary/30 hover:shadow-sm transition-all text-center group">
