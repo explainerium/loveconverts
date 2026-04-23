@@ -3,6 +3,7 @@ import potrace from "potrace";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
+export const maxDuration = 120;
 
 const ACCEPTED = new Set([
   "image/jpeg",
@@ -89,12 +90,20 @@ export async function POST(req: Request) {
       Math.max(1, parseInt(formData.get("detail") as string) || 4)
     );
 
-    // Convert to PNG bitmap for potrace (resize large images to prevent memory issues)
     const raw = Buffer.from(await file.arrayBuffer());
+
+    // Color tracing is O(pixels * colors) — use smaller canvas to avoid
+    // memory exhaustion on the 512 MB VPS. B&W is much lighter.
+    const maxDim = mode === "color" ? 1000 : 1500;
+
     const pngBuf = await sharp(raw)
-      .resize(2000, 2000, { fit: "inside", withoutEnlargement: true })
+      .resize(maxDim, maxDim, { fit: "inside", withoutEnlargement: true })
       .png()
       .toBuffer();
+
+    console.log(
+      `[image-to-svg] mode=${mode} size=${(pngBuf.length / 1024).toFixed(0)}KB colors=${colors} detail=${detail}`
+    );
 
     let svg: string;
     if (mode === "color") {
@@ -106,8 +115,13 @@ export async function POST(req: Request) {
     return Response.json({ svg });
   } catch (err) {
     console.error("[image-to-svg] error:", err);
+    const msg = err instanceof Error ? err.message : String(err);
     return Response.json(
-      { error: "Conversion failed. Please try a different image." },
+      {
+        error: msg.includes("memory") || msg.includes("ENOMEM")
+          ? "Image is too complex for color tracing. Try Black & White mode or fewer colors."
+          : "Conversion failed. Please try a different image or simpler settings.",
+      },
       { status: 500 }
     );
   }

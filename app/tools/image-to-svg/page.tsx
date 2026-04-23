@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useDropzone } from "react-dropzone";
 import {
   Upload,
@@ -24,6 +24,15 @@ function fmtBytes(n: number) {
   return (n / (1024 * 1024)).toFixed(2) + " MB";
 }
 
+const STATUS_MESSAGES = [
+  "Uploading image...",
+  "Analyzing image structure...",
+  "Tracing edges and paths...",
+  "Building vector shapes...",
+  "Optimizing SVG output...",
+  "Almost done...",
+];
+
 type Stage = "upload" | "converting" | "done";
 type Mode = "bw" | "color";
 
@@ -33,10 +42,45 @@ export default function ImageToSvgPage() {
   const [preview, setPreview] = useState<string | null>(null);
   const [mode, setMode] = useState<Mode>("color");
   const [threshold, setThreshold] = useState(128);
-  const [colors, setColors] = useState(6);
+  const [colors, setColors] = useState(4);
   const [detail, setDetail] = useState(4);
   const [svgData, setSvgData] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [progress, setProgress] = useState(0);
+  const [statusIdx, setStatusIdx] = useState(0);
+  const progressRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const statusRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Animated progress bar + cycling status messages while converting
+  useEffect(() => {
+    if (stage === "converting") {
+      setProgress(0);
+      setStatusIdx(0);
+
+      // Progress: ramp to 90% over ~30s, then slow crawl
+      progressRef.current = setInterval(() => {
+        setProgress((p) => {
+          if (p < 60) return p + 2;
+          if (p < 85) return p + 0.5;
+          if (p < 95) return p + 0.1;
+          return p;
+        });
+      }, 500);
+
+      // Status: cycle messages every 4 seconds
+      statusRef.current = setInterval(() => {
+        setStatusIdx((i) => (i + 1) % STATUS_MESSAGES.length);
+      }, 4000);
+    } else {
+      if (stage === "done") setProgress(100);
+      if (progressRef.current) clearInterval(progressRef.current);
+      if (statusRef.current) clearInterval(statusRef.current);
+    }
+    return () => {
+      if (progressRef.current) clearInterval(progressRef.current);
+      if (statusRef.current) clearInterval(statusRef.current);
+    };
+  }, [stage]);
 
   const onDrop = useCallback(
     (accepted: File[]) => {
@@ -336,17 +380,36 @@ export default function ImageToSvgPage() {
 
       {/* ─── STAGE 2: Converting ─── */}
       {stage === "converting" && (
-        <div className="max-w-md mx-auto px-4 py-32 text-center space-y-6">
+        <div className="max-w-md mx-auto px-4 py-24 text-center space-y-8">
           <Loader2 size={48} className="animate-spin text-primary mx-auto" />
           <div>
             <h2 className="text-xl font-bold text-foreground mb-1">
               Vectorizing your image...
             </h2>
-            <p className="text-sm text-muted">
-              Tracing {mode === "color" ? `${colors} colors` : "black & white"}.
-              This usually takes a few seconds.
+            <p className="text-sm text-muted mb-6">
+              {STATUS_MESSAGES[statusIdx]}
+            </p>
+
+            {/* Progress bar */}
+            <div className="w-full bg-gray-100 rounded-full h-3 overflow-hidden">
+              <div
+                className="h-full bg-gradient-to-r from-primary to-orange-400 rounded-full transition-all duration-500 ease-out"
+                style={{ width: `${Math.min(progress, 100)}%` }}
+              />
+            </div>
+            <p className="text-xs text-muted mt-2">
+              {Math.round(progress)}% &middot;{" "}
+              {mode === "color"
+                ? `Color tracing (${colors} colors)`
+                : "Black & white tracing"}
             </p>
           </div>
+
+          <p className="text-[11px] text-muted/60">
+            {mode === "color"
+              ? "Color mode takes 10-30 seconds depending on image complexity"
+              : "Black & white mode is usually faster (5-15 seconds)"}
+          </p>
         </div>
       )}
 
