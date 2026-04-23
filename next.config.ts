@@ -7,6 +7,8 @@ const nextConfig: NextConfig = {
     "fluent-ffmpeg",
     "@ffmpeg-installer/ffmpeg",
     "@ffprobe-installer/ffprobe",
+    "potrace",
+    "jimp",
   ],
   images: {
     formats: ["image/avif", "image/webp"],
