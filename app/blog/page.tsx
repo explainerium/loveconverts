@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Clock, ArrowRight } from "lucide-react";
+import { Clock, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { getAllPosts } from "@/lib/blog-data";
 
 export const metadata: Metadata = {
@@ -16,14 +16,42 @@ export const metadata: Metadata = {
   },
 };
 
+const PER_PAGE = 12;
+
 const CATEGORY_COLORS: Record<string, string> = {
   Guides: "bg-blue-50 text-blue-700",
   Explained: "bg-violet-50 text-violet-700",
   Downloaders: "bg-pink-50 text-pink-700",
 };
 
-export default function BlogIndexPage() {
-  const posts = getAllPosts();
+function parseDate(d: string): number {
+  return new Date(d).getTime() || 0;
+}
+
+export default async function BlogIndexPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
+  const { page: pageStr } = await searchParams;
+
+  // Sort newest first
+  const allPosts = getAllPosts().sort(
+    (a, b) => parseDate(b.publishDate) - parseDate(a.publishDate)
+  );
+  const totalPosts = allPosts.length;
+  const totalPages = Math.ceil(totalPosts / PER_PAGE);
+  const currentPage = Math.max(1, Math.min(totalPages, parseInt(pageStr || "1") || 1));
+  const start = (currentPage - 1) * PER_PAGE;
+  const posts = allPosts.slice(start, start + PER_PAGE);
+  const showingFrom = start + 1;
+  const showingTo = Math.min(start + PER_PAGE, totalPosts);
+
+  // Page numbers to show: current +/- 2
+  const pageNumbers: number[] = [];
+  for (let i = Math.max(1, currentPage - 2); i <= Math.min(totalPages, currentPage + 2); i++) {
+    pageNumbers.push(i);
+  }
 
   return (
     <div className="min-h-screen bg-background py-12">
@@ -88,6 +116,90 @@ export default function BlogIndexPage() {
             </Link>
           ))}
         </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="space-y-4">
+            <p className="text-center text-sm text-muted">
+              Showing {showingFrom}-{showingTo} of {totalPosts} posts
+            </p>
+
+            <nav className="flex items-center justify-center gap-1.5">
+              {/* Previous */}
+              {currentPage > 1 ? (
+                <Link
+                  href={currentPage === 2 ? "/blog" : `/blog?page=${currentPage - 1}`}
+                  className="flex items-center gap-1 px-3 py-2 text-sm font-semibold text-muted border border-border rounded-lg hover:border-primary/40 hover:text-primary transition-all"
+                >
+                  <ChevronLeft size={14} /> Previous
+                </Link>
+              ) : (
+                <span className="flex items-center gap-1 px-3 py-2 text-sm font-semibold text-muted/40 border border-border/40 rounded-lg cursor-not-allowed">
+                  <ChevronLeft size={14} /> Previous
+                </span>
+              )}
+
+              {/* Page 1 + ellipsis if needed */}
+              {pageNumbers[0] > 1 && (
+                <>
+                  <Link
+                    href="/blog"
+                    className="w-9 h-9 flex items-center justify-center text-sm font-semibold rounded-lg border border-border text-muted hover:border-primary/40 hover:text-primary transition-all"
+                  >
+                    1
+                  </Link>
+                  {pageNumbers[0] > 2 && (
+                    <span className="w-9 h-9 flex items-center justify-center text-sm text-muted">...</span>
+                  )}
+                </>
+              )}
+
+              {/* Page numbers */}
+              {pageNumbers.map((n) => (
+                <Link
+                  key={n}
+                  href={n === 1 ? "/blog" : `/blog?page=${n}`}
+                  className={`w-9 h-9 flex items-center justify-center text-sm font-semibold rounded-lg border transition-all ${
+                    n === currentPage
+                      ? "bg-primary text-white border-primary"
+                      : "border-border text-muted hover:border-primary/40 hover:text-primary"
+                  }`}
+                >
+                  {n}
+                </Link>
+              ))}
+
+              {/* Ellipsis + last page if needed */}
+              {pageNumbers[pageNumbers.length - 1] < totalPages && (
+                <>
+                  {pageNumbers[pageNumbers.length - 1] < totalPages - 1 && (
+                    <span className="w-9 h-9 flex items-center justify-center text-sm text-muted">...</span>
+                  )}
+                  <Link
+                    href={`/blog?page=${totalPages}`}
+                    className="w-9 h-9 flex items-center justify-center text-sm font-semibold rounded-lg border border-border text-muted hover:border-primary/40 hover:text-primary transition-all"
+                  >
+                    {totalPages}
+                  </Link>
+                </>
+              )}
+
+              {/* Next */}
+              {currentPage < totalPages ? (
+                <Link
+                  href={`/blog?page=${currentPage + 1}`}
+                  className="flex items-center gap-1 px-3 py-2 text-sm font-semibold text-muted border border-border rounded-lg hover:border-primary/40 hover:text-primary transition-all"
+                >
+                  Next <ChevronRight size={14} />
+                </Link>
+              ) : (
+                <span className="flex items-center gap-1 px-3 py-2 text-sm font-semibold text-muted/40 border border-border/40 rounded-lg cursor-not-allowed">
+                  Next <ChevronRight size={14} />
+                </span>
+              )}
+            </nav>
+          </div>
+        )}
       </div>
     </div>
   );

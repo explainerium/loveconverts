@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <rect width="1200" height="630" fill="#0a1628" />
+  <line x1="700" y1="630" x2="1200" y2="0" stroke="#0066dc15" stroke-width="60" /><line x1="800" y1="630" x2="1200" y2="130" stroke="#0066dc0a" stroke-width="40" />
+  <!-- Accent glow -->
+  <defs>
+    <radialGradient id="glow">
+      <stop offset="0%" stop-color="#0066dc" stop-opacity="0.15" />
+      <stop offset="100%" stop-color="#0066dc" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+  <ellipse cx="300" cy="315" rx="400" ry="300" fill="url(#glow)" />
+  <!-- Icon badge -->
+  <rect x="80" y="80" width="100" height="100" rx="24" fill="#0066dc" />
+  <text x="130" y="148" text-anchor="middle" font-family="sans-serif" font-weight="bold" font-size="42" fill="white">▶</text>
+  <!-- Title -->
+  <text x="80" y="280" font-family="sans-serif" font-weight="bold" font-size="72" fill="white">Download</text>
+  <text x="80" y="370" font-family="sans-serif" font-weight="bold" font-size="72" fill="#0066dc">Dailymotion</text>
+  <!-- Divider -->
+  <rect x="80" y="400" width="200" height="4" rx="2" fill="#0066dc" opacity="0.6" />
+  <!-- Subtitle -->
+  <text x="80" y="440" font-family="sans-serif" font-size="24" fill="#888888">Free online tool at loveconverts.com</text>
+  <!-- Brand -->
+  <text x="1120" y="600" text-anchor="end" font-family="sans-serif" font-weight="bold" font-size="18" fill="#555555">LoveConverts</text>
+</svg>
