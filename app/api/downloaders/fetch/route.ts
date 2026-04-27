@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { v4 as uuidv4 } from "uuid";
 import db from "@/lib/db";
+import { findYtDlp } from "@/lib/yt-dlp";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -172,36 +173,13 @@ export async function POST(req: NextRequest) {
   }
 
   // yt-dlp path — check if the binary exists
-  let ytDlpPath = process.env.YT_DLP_PATH || "";
-
-  // If no env var set, try common locations
-  if (!ytDlpPath) {
-    const fs = await import("fs");
-    const commonPaths = [
-      "/usr/local/bin/yt-dlp",
-      "/usr/bin/yt-dlp",
-      "/home/" + (process.env.USER || process.env.HOME?.split("/").pop() || "") + "/.local/bin/yt-dlp",
-      "/Users/explainerium/Library/Python/3.9/bin/yt-dlp", // macOS dev fallback
-    ];
-    for (const p of commonPaths) {
-      if (fs.existsSync(p)) {
-        ytDlpPath = p;
-        break;
-      }
-    }
-  }
-
-  if (!ytDlpPath) {
-    // Last resort: try "yt-dlp" from PATH
-    try {
-      const { execSync } = await import("child_process");
-      const resolved = execSync("which yt-dlp", { encoding: "utf-8" }).trim();
-      if (resolved) ytDlpPath = resolved;
-    } catch { /* not on PATH */ }
-  }
+  const ytDlpPath = findYtDlp();
 
   if (!ytDlpPath) {
     logStat(platform, format, false, "no_ytdlp");
+    console.error(
+      `[yt-dlp] Binary not found. PATH=${process.env.PATH} HOME=${process.env.HOME} USER=${process.env.USER}`
+    );
     return Response.json(
       { success: false, error: "Video downloading is not available in this deployment environment. This feature requires a custom server with yt-dlp installed." },
       { status: 503 }

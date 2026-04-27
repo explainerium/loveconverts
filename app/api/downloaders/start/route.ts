@@ -11,6 +11,7 @@ import {
   failJob,
   updateJob,
 } from "@/lib/jobs";
+import { findYtDlp } from "@/lib/yt-dlp";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -69,7 +70,7 @@ function runYtDlp(
   outputPath: string,
   onProgress: (percent: number, stage?: string) => void
 ): Promise<void> {
-  const ytDlpPath = process.env.YT_DLP_PATH || "/usr/local/bin/yt-dlp";
+  const ytDlpPath = findYtDlp() || "/usr/local/bin/yt-dlp";
 
   return new Promise((resolve, reject) => {
     const args: string[] = [
