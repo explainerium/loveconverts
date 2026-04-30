@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import ToolSchemas from "@/app/components/ToolSchemas";
 export const metadata: Metadata = {
   title: "Remove Image Background Free Online",
   description:
@@ -11,5 +12,14 @@ export default function RemoveBgLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return (
+    <>
+      <ToolSchemas
+        name="Remove Background"
+        slug="remove-background"
+        description="Remove backgrounds from images online. Get transparent PNG output."
+      />
+      {children}
+    </>
+  );
 }

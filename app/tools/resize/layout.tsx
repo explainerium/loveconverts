@@ -1,10 +1,28 @@
 import type { Metadata } from "next";
+import ToolSchemas from "@/app/components/ToolSchemas";
+
 export const metadata: Metadata = {
-  title: "Resize Image Online Free: Change Image Dimensions",
-  description: "Resize images for Instagram, Facebook, YouTube, LinkedIn and more. Free online image resizer with social media presets. No signup needed.",
+  title: { absolute: "Image Size Changer — Resize & Crop Photos Free Online | LoveConverts" },
+  description:
+    "Change image size online for free. Resize photos to exact pixels, percentage, or social media presets. No signup. Works on iPhone, Android, Windows and Mac.",
   alternates: { canonical: "https://loveconverts.com/tools/resize" },
-  openGraph: { url: "https://loveconverts.com/tools/resize" },
+  openGraph: {
+    title: "Image Size Changer — Resize & Crop Photos Free Online",
+    description:
+      "Change image size online for free. Resize to exact pixels or social media presets. No signup.",
+    url: "https://loveconverts.com/tools/resize",
+  },
 };
+
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+  return (
+    <>
+      <ToolSchemas
+        name="Image Size Changer"
+        slug="resize"
+        description="Change image size online for free. Resize photos to exact pixels, percentage, or social media presets."
+      />
+      {children}
+    </>
+  );
 }

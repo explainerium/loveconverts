@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
-import { Upload, Download, Loader2, Sparkles, Minimize2, Maximize2, Crop, Wand2, ImageIcon } from "lucide-react";
+import { Upload, Download, Loader2, Sparkles, Minimize2, Wand2, ImageIcon, ArrowUpCircle, Zap, Sun, Palette, Eraser, User, Moon } from "lucide-react";
 import Link from "next/link";
 import { useToolShortcuts } from "@/app/components/useToolShortcuts";
 import KeyboardShortcuts from "@/app/components/KeyboardShortcuts";
@@ -19,20 +19,20 @@ type EnhanceMode = "auto" | "upscale" | "sharpen" | "hdr" | "color" | "denoise" 
 
 interface ModeCard {
   key: EnhanceMode;
-  emoji: string;
+  Icon: React.ComponentType<{ size?: number; className?: string }>;
   label: string;
   desc: string;
 }
 
 const MODES: ModeCard[] = [
-  { key: "auto",     emoji: "\u2728",     label: "Magic Fix",    desc: "Auto-enhance everything" },
-  { key: "upscale",  emoji: "\uD83D\uDD0D", label: "Super Zoom",   desc: "Upscale 2x or 4x" },
-  { key: "sharpen",  emoji: "\u26A1",     label: "Sharpen",      desc: "Crispy sharp details" },
-  { key: "hdr",      emoji: "\uD83C\uDF04", label: "HDR",          desc: "Dramatic dynamic range" },
-  { key: "color",    emoji: "\uD83C\uDF08", label: "Color Boost",  desc: "Make colors pop" },
-  { key: "denoise",  emoji: "\uD83E\uDDF9", label: "Denoise",      desc: "Remove grain and noise" },
-  { key: "portrait", emoji: "\uD83E\uDD33", label: "Portrait",     desc: "Flawless skin and tone" },
-  { key: "lowlight", emoji: "\uD83C\uDF19", label: "Night Vision", desc: "Brighten dark photos" },
+  { key: "auto",     Icon: Sparkles,       label: "Auto Enhance",  desc: "One-click AI improvement" },
+  { key: "upscale",  Icon: ArrowUpCircle,  label: "Upscale",       desc: "Enlarge 2x or 4x without losing sharpness" },
+  { key: "sharpen",  Icon: Zap,            label: "Sharpen",       desc: "Improve detail and clarity" },
+  { key: "hdr",      Icon: Sun,            label: "HDR",           desc: "Recover highlight and shadow detail" },
+  { key: "color",    Icon: Palette,        label: "Color",         desc: "Balance saturation and tone" },
+  { key: "denoise",  Icon: Eraser,         label: "Denoise",       desc: "Remove grain from low-light photos" },
+  { key: "portrait", Icon: User,           label: "Portrait",      desc: "Improve skin and facial detail" },
+  { key: "lowlight", Icon: Moon,           label: "Low Light",     desc: "Brighten underexposed photos" },
 ];
 
 export default function EnhancePage() {
@@ -175,9 +175,9 @@ export default function EnhancePage() {
         <div className="max-w-4xl mx-auto px-4 py-16">
           {/* Hero */}
           <div className="text-center space-y-3 mb-10">
-            <h1 className="text-4xl font-extrabold text-foreground">AI Enhance</h1>
-            <p className="text-muted max-w-lg mx-auto">
-              Automatically enhance your photos with one click.
+            <h1 className="text-4xl font-extrabold text-foreground">AI Photo Enhancer</h1>
+            <p className="text-muted max-w-xl mx-auto">
+              Upscale, denoise, and sharpen photos using AI. Free, no signup, files never stored.
             </p>
           </div>
 
@@ -226,7 +226,7 @@ export default function EnhancePage() {
 
               {/* Mode selector */}
               <div>
-                <p className="text-sm font-bold text-foreground mb-3">Choose enhancement mode</p>
+                <p className="text-sm font-bold text-foreground mb-3">Choose an enhancement</p>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                   {MODES.map((m) => (
                     <button
@@ -238,8 +238,8 @@ export default function EnhancePage() {
                           : "border-border hover:border-primary/40"
                       }`}
                     >
-                      <div className="flex items-center gap-2 mb-0.5">
-                        <span className="text-base">{m.emoji}</span>
+                      <div className="flex items-center gap-2 mb-1">
+                        <m.Icon size={14} className="text-primary" />
                         <span className="text-xs font-bold text-foreground">{m.label}</span>
                       </div>
                       <p className="text-[10px] text-muted leading-tight">{m.desc}</p>
@@ -371,7 +371,7 @@ export default function EnhancePage() {
               <div className="grid grid-cols-3 gap-4 text-center">
                 {[
                   { step: "1", title: "Upload", desc: "Select a photo from your device" },
-                  { step: "2", title: "Pick a mode", desc: "Choose an enhancement style or use Magic Fix" },
+                  { step: "2", title: "Choose mode", desc: "Pick an enhancement, or use Auto Enhance" },
                   { step: "3", title: "Download", desc: "Get your enhanced photo instantly" },
                 ].map(({ step, title, desc }) => (
                   <div key={step} className="space-y-2">
@@ -388,8 +388,8 @@ export default function EnhancePage() {
             {/* Features */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {[
-                { label: "8 enhancement modes", sub: "One click each" },
-                { label: "Up to 50 MB", sub: "Large files OK" },
+                { label: "Upscale 2x or 4x", sub: "Enlarge without blur" },
+                { label: "Denoise & sharpen", sub: "Recover lost detail" },
                 { label: "No sign-up", sub: "Free forever" },
                 { label: "Files never stored", sub: "100% private" },
               ].map(({ label, sub }) => (

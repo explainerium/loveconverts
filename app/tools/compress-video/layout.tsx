@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import ToolSchemas from "@/app/components/ToolSchemas";
 
 export const metadata: Metadata = {
   title: "Compress Video Online Free: Reduce MP4 File Size",
@@ -56,6 +57,11 @@ const jsonLd = {
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <>
+      <ToolSchemas
+        name="Compress Video"
+        slug="compress-video"
+        description="Compress MP4, MOV, AVI, WEBM and MKV videos online for free."
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

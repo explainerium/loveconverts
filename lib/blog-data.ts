@@ -1,3 +1,9 @@
+export interface BlogAuthor {
+  name: string;
+  title: string;
+  url: string;
+}
+
 export interface BlogPost {
   slug: string;
   metaTitle: string;
@@ -12,6 +18,17 @@ export interface BlogPost {
   content: string;
   faq: { question: string; answer: string }[];
   relatedTools: { label: string; href: string }[];
+  author?: BlogAuthor;
+}
+
+export const DEFAULT_AUTHOR: BlogAuthor = {
+  name: "LoveConverts Team",
+  title: "Image & Media Tools",
+  url: "https://loveconverts.com/about",
+};
+
+export function postAuthor(post: BlogPost): BlogAuthor {
+  return post.author || DEFAULT_AUTHOR;
 }
 
 export const BLOG_POSTS: BlogPost[] = [

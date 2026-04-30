@@ -13,6 +13,17 @@ export const metadata: Metadata = {
   },
 };
 
+import ToolSchemas from "@/app/components/ToolSchemas";
+
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return children;
+  return (
+    <>
+      <ToolSchemas
+        name="HEIC to JPG"
+        slug="heic-to-jpg"
+        description="Convert iPhone HEIC photos to JPG instantly. Free, no signup, no software needed."
+      />
+      {children}
+    </>
+  );
 }

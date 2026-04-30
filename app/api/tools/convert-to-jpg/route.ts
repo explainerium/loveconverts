@@ -1,7 +1,7 @@
 import type { NextRequest } from "next/server";
-import sharp from "sharp";
 import { auth } from "@/auth";
 import { checkAndIncrementLimit, recordConversion } from "@/lib/limits";
+import { bufferToJpeg } from "@/lib/heic";
 
 export const dynamic = "force-dynamic";
 export const runtime  = "nodejs";
@@ -31,10 +31,7 @@ export async function POST(request: NextRequest) {
     const bgColor  = (formData.get("background") as string) || "#ffffff";
 
     const buffer = Buffer.from(await file.arrayBuffer());
-    const outputBuffer = await sharp(buffer)
-      .flatten({ background: bgColor })
-      .jpeg({ quality, mozjpeg: true })
-      .toBuffer();
+    const outputBuffer = await bufferToJpeg(buffer, { quality, background: bgColor });
 
     const base = (file.name.replace(/\.[^/.]+$/, "") || "image").replace(/[^\x20-\x7E]/g, "").replace(/\s+/g, "_") || "image";
 

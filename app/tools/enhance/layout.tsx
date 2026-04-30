@@ -1,12 +1,29 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "AI Photo Enhancer: Free Online Image Enhancement",
-  description: "Enhance photos with AI-powered tools. Magic Fix, Super Zoom, effects and filters. 100% free, no signup required.",
+  title: { absolute: "AI Photo Enhancer — Upscale, Denoise & Sharpen Free | LoveConverts" },
+  description:
+    "Enhance photos with AI for free. Upscale 2x or 4x, remove noise, sharpen details, and improve portrait photos. No signup required.",
   alternates: { canonical: "https://loveconverts.com/tools/enhance" },
-  openGraph: { url: "https://loveconverts.com/tools/enhance" },
+  openGraph: {
+    title: "AI Photo Enhancer — Upscale, Denoise & Sharpen Free",
+    description:
+      "Enhance photos with AI for free. Upscale 2x or 4x, denoise, sharpen, improve portraits. No signup.",
+    url: "https://loveconverts.com/tools/enhance",
+  },
 };
 
+import ToolSchemas from "@/app/components/ToolSchemas";
+
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+  return (
+    <>
+      <ToolSchemas
+        name="AI Photo Enhancer"
+        slug="enhance"
+        description="Enhance photos with AI for free. Upscale 2x or 4x, remove noise, sharpen details, and improve portrait photos."
+      />
+      {children}
+    </>
+  );
 }

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import ToolSchemas from "@/app/components/ToolSchemas";
 export const metadata: Metadata = {
   title: "Convert PDF to Image Free Online",
   description:
@@ -11,5 +12,14 @@ export default function PdfToImageLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return (
+    <>
+      <ToolSchemas
+        name="PDF to Image"
+        slug="pdf-to-image"
+        description="Extract PDF pages as JPG or PNG images. Select specific pages or convert all."
+      />
+      {children}
+    </>
+  );
 }

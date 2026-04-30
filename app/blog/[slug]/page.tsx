@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Clock, ChevronRight, ArrowRight } from "lucide-react";
-import { getAllPosts, getPostBySlug, getRelatedPosts } from "@/lib/blog-data";
+import { Clock, ChevronRight, ArrowRight, User } from "lucide-react";
+import { getAllPosts, getPostBySlug, getRelatedPosts, postAuthor } from "@/lib/blog-data";
 import JsonLd from "@/app/components/JsonLd";
 import BlogFaqAccordion from "./BlogFaqAccordion";
 
@@ -49,6 +49,7 @@ export default async function BlogPostPage({
   if (!post) notFound();
 
   const related = getRelatedPosts(slug, 3);
+  const author = postAuthor(post);
 
   const articleSchema = {
     "@context": "https://schema.org",
@@ -56,7 +57,11 @@ export default async function BlogPostPage({
     headline: post.h1,
     datePublished: post.publishDate,
     dateModified: post.publishDate,
-    author: { "@type": "Organization", name: "LoveConverts" },
+    author: {
+      "@type": "Organization",
+      name: "LoveConverts",
+      url: "https://loveconverts.com",
+    },
     publisher: {
       "@type": "Organization",
       name: "LoveConverts",
@@ -147,7 +152,11 @@ export default async function BlogPostPage({
             {post.h1}
           </h1>
 
-          <div className="flex items-center gap-3 text-sm text-muted">
+          <div className="flex items-center gap-3 text-sm text-muted flex-wrap">
+            <span className="flex items-center gap-1">
+              <User size={13} /> By {author.name}
+            </span>
+            <span className="w-1 h-1 rounded-full bg-muted" />
             <span>{post.publishDate}</span>
             <span className="w-1 h-1 rounded-full bg-muted" />
             <span className="flex items-center gap-1">

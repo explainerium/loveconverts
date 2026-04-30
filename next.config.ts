@@ -9,6 +9,8 @@ const nextConfig: NextConfig = {
     "@ffprobe-installer/ffprobe",
     "potrace",
     "jimp",
+    "heic-convert",
+    "libheif-js",
   ],
   images: {
     formats: ["image/avif", "image/webp"],

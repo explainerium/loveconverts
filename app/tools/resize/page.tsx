@@ -262,9 +262,9 @@ export default function ResizePage() {
         <div className="max-w-4xl mx-auto px-4 py-16">
           {/* Hero */}
           <div className="text-center space-y-3 mb-10">
-            <h1 className="text-4xl font-extrabold text-foreground">Resize Images</h1>
-            <p className="text-muted max-w-lg mx-auto">
-              Change image dimensions to any size. Choose from social media presets or enter custom values.
+            <h1 className="text-4xl font-extrabold text-foreground">Image Size Changer</h1>
+            <p className="text-muted max-w-xl mx-auto">
+              Change image dimensions to any size. Choose from social media presets or enter custom values. No signup, files never stored.
             </p>
           </div>
 
@@ -556,22 +556,61 @@ export default function ResizePage() {
           </>
         )}
 
-        {/* Social media sizes SEO section */}
+        {/* SEO content sections */}
         {stage === "upload" && (
-          <div className="bg-card border border-border rounded-2xl p-6">
-            <h2 className="font-bold text-foreground mb-3">Standard Image Sizes for Social Media in 2026</h2>
-            <p className="text-sm text-muted leading-relaxed mb-4">
-              Each social media platform has specific image dimensions that produce the best results.
-              Instagram portrait posts (1080x1350) take up the most feed space and get the highest engagement.
-              Facebook post images work best at 1200x630. X/Twitter crops in-feed images to 16:9, so use 1600x900.
-              YouTube thumbnails should always be 1280x720. Using the correct dimensions prevents awkward cropping
-              and ensures your content looks polished on every platform.
-            </p>
-            <p className="text-sm text-muted leading-relaxed">
-              Upload your images above and select any platform preset to resize automatically.
-              The resizer preserves aspect ratio by default, so your images are never stretched or distorted.
-            </p>
-          </div>
+          <>
+            <div className="bg-card border border-border rounded-2xl p-6">
+              <h2 className="font-bold text-foreground mb-3">How to Change Image Size Online</h2>
+              <p className="text-sm text-muted leading-relaxed">
+                Upload an image, choose a social media preset or enter custom width and height in pixels, then download the resized photo. The tool preserves aspect ratio by default so your images are never stretched. All processing happens in your browser and on our server in memory only — files are never stored.
+              </p>
+            </div>
+
+            <div className="bg-card border border-border rounded-2xl p-6">
+              <h2 className="font-bold text-foreground mb-4">Common Image Sizes</h2>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-border">
+                      <th className="text-left py-2 px-3 text-xs font-bold text-muted uppercase tracking-wider">Platform</th>
+                      <th className="text-left py-2 px-3 text-xs font-bold text-muted uppercase tracking-wider">Recommended Size</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border">
+                    {[
+                      ["Instagram Square", "1080 × 1080 px"],
+                      ["Instagram Story", "1080 × 1920 px"],
+                      ["Facebook Cover", "851 × 315 px"],
+                      ["YouTube Thumbnail", "1280 × 720 px"],
+                      ["Twitter Header", "1500 × 500 px"],
+                      ["LinkedIn Cover", "1584 × 396 px"],
+                      ["Passport Photo", "600 × 600 px"],
+                      ["WhatsApp Profile", "500 × 500 px"],
+                    ].map(([platform, size]) => (
+                      <tr key={platform}>
+                        <td className="py-2 px-3 text-foreground">{platform}</td>
+                        <td className="py-2 px-3 text-muted">{size}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div className="bg-card border border-border rounded-2xl p-6">
+              <h2 className="font-bold text-foreground mb-3">Resize Images on Any Device</h2>
+              <p className="text-sm text-muted leading-relaxed">
+                The image size changer works in any modern browser, so you can resize photos on iPhone, Android, Windows, and Mac without downloading an app. Drag a file in from your gallery or paste it directly with Ctrl+V or Cmd+V. There&apos;s no signup, no watermark, and no daily limit.
+              </p>
+            </div>
+
+            <div className="bg-card border border-border rounded-2xl p-6">
+              <h2 className="font-bold text-foreground mb-3">Standard Image Sizes for Social Media in 2026</h2>
+              <p className="text-sm text-muted leading-relaxed">
+                Each platform has dimensions that produce the best results. Instagram portrait posts (1080&times;1350) take up the most feed space and get the highest engagement. Facebook posts work best at 1200&times;630. X/Twitter crops in-feed images to 16:9, so use 1600&times;900. YouTube thumbnails should always be 1280&times;720. Using the correct dimensions prevents awkward cropping and ensures your content looks polished everywhere.
+              </p>
+            </div>
+          </>
         )}
 
         {/* Related Tools */}

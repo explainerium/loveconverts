@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import ToolSchemas from "@/app/components/ToolSchemas";
 
 export const metadata: Metadata = {
   title: "Convert Image to SVG Free Online — Vectorize Any Image",
@@ -14,5 +15,14 @@ export const metadata: Metadata = {
 };
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return children;
+  return (
+    <>
+      <ToolSchemas
+        name="Image to SVG"
+        slug="image-to-svg"
+        description="Convert JPG, PNG, WebP and other images to SVG vector format for free."
+      />
+      {children}
+    </>
+  );
 }
