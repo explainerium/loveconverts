@@ -79,10 +79,13 @@ function runYtDlp(
       "--no-warnings",
       "--no-playlist",
       "--no-check-certificates",
+      "--geo-bypass",
       "--newline", // critical: one progress line per update instead of \r carriage returns
       "--progress",
       "--user-agent",
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+      "--add-header",
+      "Accept-Language:en-US,en;q=0.9",
       "-o",
       outputPath,
     ];
@@ -90,6 +93,16 @@ function runYtDlp(
     const isYouTube = pageUrl.includes("youtube.com") || pageUrl.includes("youtu.be");
     if (isYouTube) {
       args.push("--extractor-args", "youtube:player_client=mediaconnect");
+    }
+
+    const isInstagram = pageUrl.includes("instagram.com");
+    if (isInstagram) {
+      args.push(
+        "--extractor-args",
+        "instagram:skip_dash_manifest=True",
+        "--add-header",
+        "Accept:text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      );
     }
 
     const cookiesPath = process.env.YT_DLP_COOKIES || "/var/www/loveconverts/cookies.txt";

@@ -214,13 +214,27 @@ export async function POST(req: NextRequest) {
       "--dump-single-json",
       "--no-warnings",
       "--no-check-certificates",
-      "--user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+      "--geo-bypass",
+      "--user-agent",
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+      "--add-header",
+      "Accept-Language:en-US,en;q=0.9",
     ];
 
     // For YouTube: use mediaconnect player client to bypass bot detection on VPS
     const isYouTubePlatform = ["youtube", "youtube-shorts"].includes(platform);
     if (isYouTubePlatform) {
       ytArgs.push("--extractor-args", "youtube:player_client=mediaconnect");
+    }
+
+    // Instagram needs extra headers + skipping the DASH manifest (which requires login)
+    if (platform === "instagram") {
+      ytArgs.push(
+        "--extractor-args",
+        "instagram:skip_dash_manifest=True",
+        "--add-header",
+        "Accept:text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      );
     }
 
     // Use cookies file if available (needed for YouTube bot detection on VPS)
@@ -354,29 +368,31 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    let errorMessage = "Failed to fetch media information.";
+    let errorMessage = "Download failed. Please check the URL and try again.";
     let errorType = "unknown";
 
-    if (msg.includes("Sign in to confirm") || msg.includes("not a bot") ||
-        msg.includes("confirm your age") || msg.includes("age-restricted")) {
+    const lower = msg.toLowerCase();
+
+    if (lower.includes("sign in to confirm") || lower.includes("not a bot") ||
+        lower.includes("confirm your age") || lower.includes("age-restricted")) {
       errorMessage = "YouTube is blocking this download. The video may require a signed-in account or be age-restricted. Please try a different video.";
       errorType = "bot_check";
-    } else if (msg.includes("login required") || msg.includes("Login required") ||
-        msg.includes("not granting access") || msg.includes("empty media response")) {
-      errorMessage = "This content requires login to access. Please make sure the post is public and try again.";
+    } else if (lower.includes("login") || lower.includes("authentication") ||
+        lower.includes("not granting access") || lower.includes("empty media response") ||
+        lower.includes("private")) {
+      errorMessage = "This video is private or requires login. Please try a public video URL.";
       errorType = "login_required";
-    } else if (msg.includes("Private") || msg.includes("private")) {
-      errorMessage = "This content is private. Only public posts can be downloaded.";
-      errorType = "private";
-    } else if (msg.includes("not available") || msg.includes("removed") || msg.includes("deleted")) {
-      errorMessage = "This video is unavailable or has been removed.";
+    } else if (lower.includes("rate") || lower.includes("429") || lower.includes("too many requests")) {
+      errorMessage = "Too many requests. Please wait a moment and try again.";
+      errorType = "rate_limited";
+    } else if (lower.includes("not available") || lower.includes("unavailable") ||
+        lower.includes("removed") || lower.includes("deleted") ||
+        lower.includes("geo") || lower.includes("region")) {
+      errorMessage = "This video is not available in your region or has been removed.";
       errorType = "unavailable";
-    } else if (msg.includes("Unsupported URL") || msg.includes("unsupported")) {
+    } else if (lower.includes("unsupported url") || lower.includes("unsupported")) {
       errorMessage = "Unsupported URL. Please check the link and try again.";
       errorType = "unsupported";
-    } else if (msg.includes("rate") || msg.includes("429")) {
-      errorMessage = "The platform is rate-limiting requests. Please try again in a moment.";
-      errorType = "rate_limited";
     }
 
     logStat(platform, format, false, errorType);
